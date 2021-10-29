@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/mute"
+        android:title="@string/toggle_mute"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/standby"
+        android:title="@string/standby_mode"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/reset"
+        android:title="@string/reset_settings"
+        app:showAsAction="never" />
+</menu>

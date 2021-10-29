@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/fragment_setup">
+
+    <fragment
+        android:id="@+id/fragment_setup"
+        android:name="com.tomg.fiiok9control.setup.ui.SetupFragment">
+
+        <action
+            android:id="@+id/setup_to_state"
+            app:destination="@id/fragment_state"
+            app:popUpTo="@id/fragment_setup"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_state"
+        android:name="com.tomg.fiiok9control.state.ui.StateFragment">
+
+        <action
+            android:id="@+id/state_to_setup"
+            app:destination="@id/fragment_setup"
+            app:popUpTo="@id/fragment_state"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_audio"
+        android:name="com.tomg.fiiok9control.audio.ui.AudioFragment">
+
+        <action
+            android:id="@+id/audio_to_setup"
+            app:destination="@id/fragment_setup"
+            app:popUpTo="@id/fragment_audio"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_eq"
+        android:name="com.tomg.fiiok9control.eq.ui.EqFragment">
+
+        <action
+            android:id="@+id/eq_to_setup"
+            app:destination="@id/fragment_setup"
+            app:popUpTo="@id/fragment_eq"
+            app:popUpToInclusive="true" />
+    </fragment>
+</navigation>

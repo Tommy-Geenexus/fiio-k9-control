@@ -1,0 +1,26 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>ComplexMethod:StateViewModel.kt$StateViewModel$fun handleGaiaPacket(data: ByteArray)</ID>
+    <ID>EmptyFunctionBlock:EqFragment.kt$EqFragment${ }</ID>
+    <ID>EmptyFunctionBlock:GaiaGattService.kt$GaiaGattService${ }</ID>
+    <ID>EmptyFunctionBlock:SetupFragment.kt$SetupFragment${ }</ID>
+    <ID>LongMethod:StateViewModel.kt$StateViewModel$fun handleGaiaPacket(data: ByteArray)</ID>
+    <ID>MagicNumber:AudioViewModel.kt$AudioViewModel$200</ID>
+    <ID>MagicNumber:AudioViewModel.kt$AudioViewModel$4</ID>
+    <ID>MagicNumber:AudioViewModel.kt$AudioViewModel$6</ID>
+    <ID>MagicNumber:StateViewModel.kt$StateViewModel$200</ID>
+    <ID>MagicNumber:StateViewModel.kt$StateViewModel$3</ID>
+    <ID>MagicNumber:StateViewModel.kt$StateViewModel$4</ID>
+    <ID>MagicNumber:StateViewModel.kt$StateViewModel$44.1f</ID>
+    <ID>MagicNumber:StateViewModel.kt$StateViewModel$48</ID>
+    <ID>MagicNumber:StateViewModel.kt$StateViewModel$6</ID>
+    <ID>MagicNumber:StateViewModel.kt$StateViewModel$64</ID>
+    <ID>NestedBlockDepth:GaiaGattService.kt$GaiaGattService$private fun checkService(gattService: BluetoothGattService): Boolean</ID>
+    <ID>TooManyFunctions:BaseFragment.kt$BaseFragment&lt;B : ViewBinding&gt; : Fragment</ID>
+    <ID>TooManyFunctions:GaiaGattService.kt$GaiaGattService : BLEService</ID>
+    <ID>TooManyFunctions:StateFragment.kt$StateFragment : BaseFragmentListener</ID>
+    <ID>TooManyFunctions:StateViewModel.kt$StateViewModel : ViewModelContainerHost</ID>
+  </CurrentIssues>
+</SmellBaseline>

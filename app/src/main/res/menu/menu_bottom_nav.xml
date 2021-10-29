@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@id/fragment_state"
+        android:icon="@drawable/ic_k9"
+        android:title="@string/state" />
+
+    <item
+        android:id="@id/fragment_audio"
+        android:icon="@drawable/ic_bluetooth_audio"
+        android:title="@string/audio" />
+
+    <item
+        android:id="@id/fragment_eq"
+        android:icon="@drawable/ic_graphic_eq"
+        android:title="@string/equalizer" />
+
+</menu>

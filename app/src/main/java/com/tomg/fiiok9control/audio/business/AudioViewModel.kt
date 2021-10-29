@@ -1,0 +1,194 @@
+/*
+ * Copyright (c) 2021, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
+ * and associated documentation files (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute,
+ * sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY,WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+package com.tomg.fiiok9control.audio.business
+
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
+import com.qualcomm.qti.libraries.gaia.packets.GaiaPacketBLE
+import com.tomg.fiiok9control.audio.LowPassFilter
+import com.tomg.fiiok9control.gaia.GaiaGattService
+import com.tomg.fiiok9control.gaia.GaiaPacketFactory
+import com.tomg.fiiok9control.gaia.isFiioPacket
+import com.tomg.fiiok9control.setup.data.SetupRepository
+import com.tomg.fiiok9control.toHexString
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import org.orbitmvi.orbit.ContainerHost
+import org.orbitmvi.orbit.syntax.simple.intent
+import org.orbitmvi.orbit.syntax.simple.postSideEffect
+import org.orbitmvi.orbit.syntax.simple.reduce
+import org.orbitmvi.orbit.viewmodel.container
+import javax.inject.Inject
+
+@HiltViewModel
+class AudioViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
+    private val setupRepository: SetupRepository
+) : ViewModel(),
+    ContainerHost<AudioState, AudioSideEffect> {
+
+    override val container = container<AudioState, AudioSideEffect>(
+        savedStateHandle = savedStateHandle,
+        initialState = AudioState()
+    )
+
+    private val gaiaPacketResponses: MutableList<Int> = mutableListOf()
+
+    fun clearGaiaPacketResponses() {
+        gaiaPacketResponses.clear()
+    }
+
+    fun handleGaiaPacket(data: ByteArray) = intent {
+        val packet = GaiaPacketBLE(data)
+        if (packet.isFiioPacket()) {
+            gaiaPacketResponses.remove(packet.command)
+            val payload = packet.payload.toHexString()
+            when (packet.command) {
+                GaiaPacketFactory.CMD_ID_LOW_PASS_FILTER_GET -> {
+                    val id = payload.toIntOrNull(radix = 16) ?: -1
+                    val lowPassFilter = LowPassFilter.findById(id)
+                    if (lowPassFilter != null) {
+                        reduce {
+                            state.copy(lowPassFilter = lowPassFilter)
+                        }
+                    }
+                }
+                GaiaPacketFactory.CMD_ID_CHANNEL_BAL_GET -> {
+                    if (payload.length < 6) return@intent
+                    val leftChannel = payload.startsWith("0001")
+                    val channelBalance = payload.substring(4).toIntOrNull(radix = 16)
+                    if (channelBalance != null) {
+                        reduce {
+                            state.copy(
+                                channelBalance = if (leftChannel) {
+                                    -channelBalance
+                                } else {
+                                    channelBalance
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+            if (gaiaPacketResponses.isEmpty()) {
+                postSideEffect(AudioSideEffect.Characteristic.Changed)
+            }
+        }
+    }
+
+    fun handleGaiaPacketSendResult(commandId: Int) = intent {
+        gaiaPacketResponses.remove(commandId)
+        if (gaiaPacketResponses.isEmpty()) {
+            postSideEffect(AudioSideEffect.Characteristic.Changed)
+        }
+    }
+
+    fun reconnectToDevice(service: GaiaGattService?) = intent {
+        postSideEffect(AudioSideEffect.Reconnect.Initiated)
+        if (service != null) {
+            val success = service.connectToDevice(setupRepository.getBondedDeviceAddressOrEmpty())
+            postSideEffect(
+                if (success) {
+                    AudioSideEffect.Reconnect.Success
+                } else {
+                    AudioSideEffect.Reconnect.Failure
+                }
+            )
+        } else {
+            postSideEffect(AudioSideEffect.Reconnect.Failure)
+        }
+    }
+
+    fun sendGaiaPacketLowPassFilter(
+        scope: CoroutineScope,
+        service: GaiaGattService?,
+        lowPassFilter: LowPassFilter
+    ) = intent {
+        if (service != null) {
+            val commandId = GaiaPacketFactory.CMD_ID_LOW_PASS_FILTER_SET
+            gaiaPacketResponses.add(commandId)
+            postSideEffect(AudioSideEffect.Characteristic.Write)
+            scope.launch(context = Dispatchers.IO) {
+                val packet = GaiaPacketFactory.createGaiaPacket(
+                    commandId = commandId,
+                    payload = byteArrayOf(lowPassFilter.id.toByte())
+                )
+                val success = service.sendGaiaPacket(packet)
+                if (success) {
+                    reduce {
+                        state.copy(lowPassFilter = lowPassFilter)
+                    }
+                }
+            }
+        }
+    }
+
+    fun sendGaiaPacketChannelBalance(
+        scope: CoroutineScope,
+        service: GaiaGattService?,
+        channelBalance: Int
+    ) = intent {
+        if (service != null) {
+            val commandId = GaiaPacketFactory.CMD_ID_CHANNEL_BAL_SET
+            gaiaPacketResponses.add(commandId)
+            postSideEffect(AudioSideEffect.Characteristic.Write)
+            scope.launch(context = Dispatchers.IO) {
+                val packet = GaiaPacketFactory.createGaiaPacket(
+                    commandId = commandId,
+                    payload = byteArrayOf(
+                        if (channelBalance < 0) 1.toByte() else 2.toByte(),
+                        channelBalance.toByte()
+                    )
+                )
+                val success = service.sendGaiaPacket(packet)
+                if (success) {
+                    reduce {
+                        state.copy(channelBalance = channelBalance)
+                    }
+                }
+            }
+        }
+    }
+
+    fun sendGaiaPacketsDelayed(
+        scope: CoroutineScope,
+        service: GaiaGattService?
+    ) = intent {
+        if (service != null) {
+            val commandIds = listOf(
+                GaiaPacketFactory.CMD_ID_LOW_PASS_FILTER_GET,
+                GaiaPacketFactory.CMD_ID_CHANNEL_BAL_GET
+            )
+            gaiaPacketResponses.addAll(commandIds)
+            postSideEffect(AudioSideEffect.Characteristic.Write)
+            scope.launch(context = Dispatchers.IO) {
+                commandIds.forEach { commandId ->
+                    val packet = GaiaPacketFactory.createGaiaPacket(commandId = commandId)
+                    service.sendGaiaPacket(packet)
+                    delay(200)
+                }
+            }
+        }
+    }
+}

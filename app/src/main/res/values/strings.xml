@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<resources>
+    <string name="app_name">FiioK9Control</string>
+
+    <string name="audio">Audio</string>
+    <string name="audio_fmt">Audio format %s</string>
+
+    <string name="bluetooth">Bluetooth</string>
+
+    <string name="channel_balance">Channel balance</string>
+
+    <string name="coaxial">Coaxial</string>
+
+    <string name="connect_device">Connect device</string>
+
+    <string name="disabled">Disabled</string>
+
+    <string name="emoticon_joy" translatable="false">(^_^)/</string>
+    <string name="emoticon_trouble" translatable="false">(^_^*)</string>
+
+    <string name="enable_bluetooth">Enable Bluetooth</string>
+
+    <string name="enabled_default_behaviour">Enabled, default behaviour</string>
+    <string name="enabled_multi_color_gradient_only">Enabled, multi-color gradient only</string>
+
+    <string name="equalizer">Equalizer</string>
+
+    <string name="fw_version">Firmware version %s</string>
+
+    <string name="gaia_discover">Discovering GAIA services</string>
+
+    <string name="gatt_discover">Discovering GATT services</string>
+
+    <string name="grant_permissions">Grant permissions</string>
+
+    <string name="indicator">Indicator</string>
+    <string name="indicator_brightness">Indicator brightness</string>
+
+    <string name="input_source">Input source</string>
+
+    <string name="line_in">Line in</string>
+
+    <string name="low_dispersion_short_delay">Low dispersion short delay</string>
+    <string name="low_pass_filter">Low pass filter</string>
+
+    <string name="optical">Optical</string>
+
+    <string name="pair_device">Pair device</string>
+
+    <string name="reset_settings">Reset settings</string>
+
+    <string name="sharp_roll_off">Sharp roll-off</string>
+
+    <string name="short_delay_sharp_roll_off">Short delay sharp roll-off</string>
+    <string name="short_delay_slow_roll_off">Short delay slow roll-off</string>
+
+    <string name="slow_roll_off">Slow roll-off</string>
+
+    <string name="standby_mode">Standby mode</string>
+
+    <string name="state">State</string>
+
+    <string name="super_slow">Super slow</string>
+
+    <string name="toggle_mute">Toggle mute</string>
+
+    <string name="usb">USB</string>
+</resources>
