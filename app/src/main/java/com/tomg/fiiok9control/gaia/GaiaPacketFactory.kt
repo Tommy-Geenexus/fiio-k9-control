@@ -30,6 +30,10 @@ object GaiaPacketFactory {
     const val CMD_ID_CHANNEL_BAL_GET = 0x0413
     const val CMD_ID_CHANNEL_BAL_SET = 0x0403
     const val CMD_ID_CODEC_BIT_GET = 0x0416
+    const val CMD_ID_EQ_EN_GET = 0x0419
+    const val CMD_ID_EQ_EN_SET = 0x0408
+    const val CMD_ID_EQ_PRE_GET = 0x0435
+    const val CMD_ID_EQ_PRE_SET = 0x0423
     const val CMD_ID_INDICATOR_RGB_LIGHTING_GET = 0x043d
     const val CMD_ID_INDICATOR_RGB_LIGHTING_SET = 0x043e
     const val CMD_ID_INPUT_SRC_GET = 0x0448

@@ -21,11 +21,28 @@
 package com.tomg.fiiok9control.eq.business
 
 import android.os.Parcelable
-import com.tomg.fiiok9control.eq.EqPreSet
 import kotlinx.parcelize.Parcelize
 
-@Parcelize
-data class EqState(
-    val eqEnabled: Boolean = false,
-    val eqPreSet: EqPreSet = EqPreSet.Default
-) : Parcelable
+sealed class EqSideEffect : Parcelable {
+
+    sealed class Characteristic {
+
+        @Parcelize
+        object Write : EqSideEffect()
+
+        @Parcelize
+        object Changed : EqSideEffect()
+    }
+
+    sealed class Reconnect : EqSideEffect() {
+
+        @Parcelize
+        object Initiated : EqSideEffect()
+
+        @Parcelize
+        object Success : EqSideEffect()
+
+        @Parcelize
+        object Failure : EqSideEffect()
+    }
+}

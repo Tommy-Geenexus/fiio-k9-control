@@ -18,8 +18,47 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.fiiok9control.eq.business
+package com.tomg.fiiok9control.eq
 
 import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
-sealed class EqSideEffects : Parcelable
+sealed class EqPreSet(
+    val id: Int
+) : Parcelable {
+
+    companion object {
+
+        fun findById(id: Int) = when (id) {
+            Jazz.id -> Jazz
+            Pop.id -> Pop
+            Rock.id -> Rock
+            Dance.id -> Dance
+            Default.id -> Default
+            Rb.id -> Rb
+            Classical.id -> Classical
+            else -> null
+        }
+    }
+
+    @Parcelize
+    object Jazz : EqPreSet(id = 0)
+
+    @Parcelize
+    object Pop : EqPreSet(id = 1)
+
+    @Parcelize
+    object Rock : EqPreSet(id = 2)
+
+    @Parcelize
+    object Dance : EqPreSet(id = 3)
+
+    @Parcelize
+    object Default : EqPreSet(id = 4)
+
+    @Parcelize
+    object Rb : EqPreSet(id = 5)
+
+    @Parcelize
+    object Classical : EqPreSet(id = 6)
+}

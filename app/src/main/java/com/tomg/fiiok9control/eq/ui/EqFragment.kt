@@ -23,30 +23,73 @@ package com.tomg.fiiok9control.eq.ui
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
-import com.google.android.material.elevation.SurfaceColors
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.tomg.fiiok9control.BaseFragment
 import com.tomg.fiiok9control.R
 import com.tomg.fiiok9control.databinding.FragmentEqBinding
+import com.tomg.fiiok9control.eq.EqPreSet
+import com.tomg.fiiok9control.eq.business.EqSideEffect
+import com.tomg.fiiok9control.eq.business.EqState
 import com.tomg.fiiok9control.eq.business.EqViewModel
+import com.tomg.fiiok9control.gaia.GaiaGattSideEffect
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class EqFragment : BaseFragment<FragmentEqBinding>(R.layout.fragment_eq) {
+class EqFragment :
+    BaseFragment<FragmentEqBinding>(R.layout.fragment_eq),
+    EqAdapter.Listener {
 
-    @Suppress("unused")
-    val eqViewModel: EqViewModel by viewModels()
+    private val eqViewModel: EqViewModel by viewModels()
 
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
-        requireActivity().window.navigationBarColor =
-            SurfaceColors.SURFACE_2.getColor(requireActivity())
         setupToolbar(
             toolbar = binding.toolbar,
             titleRes = R.string.app_name
         )
+        binding.eq.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = EqAdapter(listener = this@EqFragment)
+            itemAnimator = null
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                eqViewModel.container.stateFlow.collect { state ->
+                    renderState(state)
+                }
+            }
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                eqViewModel.container.sideEffectFlow.collect { sideEffect ->
+                    handleSideEffect(sideEffect)
+                }
+            }
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                gaiaGattSideEffectFlow.collect { sideEffect ->
+                    handleGaiaGattSideEffect(sideEffect)
+                }
+            }
+        }
+        eqViewModel.sendGaiaPacketsDelayed(
+            lifecycleScope,
+            gaiaGattService()
+        )
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        eqViewModel.clearGaiaPacketResponses()
     }
 
     override fun onBluetoothStateChanged(enabled: Boolean) {
@@ -56,7 +99,71 @@ class EqFragment : BaseFragment<FragmentEqBinding>(R.layout.fragment_eq) {
     }
 
     override fun onReconnectToDevice() {
+        eqViewModel.reconnectToDevice(gaiaGattService())
     }
 
     override fun bindLayout(view: View) = FragmentEqBinding.bind(view)
+
+    override fun onEqEnabled(enabled: Boolean) {
+        if (!enabled) {
+            onEqPreSetRequested(EqPreSet.Default)
+        }
+        eqViewModel.sendGaiaPacketEqEnabled(
+            lifecycleScope,
+            gaiaGattService(),
+            enabled
+        )
+    }
+
+    override fun onEqPreSetRequested(eqPreSet: EqPreSet) {
+        eqViewModel.sendGaiaPacketEqPreSet(
+            lifecycleScope,
+            gaiaGattService(),
+            eqPreSet
+        )
+    }
+
+    private fun renderState(state: EqState) {
+        (binding.eq.adapter as? EqAdapter)?.submitList(listOf(state.eqEnabled to state.eqPreSet))
+    }
+
+    private fun handleSideEffect(sideEffect: EqSideEffect) {
+        when (sideEffect) {
+            EqSideEffect.Characteristic.Changed -> {
+                binding.progress.hide()
+            }
+            EqSideEffect.Characteristic.Write -> {
+                binding.progress.show()
+            }
+            EqSideEffect.Reconnect.Failure -> {
+                binding.progress.hide()
+                navigate(EqFragmentDirections.eqToSetup())
+            }
+            EqSideEffect.Reconnect.Initiated -> {
+                binding.progress.show()
+            }
+            EqSideEffect.Reconnect.Success -> {
+                binding.progress.hide()
+            }
+        }
+    }
+
+    private fun handleGaiaGattSideEffect(sideEffect: GaiaGattSideEffect) {
+        when (sideEffect) {
+            GaiaGattSideEffect.Gatt.Disconnected -> {
+                navigate(EqFragmentDirections.eqToSetup())
+            }
+            is GaiaGattSideEffect.Gatt.WriteCharacteristic.Failure -> {
+                eqViewModel.handleGaiaPacketSendResult(sideEffect.commandId)
+            }
+            is GaiaGattSideEffect.Gatt.WriteCharacteristic.Success -> {
+                eqViewModel.handleGaiaPacketSendResult(sideEffect.commandId)
+            }
+            is GaiaGattSideEffect.Gaia.Packet -> {
+                eqViewModel.handleGaiaPacket(sideEffect.data)
+            }
+            else -> {
+            }
+        }
+    }
 }

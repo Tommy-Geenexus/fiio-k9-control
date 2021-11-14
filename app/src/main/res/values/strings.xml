@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <resources>
+    <string name="_default">Default</string>
+
     <string name="app_name">FiioK9Control</string>
 
     <string name="audio">Audio</string>
@@ -9,9 +11,13 @@
 
     <string name="channel_balance">Channel balance</string>
 
+    <string name="classical">Classical</string>
+
     <string name="coaxial">Coaxial</string>
 
     <string name="connect_device">Connect device</string>
+
+    <string name="dance">Dance</string>
 
     <string name="disabled">Disabled</string>
 
@@ -24,6 +30,7 @@
     <string name="enabled_multi_color_gradient_only">Enabled, multi-color gradient only</string>
 
     <string name="equalizer">Equalizer</string>
+    <string name="equalizer_preset">Equalizer preset</string>
 
     <string name="fw_version">Firmware version %s</string>
 
@@ -38,6 +45,8 @@
 
     <string name="input_source">Input source</string>
 
+    <string name="jazz">Jazz</string>
+
     <string name="line_in">Line in</string>
 
     <string name="low_dispersion_short_delay">Low dispersion short delay</string>
@@ -47,7 +56,15 @@
 
     <string name="pair_device">Pair device</string>
 
+    <string name="pop">Pop</string>
+
+    <string name="r_b">
+        <![CDATA[R&B]]>
+    </string>
+
     <string name="reset_settings">Reset settings</string>
+
+    <string name="rock">Rock</string>
 
     <string name="sharp_roll_off">Sharp roll-off</string>
 

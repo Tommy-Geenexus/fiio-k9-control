@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="?materialCardViewOutlinedStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/spacing_normal"
+    app:shapeAppearance="@style/ShapeAppearance.Material3.LargeComponent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/spacing_normal">
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/eq_enabled"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/equalizer"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/eq_pre_set"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_normal"
+            android:text="@string/equalizer_preset"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/eq_enabled" />
+
+        <RadioGroup
+            android:id="@+id/group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_normal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/eq_pre_set">
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/jazz"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/jazz" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/pop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/pop" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/rock"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/rock" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/dance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/dance" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/pre_set_default"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/_default" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/rb"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/r_b" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/classical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/classical" />
+        </RadioGroup>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

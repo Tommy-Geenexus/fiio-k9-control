@@ -3,13 +3,13 @@
   <ManuallySuppressedIssues></ManuallySuppressedIssues>
   <CurrentIssues>
     <ID>ComplexMethod:StateViewModel.kt$StateViewModel$fun handleGaiaPacket(data: ByteArray)</ID>
-    <ID>EmptyFunctionBlock:EqFragment.kt$EqFragment${ }</ID>
     <ID>EmptyFunctionBlock:GaiaGattService.kt$GaiaGattService${ }</ID>
     <ID>EmptyFunctionBlock:SetupFragment.kt$SetupFragment${ }</ID>
     <ID>LongMethod:StateViewModel.kt$StateViewModel$fun handleGaiaPacket(data: ByteArray)</ID>
     <ID>MagicNumber:AudioViewModel.kt$AudioViewModel$200</ID>
     <ID>MagicNumber:AudioViewModel.kt$AudioViewModel$4</ID>
     <ID>MagicNumber:AudioViewModel.kt$AudioViewModel$6</ID>
+    <ID>MagicNumber:EqViewModel.kt$EqViewModel$200</ID>
     <ID>MagicNumber:StateViewModel.kt$StateViewModel$200</ID>
     <ID>MagicNumber:StateViewModel.kt$StateViewModel$3</ID>
     <ID>MagicNumber:StateViewModel.kt$StateViewModel$4</ID>
