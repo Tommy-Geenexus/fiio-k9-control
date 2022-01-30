@@ -24,6 +24,7 @@ import android.annotation.SuppressLint
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.pm.PackageManager
+import com.tomg.fiiok9control.Empty
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -46,11 +47,15 @@ class SetupRepository @Inject constructor(
 
     @SuppressLint("MissingPermission")
     fun getBondedDeviceAddressOrEmpty(): String {
-        return bm
-            ?.adapter
-            ?.bondedDevices
-            ?.find { device -> device.name == DEVICE_K9_PRO_NAME }
-            ?.address
-            .orEmpty()
+        return runCatching {
+            bm
+                ?.adapter
+                ?.bondedDevices
+                ?.find { device -> device.name == DEVICE_K9_PRO_NAME }
+                ?.address
+                .orEmpty()
+        }.getOrElse {
+            String.Empty
+        }
     }
 }
