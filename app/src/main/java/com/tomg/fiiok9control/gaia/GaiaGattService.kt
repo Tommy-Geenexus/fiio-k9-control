@@ -20,6 +20,7 @@
 
 package com.tomg.fiiok9control.gaia
 
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattDescriptor
@@ -108,6 +109,7 @@ class GaiaGattService : BLEService() {
         }
     }
 
+    @SuppressLint("MissingPermission")
     override fun onConnectionStateChange(
         gatt: BluetoothGatt?,
         status: Int,

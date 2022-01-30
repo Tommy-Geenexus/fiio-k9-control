@@ -190,7 +190,7 @@ public abstract class GaiaManager {
             sendGAIAPacket(bytes);
         }
         catch (GaiaException e) {
-            Log.w(TAG, "ACK packet not created, exception occurred: " + e.toString());
+            Log.w(TAG, "ACK packet not created, exception occurred: " + e);
         }
 
     }
@@ -434,7 +434,7 @@ public abstract class GaiaManager {
                     }
                 }
                 catch (GaiaException e) {
-                    Log.w(TAG, "Exception when attempting to create GAIA packet: " + e.toString());
+                    Log.w(TAG, "Exception when attempting to create GAIA packet: " + e);
                 }
                 return;
             
@@ -448,7 +448,7 @@ public abstract class GaiaManager {
                     }
                 }
                 catch (GaiaException e) {
-                    Log.w(TAG, "Exception when attempting to create GAIA packet: " + e.toString());
+                    Log.w(TAG, "Exception when attempting to create GAIA packet: " + e);
                 }
                 return;
 
@@ -497,6 +497,7 @@ public abstract class GaiaManager {
      * @return true if the packet has been acknowledged in this method. If the method returns false the packet will be
      * acknowledged with a {@link GAIA.Status#NOT_SUPPORTED} status.
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     protected abstract boolean manageReceivedPacket(GaiaPacket packet);
 
     /**

@@ -20,6 +20,7 @@
 
 package com.tomg.fiiok9control.setup.data
 
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.pm.PackageManager
@@ -43,6 +44,7 @@ class SetupRepository @Inject constructor(
 
     fun isBluetoothEnabled() = bm?.adapter?.isEnabled == true
 
+    @SuppressLint("MissingPermission")
     fun getBondedDeviceAddressOrEmpty(): String {
         return bm
             ?.adapter

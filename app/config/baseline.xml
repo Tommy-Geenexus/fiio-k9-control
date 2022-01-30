@@ -1,6 +1,6 @@
-<?xml version="1.0" ?>
+<?xml version='1.0' encoding='UTF-8'?>
 <SmellBaseline>
-  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <ManuallySuppressedIssues/>
   <CurrentIssues>
     <ID>ComplexMethod:StateViewModel.kt$StateViewModel$fun handleGaiaPacket(data: ByteArray)</ID>
     <ID>EmptyFunctionBlock:GaiaGattService.kt$GaiaGattService${ }</ID>
@@ -18,7 +18,9 @@
     <ID>MagicNumber:StateViewModel.kt$StateViewModel$6</ID>
     <ID>MagicNumber:StateViewModel.kt$StateViewModel$64</ID>
     <ID>NestedBlockDepth:GaiaGattService.kt$GaiaGattService$private fun checkService(gattService: BluetoothGattService): Boolean</ID>
-    <ID>TooManyFunctions:BaseFragment.kt$BaseFragment&lt;B : ViewBinding&gt; : Fragment</ID>
+    <ID>TooManyFunctions:AudioFragment.kt$AudioFragment : BaseFragmentListener</ID>
+    <ID>TooManyFunctions:BaseFragment.kt$BaseFragment&lt;B : ViewBinding> : Fragment</ID>
+    <ID>TooManyFunctions:EqFragment.kt$EqFragment : BaseFragmentListener</ID>
     <ID>TooManyFunctions:GaiaGattService.kt$GaiaGattService : BLEService</ID>
     <ID>TooManyFunctions:StateFragment.kt$StateFragment : BaseFragmentListener</ID>
     <ID>TooManyFunctions:StateViewModel.kt$StateViewModel : ViewModelContainerHost</ID>
