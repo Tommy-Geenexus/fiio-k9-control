@@ -36,7 +36,6 @@ import com.tomg.fiiok9control.eq.business.EqState
 import com.tomg.fiiok9control.eq.business.EqViewModel
 import com.tomg.fiiok9control.gaia.GaiaGattSideEffect
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -61,30 +60,36 @@ class EqFragment :
             itemAnimator = null
         }
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 eqViewModel.container.stateFlow.collect { state ->
                     renderState(state)
                 }
             }
         }
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 eqViewModel.container.sideEffectFlow.collect { sideEffect ->
                     handleSideEffect(sideEffect)
                 }
             }
         }
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 gaiaGattSideEffectFlow.collect { sideEffect ->
                     handleGaiaGattSideEffect(sideEffect)
                 }
             }
         }
-        eqViewModel.sendGaiaPacketsDelayed(
-            lifecycleScope,
-            gaiaGattService()
-        )
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (gaiaGattService()?.isConnected() == true) {
+            eqViewModel.sendGaiaPacketsDelayed(
+                lifecycleScope,
+                gaiaGattService()
+            )
+        }
     }
 
     override fun onDestroyView() {
@@ -144,6 +149,10 @@ class EqFragment :
             }
             EqSideEffect.Reconnect.Success -> {
                 binding.progress.hide()
+                eqViewModel.sendGaiaPacketsDelayed(
+                    lifecycleScope,
+                    gaiaGattService()
+                )
             }
         }
     }

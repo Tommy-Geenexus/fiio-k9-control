@@ -37,7 +37,6 @@ import com.tomg.fiiok9control.databinding.FragmentAudioBinding
 import com.tomg.fiiok9control.gaia.GaiaGattSideEffect
 import com.tomg.fiiok9control.state.ui.StateFragmentDirections
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -62,30 +61,36 @@ class AudioFragment :
             itemAnimator = null
         }
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 audioViewModel.container.stateFlow.collect { state ->
                     renderState(state)
                 }
             }
         }
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 audioViewModel.container.sideEffectFlow.collect { sideEffect ->
                     handleSideEffect(sideEffect)
                 }
             }
         }
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 gaiaGattSideEffectFlow.collect { sideEffect ->
                     handleGaiaGattSideEffect(sideEffect)
                 }
             }
         }
-        audioViewModel.sendGaiaPacketsDelayed(
-            lifecycleScope,
-            gaiaGattService()
-        )
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (gaiaGattService()?.isConnected() == true) {
+            audioViewModel.sendGaiaPacketsDelayed(
+                lifecycleScope,
+                gaiaGattService()
+            )
+        }
     }
 
     override fun onDestroyView() {
@@ -144,6 +149,10 @@ class AudioFragment :
             }
             AudioSideEffect.Reconnect.Success -> {
                 binding.progress.hide()
+                audioViewModel.sendGaiaPacketsDelayed(
+                    lifecycleScope,
+                    gaiaGattService()
+                )
             }
         }
     }

@@ -40,7 +40,6 @@ import com.tomg.fiiok9control.state.business.StateSideEffect
 import com.tomg.fiiok9control.state.business.StateState
 import com.tomg.fiiok9control.state.business.StateViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -66,30 +65,26 @@ class StateFragment :
             itemAnimator = null
         }
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 stateViewModel.container.stateFlow.collect { state ->
                     renderState(state)
                 }
             }
         }
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 stateViewModel.container.sideEffectFlow.collect { sideEffect ->
                     handleSideEffect(sideEffect)
                 }
             }
         }
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 gaiaGattSideEffectFlow.collect { sideEffect ->
                     handleGaiaGattSideEffect(sideEffect)
                 }
             }
         }
-        stateViewModel.sendGaiaPacketsDelayed(
-            lifecycleScope,
-            gaiaGattService()
-        )
     }
 
     override fun onCreateOptionsMenu(
@@ -133,6 +128,16 @@ class StateFragment :
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (gaiaGattService()?.isConnected() == true) {
+            stateViewModel.sendGaiaPacketsDelayed(
+                lifecycleScope,
+                gaiaGattService()
+            )
         }
     }
 
@@ -205,6 +210,10 @@ class StateFragment :
             }
             StateSideEffect.Reconnect.Success -> {
                 binding.progress.hide()
+                stateViewModel.sendGaiaPacketsDelayed(
+                    lifecycleScope,
+                    gaiaGattService()
+                )
             }
         }
     }

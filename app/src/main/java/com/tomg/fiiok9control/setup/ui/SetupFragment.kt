@@ -40,7 +40,6 @@ import com.tomg.fiiok9control.setup.business.SetupState
 import com.tomg.fiiok9control.setup.business.SetupViewModel
 import com.tomg.fiiok9control.showSnackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -77,21 +76,21 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>(R.layout.fragment_setup
             handleActionClick()
         }
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 setupViewModel.container.stateFlow.collect { state ->
                     renderState(state)
                 }
             }
         }
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 setupViewModel.container.sideEffectFlow.collect { sideEffect ->
                     handleSideEffect(sideEffect)
                 }
             }
         }
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 gaiaGattSideEffectFlow.collect { sideEffect ->
                     handleGaiaGattSideEffect(sideEffect)
                 }
