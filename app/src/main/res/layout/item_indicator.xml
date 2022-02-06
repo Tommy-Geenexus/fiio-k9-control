@@ -66,6 +66,7 @@
             android:stepSize="1"
             android:valueFrom="1"
             android:valueTo="5"
+            app:labelBehavior="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/indicator_brightness" />
     </androidx.constraintlayout.widget.ConstraintLayout>
