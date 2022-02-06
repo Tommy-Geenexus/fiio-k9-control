@@ -103,6 +103,12 @@ class StateViewModel @Inject constructor(
                         state.copy(isMuted = isMuted)
                     }
                 }
+                GaiaPacketFactory.CMD_ID_MQA_EN_GET -> {
+                    val isMqaEnabled = payload.toIntOrNull(radix = 16) ?: 1 == 1
+                    reduce {
+                        state.copy(isMqaEnabled = isMqaEnabled)
+                    }
+                }
                 GaiaPacketFactory.CMD_ID_INPUT_SRC_GET -> {
                     val id = payload.toIntOrNull(radix = 16) ?: -1
                     val inputSource = InputSource.findById(id)
@@ -210,6 +216,35 @@ class StateViewModel @Inject constructor(
         }
     }
 
+    fun sendGaiaPacketMqa(
+        scope: CoroutineScope,
+        service: GaiaGattService?
+    ) = intent {
+        if (service != null) {
+            val commandId = GaiaPacketFactory.CMD_ID_MQA_EN_SET
+            gaiaPacketResponses.add(commandId)
+            postSideEffect(StateSideEffect.Characteristic.Write)
+            scope.launch(context = Dispatchers.IO) {
+                val packet = GaiaPacketFactory.createGaiaPacket(
+                    commandId = commandId,
+                    payload = byteArrayOf(
+                        if (state.isMqaEnabled) {
+                            0
+                        } else {
+                            1
+                        }
+                    )
+                )
+                val success = service.sendGaiaPacket(packet)
+                if (success) {
+                    reduce {
+                        state.copy(isMqaEnabled = !state.isMqaEnabled)
+                    }
+                }
+            }
+        }
+    }
+
     fun sendGaiaPacketMute(
         scope: CoroutineScope,
         service: GaiaGattService?
@@ -275,6 +310,8 @@ class StateViewModel @Inject constructor(
     ) = intent {
         if (service != null) {
             val commandIds = listOf(
+                GaiaPacketFactory.CMD_ID_MUTE_EN_GET,
+                GaiaPacketFactory.CMD_ID_MQA_EN_GET,
                 GaiaPacketFactory.CMD_ID_VERSION_GET,
                 GaiaPacketFactory.CMD_ID_AUDIO_FMT_GET,
                 GaiaPacketFactory.CMD_ID_INPUT_SRC_GET,

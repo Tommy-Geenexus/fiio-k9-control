@@ -32,5 +32,6 @@ data class StateState(
     val inputSource: InputSource = InputSource.Usb,
     val indicatorState: IndicatorState = IndicatorState.EnabledDefault,
     val indicatorBrightness: Int = 5,
-    val isMuted: Boolean = false
+    val isMuted: Boolean = false,
+    val isMqaEnabled: Boolean = true
 ) : Parcelable

@@ -95,6 +95,13 @@ class StateFragment :
     }
 
     override fun onPrepareOptionsMenu(menu: Menu) {
+        menu.findItem(R.id.mqa).setTitle(
+            if (stateViewModel.container.stateFlow.value.isMqaEnabled) {
+                R.string.mqa_disable
+            } else {
+                R.string.mqa_enable
+            }
+        )
         menu.findItem(R.id.mute).setIcon(
             if (stateViewModel.container.stateFlow.value.isMuted) {
                 R.drawable.ic_volume_off
@@ -108,6 +115,13 @@ class StateFragment :
         return when (item.itemId) {
             R.id.mute -> {
                 stateViewModel.sendGaiaPacketMute(
+                    lifecycleScope,
+                    gaiaGattService()
+                )
+                true
+            }
+            R.id.mqa -> {
+                stateViewModel.sendGaiaPacketMqa(
                     lifecycleScope,
                     gaiaGattService()
                 )

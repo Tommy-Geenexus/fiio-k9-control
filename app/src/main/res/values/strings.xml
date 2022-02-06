@@ -62,6 +62,9 @@
     <string name="low_dispersion_short_delay">Low dispersion short delay</string>
     <string name="low_pass_filter">Low pass filter</string>
 
+    <string name="mqa_disable">Disable MQA</string>
+    <string name="mqa_enable">Enable MQA</string>
+
     <string name="optical">Optical</string>
 
     <string name="pair_device">Pair device</string>

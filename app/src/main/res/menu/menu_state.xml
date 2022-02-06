@@ -8,6 +8,11 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/mqa"
+        android:title="@string/mqa_disable"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/standby"
         android:title="@string/standby_mode"
         app:showAsAction="never" />

@@ -42,6 +42,8 @@ object GaiaPacketFactory {
     const val CMD_ID_INPUT_SRC_SET = 0x0449
     const val CMD_ID_LOW_PASS_FILTER_GET = 0x0411
     const val CMD_ID_LOW_PASS_FILTER_SET = 0x0401
+    const val CMD_ID_MQA_EN_GET = 0x044F
+    const val CMD_ID_MQA_EN_SET = 0x0450
     const val CMD_ID_MUTE_EN_GET = 0x044a
     const val CMD_ID_MUTE_EN_SET = 0x044b
     const val CMD_ID_RESTORE_SET = 0x0404
