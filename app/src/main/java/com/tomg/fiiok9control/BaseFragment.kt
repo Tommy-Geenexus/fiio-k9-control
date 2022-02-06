@@ -24,14 +24,10 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.LayoutRes
-import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.viewbinding.ViewBinding
-import com.google.android.material.transition.MaterialSharedAxis
 import com.tomg.fiiok9control.gaia.GaiaGattSideEffect
 import kotlinx.coroutines.flow.Flow
 
@@ -49,22 +45,11 @@ abstract class BaseFragment<B : ViewBinding>(
         gaiaGattSideEffectFlow = (requireActivity() as FiioK9ControlActivity).gaiaGattSideEffectFlow
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setTransitions(
-            transitionEnter = MaterialSharedAxis(MaterialSharedAxis.Z, true),
-            transitionExit = MaterialSharedAxis(MaterialSharedAxis.Z, true),
-            transitionReturn = MaterialSharedAxis(MaterialSharedAxis.Z, false),
-            transitionReenter = MaterialSharedAxis(MaterialSharedAxis.Z, false)
-        )
-    }
-
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?
     ) {
         _binding = bindLayout(view)
-        binding.root.applyInsetMargins()
         requireActivity().supportFragmentManager.apply {
             setFragmentResultListener(KEY_BLUETOOTH_ENABLED, viewLifecycleOwner) { _, args ->
                 val enabled = args.getBoolean(KEY_BLUETOOTH_ENABLED, false)
@@ -99,44 +84,6 @@ abstract class BaseFragment<B : ViewBinding>(
     abstract fun bindLayout(view: View): B
 
     fun gaiaGattService() = (requireActivity() as? FiioK9ControlActivity)?.gaiaGattService
-
-    internal fun setupToolbar(
-        toolbar: Toolbar,
-        @StringRes titleRes: Int = 0
-    ) {
-        if (titleRes != 0) {
-            toolbar.setTitle(titleRes)
-        }
-        (requireActivity() as? AppCompatActivity)?.setSupportActionBar(toolbar)
-    }
-
-    private fun setTransitions(
-        transitionEnter: MaterialSharedAxis? = null,
-        transitionExit: MaterialSharedAxis? = null,
-        transitionReturn: MaterialSharedAxis? = null,
-        transitionReenter: MaterialSharedAxis? = null
-    ) {
-        enterTransition = transitionEnter?.apply {
-            duration = resources.getInteger(
-                com.google.android.material.R.integer.material_motion_duration_long_1
-            ).toLong()
-        }
-        exitTransition = transitionExit?.apply {
-            duration = resources.getInteger(
-                com.google.android.material.R.integer.material_motion_duration_long_1
-            ).toLong()
-        }
-        returnTransition = transitionReturn?.apply {
-            duration = resources.getInteger(
-                com.google.android.material.R.integer.material_motion_duration_long_1
-            ).toLong()
-        }
-        reenterTransition = transitionReenter?.apply {
-            duration = resources.getInteger(
-                com.google.android.material.R.integer.material_motion_duration_long_1
-            ).toLong()
-        }
-    }
 
     internal fun navigate(navDirections: NavDirections) {
         val navController = findNavController()

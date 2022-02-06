@@ -50,10 +50,6 @@ class EqFragment :
         savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
-        setupToolbar(
-            toolbar = binding.toolbar,
-            titleRes = R.string.app_name
-        )
         binding.eq.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = EqAdapter(listener = this@EqFragment)

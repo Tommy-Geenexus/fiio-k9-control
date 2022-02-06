@@ -52,10 +52,6 @@ class AudioFragment :
         savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
-        setupToolbar(
-            toolbar = binding.toolbar,
-            titleRes = R.string.app_name
-        )
         binding.audio.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = AudioAdapter(listener = this@AudioFragment)

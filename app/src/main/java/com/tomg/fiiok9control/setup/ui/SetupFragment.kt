@@ -62,10 +62,6 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>(R.layout.fragment_setup
         savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
-        setupToolbar(
-            toolbar = binding.toolbar,
-            titleRes = R.string.app_name
-        )
         requireActivity().supportFragmentManager.setFragmentResultListener(
             KEY_EVENT,
             viewLifecycleOwner

@@ -95,6 +95,8 @@ class FiioK9ControlActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         val binding = ActivityFiioK9ControlBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
+        binding.root.applyInsetMargins()
         window.apply {
             statusBarColor = SurfaceColors.getColorForElevation(
                 this@FiioK9ControlActivity,

@@ -55,10 +55,6 @@ class StateFragment :
     ) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
-        setupToolbar(
-            toolbar = binding.toolbar,
-            titleRes = R.string.app_name
-        )
         binding.state.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = StateAdapter(listener = this@StateFragment)
