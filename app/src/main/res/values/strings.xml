@@ -2,12 +2,20 @@
 <resources>
     <string name="_default">Default</string>
 
+    <string name="aac">AAC</string>
+
     <string name="app_name">FiioK9Control</string>
+
+    <string name="aptx">aptX</string>
+    <string name="aptx_adaptive">aptX-adaptive</string>
+    <string name="aptx_hd">aptX-HD</string>
+    <string name="aptx_ll">aptX-LL</string>
 
     <string name="audio">Audio</string>
     <string name="audio_fmt">Audio format %s</string>
 
     <string name="bluetooth">Bluetooth</string>
+    <string name="bluetooth_codecs">Bluetooth codecs</string>
 
     <string name="channel_balance">Channel balance</string>
 
@@ -46,6 +54,8 @@
     <string name="input_source">Input source</string>
 
     <string name="jazz">Jazz</string>
+
+    <string name="ldac">LDAC</string>
 
     <string name="line_in">Line in</string>
 

@@ -23,6 +23,7 @@ package com.tomg.fiiok9control.audio.business
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.qualcomm.qti.libraries.gaia.packets.GaiaPacketBLE
+import com.tomg.fiiok9control.audio.BluetoothCodec
 import com.tomg.fiiok9control.audio.LowPassFilter
 import com.tomg.fiiok9control.gaia.GaiaGattService
 import com.tomg.fiiok9control.gaia.GaiaPacketFactory
@@ -65,6 +66,15 @@ class AudioViewModel @Inject constructor(
             gaiaPacketResponses.remove(packet.command)
             val payload = packet.payload.toHexString()
             when (packet.command) {
+                GaiaPacketFactory.CMD_ID_CODEC_EN_GET -> {
+                    val id = payload.toIntOrNull(radix = 16)
+                    if (id != null) {
+                        val codecsEnabled = BluetoothCodec.findById(id)
+                        reduce {
+                            state.copy(codecsEnabled = codecsEnabled)
+                        }
+                    }
+                }
                 GaiaPacketFactory.CMD_ID_LOW_PASS_FILTER_GET -> {
                     val id = payload.toIntOrNull(radix = 16) ?: -1
                     val lowPassFilter = LowPassFilter.findById(id)
@@ -117,6 +127,36 @@ class AudioViewModel @Inject constructor(
             )
         } else {
             postSideEffect(AudioSideEffect.Reconnect.Failure)
+        }
+    }
+
+    fun sendGaiaPacketCodecsEnabled(
+        scope: CoroutineScope,
+        service: GaiaGattService?,
+        codec: BluetoothCodec,
+        enabled: Boolean
+    ) = intent {
+        if (service != null) {
+            val commandId = GaiaPacketFactory.CMD_ID_CODEC_EN_SET
+            gaiaPacketResponses.add(commandId)
+            postSideEffect(AudioSideEffect.Characteristic.Write)
+            scope.launch(context = Dispatchers.IO) {
+                val codecsEnabled = if (enabled) {
+                    state.codecsEnabled.plus(codec)
+                } else {
+                    state.codecsEnabled.minus(codec)
+                }
+                val packet = GaiaPacketFactory.createGaiaPacket(
+                    commandId = commandId,
+                    payload = byteArrayOf(BluetoothCodec.toByte(codecsEnabled))
+                )
+                val success = service.sendGaiaPacket(packet)
+                if (success) {
+                    reduce {
+                        state.copy(codecsEnabled = codecsEnabled)
+                    }
+                }
+            }
         }
     }
 
@@ -177,16 +217,19 @@ class AudioViewModel @Inject constructor(
     ) = intent {
         if (service != null) {
             val commandIds = listOf(
+                GaiaPacketFactory.CMD_ID_CODEC_EN_GET,
                 GaiaPacketFactory.CMD_ID_LOW_PASS_FILTER_GET,
                 GaiaPacketFactory.CMD_ID_CHANNEL_BAL_GET
             )
             gaiaPacketResponses.addAll(commandIds)
             postSideEffect(AudioSideEffect.Characteristic.Write)
             scope.launch(context = Dispatchers.IO) {
-                commandIds.forEach { commandId ->
+                commandIds.forEachIndexed { index, commandId ->
                     val packet = GaiaPacketFactory.createGaiaPacket(commandId = commandId)
                     service.sendGaiaPacket(packet)
-                    delay(200)
+                    if (index < commandIds.lastIndex) {
+                        delay(200)
+                    }
                 }
             }
         }

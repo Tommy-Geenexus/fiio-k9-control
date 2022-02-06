@@ -29,6 +29,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tomg.fiiok9control.BaseFragment
 import com.tomg.fiiok9control.R
+import com.tomg.fiiok9control.audio.BluetoothCodec
 import com.tomg.fiiok9control.audio.LowPassFilter
 import com.tomg.fiiok9control.audio.business.AudioSideEffect
 import com.tomg.fiiok9control.audio.business.AudioState
@@ -110,6 +111,18 @@ class AudioFragment :
 
     override fun bindLayout(view: View) = FragmentAudioBinding.bind(view)
 
+    override fun onBluetoothCodecChanged(
+        codec: BluetoothCodec,
+        enabled: Boolean
+    ) {
+        audioViewModel.sendGaiaPacketCodecsEnabled(
+            lifecycleScope,
+            gaiaGattService(),
+            codec,
+            enabled
+        )
+    }
+
     override fun onChannelBalanceRequested(value: Int) {
         audioViewModel.sendGaiaPacketChannelBalance(
             lifecycleScope,
@@ -128,7 +141,7 @@ class AudioFragment :
 
     private fun renderState(state: AudioState) {
         (binding.audio.adapter as? AudioAdapter)?.submitList(
-            listOf(state.lowPassFilter, state.channelBalance)
+            listOf(state.codecsEnabled, state.lowPassFilter, state.channelBalance)
         )
     }
 

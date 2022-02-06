@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="?materialCardViewOutlinedStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/spacing_normal"
+    app:shapeAppearance="@style/ShapeAppearance.Material3.LargeComponent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/spacing_normal">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/codec"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/bluetooth_codecs"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/apt_x_adaptive"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_normal"
+            android:text="@string/aptx_adaptive"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/codec" />
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/aac"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/aac"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/apt_x_adaptive" />
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/ldac"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/ldac"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/aac" />
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/apt_x"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/aptx"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ldac" />
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/apt_x_ll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/aptx_ll"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/apt_x" />
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/apt_x_hd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/aptx_hd"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/apt_x_ll" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

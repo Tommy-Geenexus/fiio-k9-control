@@ -172,10 +172,12 @@ class EqViewModel @Inject constructor(
             gaiaPacketResponses.addAll(commandIds)
             postSideEffect(EqSideEffect.Characteristic.Write)
             scope.launch(context = Dispatchers.IO) {
-                commandIds.forEach { commandId ->
+                commandIds.forEachIndexed { index, commandId ->
                     val packet = GaiaPacketFactory.createGaiaPacket(commandId = commandId)
                     service.sendGaiaPacket(packet)
-                    delay(200)
+                    if (index < commandIds.lastIndex) {
+                        delay(200)
+                    }
                 }
             }
         }

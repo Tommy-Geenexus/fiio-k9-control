@@ -18,23 +18,52 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.fiiok9control.audio.business
+package com.tomg.fiiok9control.audio
 
 import android.os.Parcelable
-import com.tomg.fiiok9control.audio.BluetoothCodec
-import com.tomg.fiiok9control.audio.LowPassFilter
 import kotlinx.parcelize.Parcelize
 
-@Parcelize
-data class AudioState(
-    val codecsEnabled: List<BluetoothCodec> = listOf(
-        BluetoothCodec.AptX.Adaptive,
-        BluetoothCodec.Aac,
-        BluetoothCodec.Ldac,
-        BluetoothCodec.AptX.Default,
-        BluetoothCodec.AptX.Ll,
-        BluetoothCodec.AptX.Hd
-    ),
-    val lowPassFilter: LowPassFilter = LowPassFilter.Sharp,
-    val channelBalance: Int = 0
-) : Parcelable
+sealed class BluetoothCodec(val id: Int) : Parcelable {
+
+    companion object {
+
+        fun findById(id: Int): List<BluetoothCodec> {
+            val enabledCodecs = mutableListOf<BluetoothCodec>()
+            listOf(AptX.Adaptive, AptX.Default, AptX.Ll, AptX.Hd, Aac, Ldac).forEach { codec ->
+                if ((codec.id and id) != 0) {
+                    enabledCodecs.add(codec)
+                }
+            }
+            return enabledCodecs.toList()
+        }
+
+        fun toByte(codecs: List<BluetoothCodec>): Byte {
+            var byte = 0
+            codecs.forEach { codec ->
+                byte = byte or codec.id
+            }
+            return byte.toByte()
+        }
+    }
+
+    sealed class AptX(id: Int) : BluetoothCodec(id) {
+
+        @Parcelize
+        object Adaptive : AptX(id = 1)
+
+        @Parcelize
+        object Default : AptX(id = 8)
+
+        @Parcelize
+        object Ll : AptX(id = 16)
+
+        @Parcelize
+        object Hd : AptX(id = 32)
+    }
+
+    @Parcelize
+    object Aac : BluetoothCodec(id = 2)
+
+    @Parcelize
+    object Ldac : BluetoothCodec(id = 4)
+}

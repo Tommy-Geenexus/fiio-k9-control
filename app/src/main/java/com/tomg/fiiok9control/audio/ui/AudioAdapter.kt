@@ -25,8 +25,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.tomg.fiiok9control.audio.BluetoothCodec
 import com.tomg.fiiok9control.audio.LowPassFilter
 import com.tomg.fiiok9control.databinding.ItemChannelBalanceBinding
+import com.tomg.fiiok9control.databinding.ItemCodecsEnabledBinding
 import com.tomg.fiiok9control.databinding.ItemLowPassFilterBinding
 
 class AudioAdapter(
@@ -48,6 +50,10 @@ class AudioAdapter(
 
     interface Listener {
 
+        fun onBluetoothCodecChanged(
+            codec: BluetoothCodec,
+            enabled: Boolean
+        )
         fun onChannelBalanceRequested(value: Int)
         fun onLowPassFilterRequested(lowPassFilter: LowPassFilter)
     }
@@ -58,6 +64,16 @@ class AudioAdapter(
     ): RecyclerView.ViewHolder {
         return when (viewType) {
             0 -> {
+                ItemCodecsEnabledViewHolder(
+                    ItemCodecsEnabledBinding.inflate(
+                        LayoutInflater.from(parent.context),
+                        parent,
+                        false
+                    ),
+                    listener
+                )
+            }
+            1 -> {
                 ItemLowPassFilterViewHolder(
                     ItemLowPassFilterBinding.inflate(
                         LayoutInflater.from(parent.context),
@@ -80,6 +96,7 @@ class AudioAdapter(
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun onBindViewHolder(
         holder: RecyclerView.ViewHolder,
         position: Int
@@ -87,6 +104,12 @@ class AudioAdapter(
         val payload = currentList.getOrNull(position)
         when (position) {
             0 -> {
+                val codecsEnabled = payload as? List<BluetoothCodec>
+                if (codecsEnabled != null) {
+                    (holder as? ItemCodecsEnabledViewHolder)?.bindItemCodecsEnabled(codecsEnabled)
+                }
+            }
+            1 -> {
                 val lowPassFilter = payload as? LowPassFilter
                 if (lowPassFilter != null) {
                     (holder as? ItemLowPassFilterViewHolder)?.bindItemLowPassFilter(lowPassFilter)
@@ -105,5 +128,5 @@ class AudioAdapter(
 
     override fun getItemViewType(position: Int) = position
 
-    override fun getItemCount() = 2
+    override fun getItemCount() = 3
 }
