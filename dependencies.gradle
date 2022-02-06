@@ -9,22 +9,20 @@ ext {
 
     def activity_version = "1.4.0"
     def app_compat_version = "1.4.1"
-    def coil_version = "1.4.0"
     def constraint_layout_version = "2.1.3"
     def core_version = "1.7.0"
     def coroutines_version = "1.6.0"
     def dagger_vm_compiler_version = "1.0.0"
-    def data_store_version = "1.0.0"
     def desugar_version = "1.1.5"
     def fragment_version = "1.4.1"
     def insetter_version = "0.6.1"
     def lifecycle_version = "2.4.0"
     def material_version = "1.6.0-alpha02"
     def mockK_version = "1.12.2"
-    def orbit_version = "4.3.0"
+    def orbit_version = "4.3.1"
     def recycler_view_version = "1.2.1"
     def roboelectric_version = "4.7.3"
-    def strikt_version = "0.33.0"
+    def strikt_version = "0.34.1"
     def test_version = "1.4.0"
     def timber_version = "5.0.1"
     def turbine_version = "0.7.0"
@@ -48,12 +46,10 @@ ext {
     implementation_dependencies = [
             "activity"           : "androidx.activity:activity-ktx:$activity_version",
             "app_compat"         : "androidx.appcompat:appcompat:$app_compat_version",
-            "coil"               : "io.coil-kt:coil:$coil_version",
             "constraint_layout"  : "androidx.constraintlayout:constraintlayout:$constraint_layout_version",
             "core"               : "androidx.core:core-ktx:$core_version",
             "coroutines"         : "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version",
             "dagger_hilt"        : "com.google.dagger:hilt-android:$dagger_version",
-            "data_store_prefs"   : "androidx.datastore:datastore-preferences:$data_store_version",
             "fragment"           : "androidx.fragment:fragment-ktx:$fragment_version",
             "kotlin"             : "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
             "insetter"           : "dev.chrisbanes.insetter:insetter:$insetter_version",
