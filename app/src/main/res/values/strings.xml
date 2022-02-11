@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <resources>
-    <string name="_default">Default</string>
+    <string name="_125hz">125Hz: %.1fdB</string>
+
+    <string name="_16khz">16kHz: %.1fdB</string>
+
+    <string name="_1khz">1kHz: %.1fdB</string>
+
+    <string name="_250hz">250Hz: %.1fdB</string>
+
+    <string name="_2khz">2kHz: %.1fdB</string>
+
+    <string name="_31hz">31Hz: %.1fdB</string>
+
+    <string name="_4khz">4kHz: %.1fdB</string>
+
+    <string name="_500hz">500Hz: %.1fdB</string>
+
+    <string name="_62hz">62Hz: %.1fdB</string>
+
+    <string name="_8khz">8kHz: %.1fdB</string>
 
     <string name="aac">AAC</string>
 
@@ -25,12 +43,12 @@
 
     <string name="connect_device">Connect device</string>
 
+    <string name="custom">Custom</string>
+    <string name="custom_equalizer_preset">Custom equalizer preset</string>
+
     <string name="dance">Dance</string>
 
     <string name="disabled">Disabled</string>
-
-    <string name="emoticon_joy" translatable="false">(^_^)/</string>
-    <string name="emoticon_trouble" translatable="false">(^_^*)</string>
 
     <string name="enable_bluetooth">Enable Bluetooth</string>
 
@@ -76,6 +94,8 @@
     </string>
 
     <string name="reset_settings">Reset settings</string>
+
+    <string name="restore_default">Restore defaults</string>
 
     <string name="rock">Rock</string>
 

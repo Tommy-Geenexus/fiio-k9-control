@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.tomg.fiiok9control.databinding.ItemEqBinding
 import com.tomg.fiiok9control.eq.EqPreSet
+import com.tomg.fiiok9control.eq.EqValue
 
 class EqAdapter(
     private val listener: Listener
@@ -49,6 +50,7 @@ class EqAdapter(
 
         fun onEqEnabled(enabled: Boolean)
         fun onEqPreSetRequested(eqPreSet: EqPreSet)
+        fun onEqValueChanged(value: EqValue)
     }
 
     override fun onCreateViewHolder(
@@ -65,20 +67,16 @@ class EqAdapter(
         )
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun onBindViewHolder(
         holder: RecyclerView.ViewHolder,
         position: Int
     ) {
-        val payload = currentList.getOrNull(position)
-        if (position == 0) {
-            val eq = payload as? Pair<*, *>
-            if (eq != null) {
-                val eqEnabled = payload.first as? Boolean
-                val eqPreSet = payload.second as? EqPreSet
-                if (eqEnabled != null && eqPreSet != null) {
-                    (holder as? ItemEqViewHolder)?.bindItemEq(eqEnabled, eqPreSet)
-                }
-            }
+        val eqEnabled = currentList.getOrNull(0) as? Boolean
+        val eqPreSet = currentList.getOrNull(1) as? EqPreSet
+        val eqValues = currentList.getOrNull(2) as? List<EqValue>
+        if (eqEnabled != null && eqPreSet != null && eqValues != null) {
+            (holder as? ItemEqViewHolder)?.bindItemEq(eqEnabled, eqPreSet, eqValues)
         }
     }
 

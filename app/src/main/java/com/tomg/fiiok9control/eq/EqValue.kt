@@ -18,27 +18,13 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.fiiok9control.eq.business
+package com.tomg.fiiok9control.eq
 
 import android.os.Parcelable
-import com.tomg.fiiok9control.eq.EqPreSet
-import com.tomg.fiiok9control.eq.EqValue
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class EqState(
-    val eqEnabled: Boolean = false,
-    val eqPreSet: EqPreSet = EqPreSet.Custom,
-    val eqValues: List<EqValue> = listOf(
-        EqValue(id = 1, value = 0f),
-        EqValue(id = 2, value = 0f),
-        EqValue(id = 3, value = 0f),
-        EqValue(id = 4, value = 0f),
-        EqValue(id = 5, value = 0f),
-        EqValue(id = 6, value = 0f),
-        EqValue(id = 7, value = 0f),
-        EqValue(id = 8, value = 0f),
-        EqValue(id = 9, value = 0f),
-        EqValue(id = 10, value = 0f)
-    )
+data class EqValue(
+    val id: Int,
+    val value: Float
 ) : Parcelable

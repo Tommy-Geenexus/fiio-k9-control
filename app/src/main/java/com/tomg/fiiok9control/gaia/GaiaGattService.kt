@@ -62,7 +62,10 @@ class GaiaGattService : BLEService() {
         return binder
     }
 
-    public override fun connectToDevice(address: String) = super.connectToDevice(address)
+    public override fun connectToDevice(address: String): Boolean {
+        disconnectDeviceAndReset()
+        return super.connectToDevice(address)
+    }
 
     override fun onCharacteristicRead(
         gatt: BluetoothGatt?,
@@ -94,7 +97,7 @@ class GaiaGattService : BLEService() {
         characteristic: BluetoothGattCharacteristic?,
         status: Int
     ) {
-        if (status != BluetoothGatt.GATT_SUCCESS && characteristic?.value != null) {
+        if (status == BluetoothGatt.GATT_SUCCESS && characteristic?.value != null) {
             gaiaGattSideEffectChannel.trySend(
                 GaiaGattSideEffect.Gatt.WriteCharacteristic.Success(
                     commandId = GaiaPacketBLE(characteristic.value).command

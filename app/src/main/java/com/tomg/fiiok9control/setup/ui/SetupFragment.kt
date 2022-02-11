@@ -110,16 +110,12 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>(R.layout.fragment_setup
 
     private fun renderState(state: SetupState) {
         if (!state.permissionsGranted) {
-            binding.heading.setText(R.string.emoticon_trouble)
             binding.action.setText(R.string.grant_permissions)
         } else if (!state.bluetoothEnabled) {
-            binding.heading.setText(R.string.emoticon_trouble)
             binding.action.setText(R.string.enable_bluetooth)
         } else if (state.deviceAddress.isEmpty()) {
-            binding.heading.setText(R.string.emoticon_trouble)
             binding.action.setText(R.string.pair_device)
         } else {
-            binding.heading.setText(R.string.emoticon_joy)
             binding.action.setText(R.string.connect_device)
         }
     }

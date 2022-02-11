@@ -29,7 +29,7 @@ class ItemChannelBalanceViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     init {
-        binding.channelBalanceSlider.addOnChangeListener { _, value, fromUser ->
+        binding.includeChannelBalance.slider.addOnChangeListener { _, value, fromUser ->
             if (fromUser) {
                 listener.onChannelBalanceRequested(value.toInt())
             }
@@ -37,6 +37,6 @@ class ItemChannelBalanceViewHolder(
     }
 
     fun bindItemChannelBalance(channelBalance: Int) {
-        binding.channelBalanceSlider.value = channelBalance.toFloat()
+        binding.includeChannelBalance.slider.value = channelBalance.toFloat()
     }
 }

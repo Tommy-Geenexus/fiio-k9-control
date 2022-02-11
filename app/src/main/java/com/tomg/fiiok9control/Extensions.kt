@@ -88,3 +88,22 @@ fun ByteArray.toHexString(): String {
     }
     return sb.toString()
 }
+
+fun String.toBytes(): ByteArray {
+    val bytes = ByteArray(2)
+    when {
+        length < 3 -> {
+            bytes[0] = 0
+            bytes[1] = toIntOrNull(16)?.toByte() ?: 0
+        }
+        length == 3 -> {
+            bytes[0] = (0.toString() + substring(0, 1)).toIntOrNull(16)?.toByte() ?: 0
+            bytes[1] = substring(1).toIntOrNull(16)?.toByte() ?: 0
+        }
+        else -> {
+            bytes[0] = substring(0, 2).toIntOrNull(16)?.toByte() ?: 0
+            bytes[1] = substring(2).toIntOrNull(16)?.toByte() ?: 0
+        }
+    }
+    return bytes
+}

@@ -28,6 +28,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.core.view.WindowCompat
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
@@ -73,6 +74,7 @@ class FiioK9ControlActivity : AppCompatActivity() {
 
     var gaiaGattService: GaiaGattService? = null
         set(value) {
+            field = value
             val connected = value != null
             if (connected) {
                 lifecycleScope.launch {
@@ -81,7 +83,6 @@ class FiioK9ControlActivity : AppCompatActivity() {
                     )
                 }
             }
-            field = value
             supportFragmentManager.setFragmentResult(
                 KEY_SERVICE_CONNECTED,
                 bundleOf(KEY_SERVICE_CONNECTED to connected)
@@ -111,9 +112,9 @@ class FiioK9ControlActivity : AppCompatActivity() {
             .navController
         navController.addOnDestinationChangedListener { _, navDestination, _ ->
             if (navDestination.id == R.id.fragment_state && !binding.nav.isVisible) {
-                binding.nav.isVisible = true
+                binding.nav.isInvisible = false
             } else if (navDestination.id == R.id.fragment_setup && binding.nav.isVisible) {
-                binding.nav.isVisible = false
+                binding.nav.isInvisible = true
             }
         }
         binding.nav.setupWithNavController(navController)

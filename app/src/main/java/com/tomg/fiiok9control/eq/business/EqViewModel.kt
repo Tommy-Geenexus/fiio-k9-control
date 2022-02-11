@@ -24,10 +24,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.qualcomm.qti.libraries.gaia.packets.GaiaPacketBLE
 import com.tomg.fiiok9control.eq.EqPreSet
+import com.tomg.fiiok9control.eq.EqValue
 import com.tomg.fiiok9control.gaia.GaiaGattService
 import com.tomg.fiiok9control.gaia.GaiaPacketFactory
 import com.tomg.fiiok9control.gaia.isFiioPacket
 import com.tomg.fiiok9control.setup.data.SetupRepository
+import com.tomg.fiiok9control.toBytes
 import com.tomg.fiiok9control.toHexString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -96,6 +98,10 @@ class EqViewModel @Inject constructor(
         }
     }
 
+    fun hasCustomEqValues(): Boolean {
+        return container.stateFlow.value.eqValues.any { eqValue -> eqValue.value != 0f }
+    }
+
     fun reconnectToDevice(service: GaiaGattService?) = intent {
         postSideEffect(EqSideEffect.Reconnect.Initiated)
         if (service != null) {
@@ -160,6 +166,39 @@ class EqViewModel @Inject constructor(
         }
     }
 
+    fun sendGaiaPacketEqValue(
+        scope: CoroutineScope,
+        service: GaiaGattService?,
+        eqValue: EqValue
+    ) = intent {
+        if (service != null) {
+            val commandId = GaiaPacketFactory.CMD_ID_EQ_VAL_SET
+            gaiaPacketResponses.add(commandId)
+            postSideEffect(EqSideEffect.Characteristic.Write)
+            scope.launch(context = Dispatchers.IO) {
+                val bytes = Integer.toHexString((eqValue.value * 60f).toInt()).toBytes()
+                val packet = GaiaPacketFactory.createGaiaPacket(
+                    commandId = commandId,
+                    payload = byteArrayOf(
+                        eqValue.id.toByte(),
+                        bytes[0],
+                        bytes[1]
+                    )
+                )
+                val success = service.sendGaiaPacket(packet)
+                if (success) {
+                    reduce {
+                        state.copy(
+                            eqValues = state.eqValues.map { v ->
+                                if (v.id == eqValue.id) eqValue else v
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     fun sendGaiaPacketsDelayed(
         scope: CoroutineScope,
         service: GaiaGattService?
@@ -177,6 +216,36 @@ class EqViewModel @Inject constructor(
                     service.sendGaiaPacket(packet)
                     if (index < commandIds.lastIndex) {
                         delay(200)
+                    }
+                }
+            }
+        }
+    }
+
+    fun sendGaiaPacketsEqValue(
+        scope: CoroutineScope,
+        service: GaiaGattService?
+    ) = intent {
+        if (service != null) {
+            val eqValues = state.eqValues
+            val commandId = GaiaPacketFactory.CMD_ID_EQ_VAL_SET
+            gaiaPacketResponses.addAll(List(eqValues.size) { commandId })
+            postSideEffect(EqSideEffect.Characteristic.Write)
+            scope.launch(context = Dispatchers.IO) {
+                eqValues.forEach { eqValue ->
+                    val packet = GaiaPacketFactory.createGaiaPacket(
+                        commandId = commandId,
+                        payload = byteArrayOf(eqValue.id.toByte(), 0, 0)
+                    )
+                    val success = service.sendGaiaPacket(packet)
+                    if (success) {
+                        reduce {
+                            state.copy(
+                                eqValues = state.eqValues.map { v ->
+                                    if (v.id == eqValue.id) eqValue.copy(value = 0f) else v
+                                }
+                            )
+                        }
                     }
                 }
             }

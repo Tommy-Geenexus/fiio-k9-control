@@ -2,6 +2,7 @@
 <SmellBaseline>
   <ManuallySuppressedIssues/>
   <CurrentIssues>
+    <ID>ComplexMethod:ItemEqViewHolder.kt$ItemEqViewHolder$fun bindItemEq( eqEnabled: Boolean, eqPreSet: EqPreSet, eqValues: List&lt;EqValue> )</ID>
     <ID>ComplexMethod:StateViewModel.kt$StateViewModel$fun handleGaiaPacket(data: ByteArray)</ID>
     <ID>EmptyFunctionBlock:GaiaGattService.kt$GaiaGattService${ }</ID>
     <ID>EmptyFunctionBlock:SetupFragment.kt$SetupFragment${ }</ID>
@@ -10,6 +11,16 @@
     <ID>MagicNumber:AudioViewModel.kt$AudioViewModel$4</ID>
     <ID>MagicNumber:AudioViewModel.kt$AudioViewModel$6</ID>
     <ID>MagicNumber:EqViewModel.kt$EqViewModel$200</ID>
+    <ID>MagicNumber:EqViewModel.kt$EqViewModel$60f</ID>
+    <ID>MagicNumber:Extensions.kt$16</ID>
+    <ID>MagicNumber:Extensions.kt$3</ID>
+    <ID>MagicNumber:ItemEqViewHolder.kt$ItemEqViewHolder$3</ID>
+    <ID>MagicNumber:ItemEqViewHolder.kt$ItemEqViewHolder$4</ID>
+    <ID>MagicNumber:ItemEqViewHolder.kt$ItemEqViewHolder$5</ID>
+    <ID>MagicNumber:ItemEqViewHolder.kt$ItemEqViewHolder$6</ID>
+    <ID>MagicNumber:ItemEqViewHolder.kt$ItemEqViewHolder$7</ID>
+    <ID>MagicNumber:ItemEqViewHolder.kt$ItemEqViewHolder$8</ID>
+    <ID>MagicNumber:ItemEqViewHolder.kt$ItemEqViewHolder$9</ID>
     <ID>MagicNumber:StateViewModel.kt$StateViewModel$200</ID>
     <ID>MagicNumber:StateViewModel.kt$StateViewModel$3</ID>
     <ID>MagicNumber:StateViewModel.kt$StateViewModel$4</ID>
@@ -19,7 +30,6 @@
     <ID>MagicNumber:StateViewModel.kt$StateViewModel$64</ID>
     <ID>NestedBlockDepth:GaiaGattService.kt$GaiaGattService$private fun checkService(gattService: BluetoothGattService): Boolean</ID>
     <ID>TooManyFunctions:AudioFragment.kt$AudioFragment : BaseFragmentListener</ID>
-    <ID>TooManyFunctions:BaseFragment.kt$BaseFragment&lt;B : ViewBinding> : Fragment</ID>
     <ID>TooManyFunctions:EqFragment.kt$EqFragment : BaseFragmentListener</ID>
     <ID>TooManyFunctions:GaiaGattService.kt$GaiaGattService : BLEService</ID>
     <ID>TooManyFunctions:StateFragment.kt$StateFragment : BaseFragmentListener</ID>

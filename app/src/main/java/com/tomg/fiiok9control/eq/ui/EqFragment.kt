@@ -21,6 +21,9 @@
 package com.tomg.fiiok9control.eq.ui
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -31,6 +34,7 @@ import com.tomg.fiiok9control.BaseFragment
 import com.tomg.fiiok9control.R
 import com.tomg.fiiok9control.databinding.FragmentEqBinding
 import com.tomg.fiiok9control.eq.EqPreSet
+import com.tomg.fiiok9control.eq.EqValue
 import com.tomg.fiiok9control.eq.business.EqSideEffect
 import com.tomg.fiiok9control.eq.business.EqState
 import com.tomg.fiiok9control.eq.business.EqViewModel
@@ -50,6 +54,7 @@ class EqFragment :
         savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
+        setHasOptionsMenu(true)
         binding.eq.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = EqAdapter(listener = this@EqFragment)
@@ -75,6 +80,30 @@ class EqFragment :
                     handleGaiaGattSideEffect(sideEffect)
                 }
             }
+        }
+    }
+
+    override fun onCreateOptionsMenu(
+        menu: Menu,
+        inflater: MenuInflater
+    ) {
+        inflater.inflate(R.menu.menu_eq, menu)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        menu.findItem(R.id.restore_default).isVisible = eqViewModel.hasCustomEqValues()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.restore_default -> {
+                eqViewModel.sendGaiaPacketsEqValue(
+                    lifecycleScope,
+                    gaiaGattService()
+                )
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -107,7 +136,7 @@ class EqFragment :
 
     override fun onEqEnabled(enabled: Boolean) {
         if (!enabled) {
-            onEqPreSetRequested(EqPreSet.Default)
+            onEqPreSetRequested(EqPreSet.Custom)
         }
         eqViewModel.sendGaiaPacketEqEnabled(
             lifecycleScope,
@@ -124,8 +153,19 @@ class EqFragment :
         )
     }
 
+    override fun onEqValueChanged(value: EqValue) {
+        eqViewModel.sendGaiaPacketEqValue(
+            lifecycleScope,
+            gaiaGattService(),
+            value
+        )
+    }
+
     private fun renderState(state: EqState) {
-        (binding.eq.adapter as? EqAdapter)?.submitList(listOf(state.eqEnabled to state.eqPreSet))
+        requireActivity().invalidateOptionsMenu()
+        (binding.eq.adapter as? EqAdapter)?.submitList(
+            listOf(state.eqEnabled, state.eqPreSet, state.eqValues)
+        )
     }
 
     private fun handleSideEffect(sideEffect: EqSideEffect) {

@@ -34,7 +34,7 @@ sealed class EqPreSet(
             Pop.id -> Pop
             Rock.id -> Rock
             Dance.id -> Dance
-            Default.id -> Default
+            Custom.id -> Custom
             Rb.id -> Rb
             Classical.id -> Classical
             else -> null
@@ -54,7 +54,7 @@ sealed class EqPreSet(
     object Dance : EqPreSet(id = 3)
 
     @Parcelize
-    object Default : EqPreSet(id = 4)
+    object Custom : EqPreSet(id = 4)
 
     @Parcelize
     object Rb : EqPreSet(id = 5)
