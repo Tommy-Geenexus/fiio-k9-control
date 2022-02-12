@@ -36,7 +36,6 @@ import com.tomg.fiiok9control.audio.business.AudioState
 import com.tomg.fiiok9control.audio.business.AudioViewModel
 import com.tomg.fiiok9control.databinding.FragmentAudioBinding
 import com.tomg.fiiok9control.gaia.GaiaGattSideEffect
-import com.tomg.fiiok9control.state.ui.StateFragmentDirections
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -97,7 +96,7 @@ class AudioFragment :
 
     override fun onBluetoothStateChanged(enabled: Boolean) {
         if (!enabled) {
-            navigate(AudioFragmentDirections.audioToSetup())
+            navigateToStartDestination()
         }
     }
 
@@ -151,7 +150,7 @@ class AudioFragment :
             }
             AudioSideEffect.Reconnect.Failure -> {
                 binding.progress.hide()
-                navigate(StateFragmentDirections.stateToSetup())
+                onBluetoothStateChanged(false)
             }
             AudioSideEffect.Reconnect.Initiated -> {
                 binding.progress.show()
@@ -169,7 +168,7 @@ class AudioFragment :
     private fun handleGaiaGattSideEffect(sideEffect: GaiaGattSideEffect?) {
         when (sideEffect) {
             GaiaGattSideEffect.Gatt.Disconnected -> {
-                navigate(AudioFragmentDirections.audioToSetup())
+                onBluetoothStateChanged(false)
             }
             is GaiaGattSideEffect.Gatt.WriteCharacteristic.Failure -> {
                 audioViewModel.handleGaiaPacketSendResult(sideEffect.commandId)

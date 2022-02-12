@@ -92,4 +92,8 @@ abstract class BaseFragment<B : ViewBinding>(
             navController.navigate(navDirections)
         }
     }
+
+    internal fun navigateToStartDestination() {
+        findNavController().setGraph(R.navigation.nav_graph)
+    }
 }

@@ -124,7 +124,7 @@ class EqFragment :
 
     override fun onBluetoothStateChanged(enabled: Boolean) {
         if (!enabled) {
-            navigate(EqFragmentDirections.eqToSetup())
+            navigateToStartDestination()
         }
     }
 
@@ -178,7 +178,7 @@ class EqFragment :
             }
             EqSideEffect.Reconnect.Failure -> {
                 binding.progress.hide()
-                navigate(EqFragmentDirections.eqToSetup())
+                onBluetoothStateChanged(false)
             }
             EqSideEffect.Reconnect.Initiated -> {
                 binding.progress.show()
@@ -196,7 +196,7 @@ class EqFragment :
     private fun handleGaiaGattSideEffect(sideEffect: GaiaGattSideEffect) {
         when (sideEffect) {
             GaiaGattSideEffect.Gatt.Disconnected -> {
-                navigate(EqFragmentDirections.eqToSetup())
+                onBluetoothStateChanged(false)
             }
             is GaiaGattSideEffect.Gatt.WriteCharacteristic.Failure -> {
                 eqViewModel.handleGaiaPacketSendResult(sideEffect.commandId)

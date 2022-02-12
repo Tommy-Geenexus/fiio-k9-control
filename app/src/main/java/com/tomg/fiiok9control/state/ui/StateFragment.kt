@@ -100,15 +100,19 @@ class StateFragment :
         )
         menu.findItem(R.id.mute).setIcon(
             if (stateViewModel.container.stateFlow.value.isMuted) {
-                R.drawable.ic_volume_off
+                R.drawable.ic_volume_mute_off
             } else {
-                R.drawable.ic_volume_up
+                R.drawable.ic_volume_mute
             }
         )
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.disconnect -> {
+                stateViewModel.disconnect(gaiaGattService())
+                true
+            }
             R.id.mute -> {
                 stateViewModel.sendGaiaPacketMute(
                     lifecycleScope,
@@ -158,7 +162,7 @@ class StateFragment :
 
     override fun onBluetoothStateChanged(enabled: Boolean) {
         if (!enabled) {
-            navigate(StateFragmentDirections.stateToSetup())
+            navigateToStartDestination()
         }
     }
 
@@ -213,7 +217,7 @@ class StateFragment :
             }
             StateSideEffect.Reconnect.Failure -> {
                 binding.progress.hide()
-                navigate(StateFragmentDirections.stateToSetup())
+                onBluetoothStateChanged(false)
             }
             StateSideEffect.Reconnect.Initiated -> {
                 binding.progress.show()
@@ -231,7 +235,7 @@ class StateFragment :
     private fun handleGaiaGattSideEffect(sideEffect: GaiaGattSideEffect?) {
         when (sideEffect) {
             GaiaGattSideEffect.Gatt.Disconnected -> {
-                navigate(StateFragmentDirections.stateToSetup())
+                onBluetoothStateChanged(false)
             }
             is GaiaGattSideEffect.Gatt.WriteCharacteristic.Failure -> {
                 stateViewModel.handleGaiaPacketSendResult(sideEffect.commandId)

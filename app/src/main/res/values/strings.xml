@@ -50,6 +50,8 @@
 
     <string name="disabled">Disabled</string>
 
+    <string name="disconnect">Disconnect</string>
+
     <string name="enable_bluetooth">Enable Bluetooth</string>
 
     <string name="enabled_default_behaviour">Enabled, default behaviour</string>

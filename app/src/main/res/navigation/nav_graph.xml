@@ -17,34 +17,13 @@
 
     <fragment
         android:id="@+id/fragment_state"
-        android:name="com.tomg.fiiok9control.state.ui.StateFragment">
-
-        <action
-            android:id="@+id/state_to_setup"
-            app:destination="@id/fragment_setup"
-            app:popUpTo="@id/fragment_state"
-            app:popUpToInclusive="true" />
-    </fragment>
+        android:name="com.tomg.fiiok9control.state.ui.StateFragment" />
 
     <fragment
         android:id="@+id/fragment_audio"
-        android:name="com.tomg.fiiok9control.audio.ui.AudioFragment">
-
-        <action
-            android:id="@+id/audio_to_setup"
-            app:destination="@id/fragment_setup"
-            app:popUpTo="@id/fragment_audio"
-            app:popUpToInclusive="true" />
-    </fragment>
+        android:name="com.tomg.fiiok9control.audio.ui.AudioFragment" />
 
     <fragment
         android:id="@+id/fragment_eq"
-        android:name="com.tomg.fiiok9control.eq.ui.EqFragment">
-
-        <action
-            android:id="@+id/eq_to_setup"
-            app:destination="@id/fragment_setup"
-            app:popUpTo="@id/fragment_eq"
-            app:popUpToInclusive="true" />
-    </fragment>
+        android:name="com.tomg.fiiok9control.eq.ui.EqFragment" />
 </navigation>

@@ -29,7 +29,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.core.view.WindowCompat
 import androidx.core.view.isInvisible
-import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
@@ -105,15 +104,13 @@ class FiioK9ControlActivity : AppCompatActivity() {
             )
             navigationBarColor = SurfaceColors.SURFACE_2.getColor(this@FiioK9ControlActivity)
         }
-        val navController = (
-            supportFragmentManager
-                .findFragmentById(R.id.nav_controller) as NavHostFragment
-            )
-            .navController
+        val navController =
+            (supportFragmentManager.findFragmentById(R.id.nav_controller) as NavHostFragment)
+                .navController
         navController.addOnDestinationChangedListener { _, navDestination, _ ->
-            if (navDestination.id == R.id.fragment_state && !binding.nav.isVisible) {
+            if (navDestination.id == R.id.fragment_state && binding.nav.isInvisible) {
                 binding.nav.isInvisible = false
-            } else if (navDestination.id == R.id.fragment_setup && binding.nav.isVisible) {
+            } else if (navDestination.id == R.id.fragment_setup) {
                 binding.nav.isInvisible = true
             }
         }

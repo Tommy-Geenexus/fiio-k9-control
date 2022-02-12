@@ -60,6 +60,14 @@ class StateViewModel @Inject constructor(
         gaiaPacketResponses.clear()
     }
 
+    fun disconnect(service: GaiaGattService?) = intent {
+        if (service != null) {
+            postSideEffect(StateSideEffect.Reconnect.Initiated)
+            service.disconnectDeviceAndReset()
+            postSideEffect(StateSideEffect.Reconnect.Failure)
+        }
+    }
+
     private fun getAudioFmt(
         id: Int,
         sampleRate: Int

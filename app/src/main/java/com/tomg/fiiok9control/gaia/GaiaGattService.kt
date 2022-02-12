@@ -241,7 +241,7 @@ class GaiaGattService : BLEService() {
         }
     }
 
-    private fun disconnectDeviceAndReset() {
+    fun disconnectDeviceAndReset() {
         notificationCharacteristics.forEach { characteristic ->
             requestCharacteristicNotification(characteristic, false)
         }

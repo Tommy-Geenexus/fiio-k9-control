@@ -29,7 +29,6 @@
         android:id="@+id/nav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         app:itemActiveIndicatorStyle="@style/Widget.FiioK9Control.BottomNavigationView.ActiveIndicator"
         app:labelVisibilityMode="unlabeled"
         app:layout_constraintBottom_toBottomOf="parent"
