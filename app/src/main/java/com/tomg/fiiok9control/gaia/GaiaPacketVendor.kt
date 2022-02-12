@@ -20,13 +20,14 @@
 
 package com.tomg.fiiok9control.gaia
 
+import android.os.Parcelable
 import com.qualcomm.qti.libraries.gaia.packets.GaiaPacketBLE
+import kotlinx.parcelize.Parcelize
 
-object GaiaPacketFactory {
+sealed class GaiaPacketVendor(val vendorId: Int) : Parcelable {
 
-    fun createGaiaPacket(
-        vendorId: Int = GaiaPacketVendor.Fiio.vendorId,
-        commandId: Int,
-        payload: ByteArray = byteArrayOf()
-    ) = GaiaPacketBLE(vendorId, commandId, payload)
+    @Parcelize
+    object Fiio : GaiaPacketVendor(vendorId = 0x0a)
 }
+
+fun GaiaPacketBLE.isFiioPacket() = vendorId == GaiaPacketVendor.Fiio.vendorId

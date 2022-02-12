@@ -27,6 +27,7 @@ import com.tomg.fiiok9control.eq.EqPreSet
 import com.tomg.fiiok9control.eq.EqValue
 import com.tomg.fiiok9control.gaia.GaiaGattService
 import com.tomg.fiiok9control.gaia.GaiaPacketFactory
+import com.tomg.fiiok9control.gaia.fiio.K9Command
 import com.tomg.fiiok9control.gaia.isFiioPacket
 import com.tomg.fiiok9control.setup.data.SetupRepository
 import com.tomg.fiiok9control.toBytes
@@ -67,7 +68,7 @@ class EqViewModel @Inject constructor(
             gaiaPacketResponses.remove(packet.command)
             val payload = packet.payload.toHexString()
             when (packet.command) {
-                GaiaPacketFactory.CMD_ID_EQ_EN_GET -> {
+                K9Command.Get.EqEnabled.commandId -> {
                     val eqEnabled = payload.toIntOrNull(radix = 16) ?: -1
                     if (eqEnabled >= 0) {
                         reduce {
@@ -75,7 +76,7 @@ class EqViewModel @Inject constructor(
                         }
                     }
                 }
-                GaiaPacketFactory.CMD_ID_EQ_PRE_GET -> {
+                K9Command.Get.EqPreSet.commandId -> {
                     val id = payload.toIntOrNull(radix = 16) ?: -1
                     val eqPreSet = EqPreSet.findById(id)
                     if (eqPreSet != null) {
@@ -124,7 +125,7 @@ class EqViewModel @Inject constructor(
         eqEnabled: Boolean
     ) = intent {
         if (service != null) {
-            val commandId = GaiaPacketFactory.CMD_ID_EQ_EN_SET
+            val commandId = K9Command.Set.EqEnabled.commandId
             gaiaPacketResponses.add(commandId)
             postSideEffect(EqSideEffect.Characteristic.Write)
             scope.launch(context = Dispatchers.IO) {
@@ -148,7 +149,7 @@ class EqViewModel @Inject constructor(
         eqPreSet: EqPreSet
     ) = intent {
         if (service != null) {
-            val commandId = GaiaPacketFactory.CMD_ID_EQ_PRE_SET
+            val commandId = K9Command.Set.EqPreSet.commandId
             gaiaPacketResponses.add(commandId)
             postSideEffect(EqSideEffect.Characteristic.Write)
             scope.launch(context = Dispatchers.IO) {
@@ -172,7 +173,7 @@ class EqViewModel @Inject constructor(
         eqValue: EqValue
     ) = intent {
         if (service != null) {
-            val commandId = GaiaPacketFactory.CMD_ID_EQ_VAL_SET
+            val commandId = K9Command.Set.EqValue.commandId
             gaiaPacketResponses.add(commandId)
             postSideEffect(EqSideEffect.Characteristic.Write)
             scope.launch(context = Dispatchers.IO) {
@@ -205,8 +206,8 @@ class EqViewModel @Inject constructor(
     ) = intent {
         if (service != null) {
             val commandIds = listOf(
-                GaiaPacketFactory.CMD_ID_EQ_EN_GET,
-                GaiaPacketFactory.CMD_ID_EQ_PRE_GET
+                K9Command.Get.EqEnabled.commandId,
+                K9Command.Get.EqPreSet.commandId
             )
             gaiaPacketResponses.addAll(commandIds)
             postSideEffect(EqSideEffect.Characteristic.Write)
@@ -228,7 +229,7 @@ class EqViewModel @Inject constructor(
     ) = intent {
         if (service != null) {
             val eqValues = state.eqValues
-            val commandId = GaiaPacketFactory.CMD_ID_EQ_VAL_SET
+            val commandId = K9Command.Set.EqValue.commandId
             gaiaPacketResponses.addAll(List(eqValues.size) { commandId })
             postSideEffect(EqSideEffect.Characteristic.Write)
             scope.launch(context = Dispatchers.IO) {

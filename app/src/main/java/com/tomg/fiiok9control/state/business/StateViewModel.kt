@@ -25,6 +25,7 @@ import androidx.lifecycle.ViewModel
 import com.qualcomm.qti.libraries.gaia.packets.GaiaPacketBLE
 import com.tomg.fiiok9control.gaia.GaiaGattService
 import com.tomg.fiiok9control.gaia.GaiaPacketFactory
+import com.tomg.fiiok9control.gaia.fiio.K9Command
 import com.tomg.fiiok9control.gaia.isFiioPacket
 import com.tomg.fiiok9control.setup.data.SetupRepository
 import com.tomg.fiiok9control.state.IndicatorState
@@ -85,7 +86,7 @@ class StateViewModel @Inject constructor(
             gaiaPacketResponses.remove(packet.command)
             val payload = packet.payload.toHexString()
             when (packet.command) {
-                GaiaPacketFactory.CMD_ID_VERSION_GET -> {
+                K9Command.Get.Version.commandId -> {
                     if (payload.length < 6) return@intent
                     val versionMajor = payload.substring(0, 4).toIntOrNull(radix = 16)
                     val versionMinor = payload.substring(4).toIntOrNull(radix = 16)
@@ -95,7 +96,7 @@ class StateViewModel @Inject constructor(
                         }
                     }
                 }
-                GaiaPacketFactory.CMD_ID_AUDIO_FMT_GET -> {
+                K9Command.Get.AudioFormat.commandId -> {
                     if (payload.length < 6) return@intent
                     val id = payload.substring(0, 4).toIntOrNull(radix = 16)
                     val sampleRate = payload.substring(4).toIntOrNull(radix = 16)
@@ -105,19 +106,19 @@ class StateViewModel @Inject constructor(
                         }
                     }
                 }
-                GaiaPacketFactory.CMD_ID_MUTE_EN_GET -> {
+                K9Command.Get.MuteEnabled.commandId -> {
                     val isMuted = payload.toIntOrNull(radix = 16) == 1
                     reduce {
                         state.copy(isMuted = isMuted)
                     }
                 }
-                GaiaPacketFactory.CMD_ID_MQA_EN_GET -> {
+                K9Command.Get.MqaEnabled.commandId -> {
                     val isMqaEnabled = payload.toIntOrNull(radix = 16) ?: 1 == 1
                     reduce {
                         state.copy(isMqaEnabled = isMqaEnabled)
                     }
                 }
-                GaiaPacketFactory.CMD_ID_INPUT_SRC_GET -> {
+                K9Command.Get.InputSource.commandId -> {
                     val id = payload.toIntOrNull(radix = 16) ?: -1
                     val inputSource = InputSource.findById(id)
                     if (inputSource != null) {
@@ -126,7 +127,7 @@ class StateViewModel @Inject constructor(
                         }
                     }
                 }
-                GaiaPacketFactory.CMD_ID_INDICATOR_RGB_LIGHTING_GET -> {
+                K9Command.Get.IndicatorRgbLighting.commandId -> {
                     if (payload.length < 6) return@intent
                     val id = payload.substring(0, 4).toIntOrNull(radix = 16) ?: -1
                     val indicatorState = IndicatorState.findById(id)
@@ -176,7 +177,7 @@ class StateViewModel @Inject constructor(
         indicatorBrightness: Int
     ) = intent {
         if (service != null) {
-            val commandId = GaiaPacketFactory.CMD_ID_INDICATOR_RGB_LIGHTING_SET
+            val commandId = K9Command.Set.IndicatorRgbLighting.commandId
             gaiaPacketResponses.add(commandId)
             postSideEffect(StateSideEffect.Characteristic.Write)
             scope.launch(context = Dispatchers.IO) {
@@ -203,7 +204,7 @@ class StateViewModel @Inject constructor(
         indicatorState: IndicatorState
     ) = intent {
         if (service != null) {
-            val commandId = GaiaPacketFactory.CMD_ID_INDICATOR_RGB_LIGHTING_SET
+            val commandId = K9Command.Set.IndicatorRgbLighting.commandId
             gaiaPacketResponses.add(commandId)
             postSideEffect(StateSideEffect.Characteristic.Write)
             scope.launch(context = Dispatchers.IO) {
@@ -229,19 +230,13 @@ class StateViewModel @Inject constructor(
         service: GaiaGattService?
     ) = intent {
         if (service != null) {
-            val commandId = GaiaPacketFactory.CMD_ID_MQA_EN_SET
+            val commandId = K9Command.Set.MqaEnabled.commandId
             gaiaPacketResponses.add(commandId)
             postSideEffect(StateSideEffect.Characteristic.Write)
             scope.launch(context = Dispatchers.IO) {
                 val packet = GaiaPacketFactory.createGaiaPacket(
                     commandId = commandId,
-                    payload = byteArrayOf(
-                        if (state.isMqaEnabled) {
-                            0
-                        } else {
-                            1
-                        }
-                    )
+                    payload = byteArrayOf(if (state.isMqaEnabled) 0 else 1)
                 )
                 val success = service.sendGaiaPacket(packet)
                 if (success) {
@@ -258,19 +253,13 @@ class StateViewModel @Inject constructor(
         service: GaiaGattService?
     ) = intent {
         if (service != null) {
-            val commandId = GaiaPacketFactory.CMD_ID_MUTE_EN_SET
+            val commandId = K9Command.Set.MuteEnabled.commandId
             gaiaPacketResponses.add(commandId)
             postSideEffect(StateSideEffect.Characteristic.Write)
             scope.launch(context = Dispatchers.IO) {
                 val packet = GaiaPacketFactory.createGaiaPacket(
                     commandId = commandId,
-                    payload = byteArrayOf(
-                        if (state.isMuted) {
-                            0
-                        } else {
-                            1
-                        }
-                    )
+                    payload = byteArrayOf(if (state.isMuted) 0 else 1)
                 )
                 val success = service.sendGaiaPacket(packet)
                 if (success) {
@@ -287,7 +276,7 @@ class StateViewModel @Inject constructor(
         service: GaiaGattService?
     ) = intent {
         if (service != null) {
-            val commandId = GaiaPacketFactory.CMD_ID_RESTORE_SET
+            val commandId = K9Command.Set.Restore.commandId
             gaiaPacketResponses.add(commandId)
             postSideEffect(StateSideEffect.Characteristic.Write)
             scope.launch(context = Dispatchers.IO) {
@@ -302,7 +291,7 @@ class StateViewModel @Inject constructor(
         service: GaiaGattService?
     ) = intent {
         if (service != null) {
-            val commandId = GaiaPacketFactory.CMD_ID_STANDBY_SET
+            val commandId = K9Command.Set.Standby.commandId
             gaiaPacketResponses.add(commandId)
             postSideEffect(StateSideEffect.Characteristic.Write)
             scope.launch(context = Dispatchers.IO) {
@@ -318,12 +307,12 @@ class StateViewModel @Inject constructor(
     ) = intent {
         if (service != null) {
             val commandIds = listOf(
-                GaiaPacketFactory.CMD_ID_MUTE_EN_GET,
-                GaiaPacketFactory.CMD_ID_MQA_EN_GET,
-                GaiaPacketFactory.CMD_ID_VERSION_GET,
-                GaiaPacketFactory.CMD_ID_AUDIO_FMT_GET,
-                GaiaPacketFactory.CMD_ID_INPUT_SRC_GET,
-                GaiaPacketFactory.CMD_ID_INDICATOR_RGB_LIGHTING_GET
+                K9Command.Get.MuteEnabled.commandId,
+                K9Command.Get.MqaEnabled.commandId,
+                K9Command.Get.Version.commandId,
+                K9Command.Get.AudioFormat.commandId,
+                K9Command.Get.InputSource.commandId,
+                K9Command.Get.IndicatorRgbLighting.commandId
             )
             gaiaPacketResponses.addAll(commandIds)
             postSideEffect(StateSideEffect.Characteristic.Write)
@@ -346,28 +335,24 @@ class StateViewModel @Inject constructor(
     ) = intent {
         if (service != null) {
             val commandIds = mutableListOf(
-                GaiaPacketFactory.CMD_ID_INPUT_SRC_SET,
-                GaiaPacketFactory.CMD_ID_VOLUME_GET
+                K9Command.Set.InputSource.commandId,
+                K9Command.Get.Volume.commandId
             )
             if (inputSource == InputSource.Bluetooth) {
-                commandIds.add(GaiaPacketFactory.CMD_ID_CODEC_BIT_GET)
+                commandIds.add(K9Command.Get.CodecBit.commandId)
             }
             gaiaPacketResponses.addAll(commandIds)
             postSideEffect(StateSideEffect.Characteristic.Write)
             scope.launch(context = Dispatchers.IO) {
                 val packets = mutableListOf(
                     GaiaPacketFactory.createGaiaPacket(
-                        commandId = GaiaPacketFactory.CMD_ID_INPUT_SRC_SET,
+                        commandId = K9Command.Set.InputSource.commandId,
                         payload = byteArrayOf(inputSource.id.toByte())
                     ),
-                    GaiaPacketFactory.createGaiaPacket(
-                        commandId = GaiaPacketFactory.CMD_ID_VOLUME_GET
-                    )
+                    GaiaPacketFactory.createGaiaPacket(commandId = K9Command.Get.Volume.commandId)
                 )
                 if (inputSource == InputSource.Bluetooth) {
-                    GaiaPacketFactory.createGaiaPacket(
-                        commandId = GaiaPacketFactory.CMD_ID_CODEC_BIT_GET
-                    )
+                    GaiaPacketFactory.createGaiaPacket(commandId = K9Command.Get.CodecBit.commandId)
                 }
                 packets.forEach { packet ->
                     val success = service.sendGaiaPacket(packet)
