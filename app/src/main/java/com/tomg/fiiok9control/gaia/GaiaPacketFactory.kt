@@ -20,6 +20,7 @@
 
 package com.tomg.fiiok9control.gaia
 
+import com.qualcomm.qti.libraries.gaia.packets.GaiaPacket
 import com.qualcomm.qti.libraries.gaia.packets.GaiaPacketBLE
 
 object GaiaPacketFactory {
@@ -28,5 +29,5 @@ object GaiaPacketFactory {
         vendorId: Int = GaiaPacketVendor.Fiio.vendorId,
         commandId: Int,
         payload: ByteArray = byteArrayOf()
-    ) = GaiaPacketBLE(vendorId, commandId, payload)
+    ): GaiaPacket = GaiaPacketBLE(vendorId, commandId, payload)
 }

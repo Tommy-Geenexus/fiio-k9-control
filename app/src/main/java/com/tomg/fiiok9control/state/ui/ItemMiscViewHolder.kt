@@ -30,9 +30,11 @@ class ItemMiscViewHolder(
 
     fun bindItemMisc(
         fwVersion: String,
-        audioFmt: String
+        audioFmt: String,
+        volume: String
     ) {
         binding.fwVersion.text = itemView.context.getString(R.string.fw_version, fwVersion)
         binding.audioFmt.text = itemView.context.getString(R.string.audio_fmt, audioFmt)
+        binding.volume.text = itemView.context.getString(R.string.volume, volume)
     }
 }

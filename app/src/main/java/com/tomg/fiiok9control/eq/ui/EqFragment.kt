@@ -190,6 +190,9 @@ class EqFragment :
                     gaiaGattService()
                 )
             }
+            EqSideEffect.Request.Failure -> {
+                binding.progress.hide()
+            }
         }
     }
 

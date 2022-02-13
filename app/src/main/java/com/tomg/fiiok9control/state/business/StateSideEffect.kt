@@ -45,4 +45,10 @@ sealed class StateSideEffect : Parcelable {
         @Parcelize
         object Failure : StateSideEffect()
     }
+
+    sealed class Request : StateSideEffect() {
+
+        @Parcelize
+        object Failure : Request()
+    }
 }

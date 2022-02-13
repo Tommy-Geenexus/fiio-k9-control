@@ -114,7 +114,7 @@ class StateFragment :
                 true
             }
             R.id.mute -> {
-                stateViewModel.sendGaiaPacketMute(
+                stateViewModel.sendGaiaPacketMuteEnabled(
                     lifecycleScope,
                     gaiaGattService()
                 )
@@ -135,7 +135,7 @@ class StateFragment :
                 true
             }
             R.id.reset -> {
-                stateViewModel.sendGaiaPacketReset(
+                stateViewModel.sendGaiaPacketRestore(
                     lifecycleScope,
                     gaiaGattService()
                 )
@@ -200,7 +200,7 @@ class StateFragment :
         requireActivity().invalidateOptionsMenu()
         (binding.state.adapter as? StateAdapter)?.submitList(
             listOf(
-                state.fwVersion to state.audioFmt,
+                Triple(state.fwVersion, state.audioFmt, state.volume),
                 state.inputSource,
                 state.indicatorState to state.indicatorBrightness
             )
@@ -228,6 +228,9 @@ class StateFragment :
                     lifecycleScope,
                     gaiaGattService()
                 )
+            }
+            StateSideEffect.Request.Failure -> {
+                binding.progress.hide()
             }
         }
     }

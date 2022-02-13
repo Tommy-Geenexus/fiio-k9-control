@@ -28,9 +28,10 @@ import com.tomg.fiiok9control.audio.LowPassFilter
 import com.tomg.fiiok9control.gaia.GaiaGattService
 import com.tomg.fiiok9control.gaia.GaiaPacketFactory
 import com.tomg.fiiok9control.gaia.fiio.K9Command
+import com.tomg.fiiok9control.gaia.fiio.K9PacketDecoder
+import com.tomg.fiiok9control.gaia.fiio.K9PacketFactory
 import com.tomg.fiiok9control.gaia.isFiioPacket
 import com.tomg.fiiok9control.setup.data.SetupRepository
-import com.tomg.fiiok9control.toHexString
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -65,20 +66,18 @@ class AudioViewModel @Inject constructor(
         val packet = GaiaPacketBLE(data)
         if (packet.isFiioPacket()) {
             gaiaPacketResponses.remove(packet.command)
-            val payload = packet.payload.toHexString()
             when (packet.command) {
                 K9Command.Get.CodecEnabled.commandId -> {
-                    val id = payload.toIntOrNull(radix = 16)
-                    if (id != null) {
-                        val codecsEnabled = BluetoothCodec.findById(id)
+                    val codecEnabled = K9PacketDecoder.decodePayloadGetCodecEnabled(packet.payload)
+                    if (!codecEnabled.isNullOrEmpty()) {
                         reduce {
-                            state.copy(codecsEnabled = codecsEnabled)
+                            state.copy(codecsEnabled = codecEnabled)
                         }
                     }
                 }
                 K9Command.Get.LowPassFilter.commandId -> {
-                    val id = payload.toIntOrNull(radix = 16) ?: -1
-                    val lowPassFilter = LowPassFilter.findById(id)
+                    val lowPassFilter =
+                        K9PacketDecoder.decodePayloadGetLowPassFilter(packet.payload)
                     if (lowPassFilter != null) {
                         reduce {
                             state.copy(lowPassFilter = lowPassFilter)
@@ -86,18 +85,11 @@ class AudioViewModel @Inject constructor(
                     }
                 }
                 K9Command.Get.ChannelBalance.commandId -> {
-                    if (payload.length < 6) return@intent
-                    val leftChannel = payload.startsWith("0001")
-                    val channelBalance = payload.substring(4).toIntOrNull(radix = 16)
+                    val channelBalance =
+                        K9PacketDecoder.decodePayloadGetChannelBalance(packet.payload)
                     if (channelBalance != null) {
                         reduce {
-                            state.copy(
-                                channelBalance = if (leftChannel) {
-                                    -channelBalance
-                                } else {
-                                    channelBalance
-                                }
-                            )
+                            state.copy(channelBalance = channelBalance)
                         }
                     }
                 }
@@ -131,15 +123,14 @@ class AudioViewModel @Inject constructor(
         }
     }
 
-    fun sendGaiaPacketCodecsEnabled(
+    fun sendGaiaPacketCodecEnabled(
         scope: CoroutineScope,
         service: GaiaGattService?,
         codec: BluetoothCodec,
         enabled: Boolean
     ) = intent {
         if (service != null) {
-            val commandId = K9Command.Set.CodecEnabled.commandId
-            gaiaPacketResponses.add(commandId)
+            gaiaPacketResponses.add(K9Command.Set.CodecEnabled.commandId)
             postSideEffect(AudioSideEffect.Characteristic.Write)
             scope.launch(context = Dispatchers.IO) {
                 val codecsEnabled = if (enabled) {
@@ -147,15 +138,16 @@ class AudioViewModel @Inject constructor(
                 } else {
                     state.codecsEnabled.minus(codec)
                 }
-                val packet = GaiaPacketFactory.createGaiaPacket(
-                    commandId = commandId,
-                    payload = byteArrayOf(BluetoothCodec.toByte(codecsEnabled))
+                val success = service.sendGaiaPacket(
+                    K9PacketFactory.createGaiaPacketSetCodecEnabled(codecsEnabled)
                 )
-                val success = service.sendGaiaPacket(packet)
                 if (success) {
                     reduce {
                         state.copy(codecsEnabled = codecsEnabled)
                     }
+                } else {
+                    gaiaPacketResponses.remove(K9Command.Set.CodecEnabled.commandId)
+                    postSideEffect(AudioSideEffect.Request.Failure)
                 }
             }
         }
@@ -167,19 +159,19 @@ class AudioViewModel @Inject constructor(
         lowPassFilter: LowPassFilter
     ) = intent {
         if (service != null) {
-            val commandId = K9Command.Set.LowPassFilter.commandId
-            gaiaPacketResponses.add(commandId)
+            gaiaPacketResponses.add(K9Command.Set.LowPassFilter.commandId)
             postSideEffect(AudioSideEffect.Characteristic.Write)
             scope.launch(context = Dispatchers.IO) {
-                val packet = GaiaPacketFactory.createGaiaPacket(
-                    commandId = commandId,
-                    payload = byteArrayOf(lowPassFilter.id.toByte())
+                val success = service.sendGaiaPacket(
+                    K9PacketFactory.createGaiaPacketSetLowPassFilter(lowPassFilter)
                 )
-                val success = service.sendGaiaPacket(packet)
                 if (success) {
                     reduce {
                         state.copy(lowPassFilter = lowPassFilter)
                     }
+                } else {
+                    gaiaPacketResponses.remove(K9Command.Set.LowPassFilter.commandId)
+                    postSideEffect(AudioSideEffect.Request.Failure)
                 }
             }
         }
@@ -191,22 +183,19 @@ class AudioViewModel @Inject constructor(
         channelBalance: Int
     ) = intent {
         if (service != null) {
-            val commandId = K9Command.Set.ChannelBalance.commandId
-            gaiaPacketResponses.add(commandId)
+            gaiaPacketResponses.add(K9Command.Set.ChannelBalance.commandId)
             postSideEffect(AudioSideEffect.Characteristic.Write)
             scope.launch(context = Dispatchers.IO) {
-                val packet = GaiaPacketFactory.createGaiaPacket(
-                    commandId = commandId,
-                    payload = byteArrayOf(
-                        if (channelBalance < 0) 1.toByte() else 2.toByte(),
-                        channelBalance.toByte()
-                    )
+                val success = service.sendGaiaPacket(
+                    K9PacketFactory.createGaiaPacketSetChannelBalance(channelBalance)
                 )
-                val success = service.sendGaiaPacket(packet)
                 if (success) {
                     reduce {
                         state.copy(channelBalance = channelBalance)
                     }
+                } else {
+                    gaiaPacketResponses.remove(K9Command.Set.ChannelBalance.commandId)
+                    postSideEffect(AudioSideEffect.Request.Failure)
                 }
             }
         }
@@ -227,7 +216,12 @@ class AudioViewModel @Inject constructor(
             scope.launch(context = Dispatchers.IO) {
                 commandIds.forEachIndexed { index, commandId ->
                     val packet = GaiaPacketFactory.createGaiaPacket(commandId = commandId)
-                    service.sendGaiaPacket(packet)
+                    val success = service.sendGaiaPacket(packet)
+                    if (!success) {
+                        gaiaPacketResponses.removeAll(commandIds)
+                        postSideEffect(AudioSideEffect.Request.Failure)
+                        return@launch
+                    }
                     if (index < commandIds.lastIndex) {
                         delay(200)
                     }

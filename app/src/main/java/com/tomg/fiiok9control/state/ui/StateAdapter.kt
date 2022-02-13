@@ -99,12 +99,16 @@ class StateAdapter(
         val payload = currentList.getOrNull(position)
         when (position) {
             0 -> {
-                val info = payload as? Pair<*, *>
+                val info = payload as? Triple<*, *, *>
                 if (info != null) {
                     val fwVersion = payload.first as? String
                     val audioFmt = payload.second as? String
-                    if (!fwVersion.isNullOrEmpty() && !audioFmt.isNullOrEmpty()) {
-                        (holder as? ItemMiscViewHolder)?.bindItemMisc(fwVersion, audioFmt)
+                    val volume = payload.third as? String
+                    if (!fwVersion.isNullOrEmpty() &&
+                        !audioFmt.isNullOrEmpty() &&
+                        !volume.isNullOrEmpty()
+                    ) {
+                        (holder as? ItemMiscViewHolder)?.bindItemMisc(fwVersion, audioFmt, volume)
                     }
                 }
             }

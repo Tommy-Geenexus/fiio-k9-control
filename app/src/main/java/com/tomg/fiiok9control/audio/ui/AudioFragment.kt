@@ -110,7 +110,7 @@ class AudioFragment :
         codec: BluetoothCodec,
         enabled: Boolean
     ) {
-        audioViewModel.sendGaiaPacketCodecsEnabled(
+        audioViewModel.sendGaiaPacketCodecEnabled(
             lifecycleScope,
             gaiaGattService(),
             codec,
@@ -161,6 +161,9 @@ class AudioFragment :
                     lifecycleScope,
                     gaiaGattService()
                 )
+            }
+            AudioSideEffect.Request.Failure -> {
+                binding.progress.hide()
             }
         }
     }

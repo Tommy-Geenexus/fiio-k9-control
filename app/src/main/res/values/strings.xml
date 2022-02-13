@@ -30,7 +30,7 @@
     <string name="aptx_ll">aptX-LL</string>
 
     <string name="audio">Audio</string>
-    <string name="audio_fmt">Audio format %s</string>
+    <string name="audio_fmt">Audio format: %s</string>
 
     <string name="bluetooth">Bluetooth</string>
     <string name="bluetooth_codecs">Bluetooth codecs</string>
@@ -60,7 +60,7 @@
     <string name="equalizer">Equalizer</string>
     <string name="equalizer_preset">Equalizer preset</string>
 
-    <string name="fw_version">Firmware version %s</string>
+    <string name="fw_version">Bluetooth firmware version: %s</string>
 
     <string name="gaia_discover">Discovering GAIA services</string>
 
@@ -117,4 +117,6 @@
     <string name="toggle_mute">Toggle mute</string>
 
     <string name="usb">USB</string>
+
+    <string name="volume">Volume level: %s</string>
 </resources>

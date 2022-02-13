@@ -27,8 +27,9 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class StateState(
-    val audioFmt: String = "44.1kHz",
     val fwVersion: String = "1.0",
+    val audioFmt: String = "44.1kHz",
+    val volume: String = "0%",
     val inputSource: InputSource = InputSource.Usb,
     val indicatorState: IndicatorState = IndicatorState.EnabledDefault,
     val indicatorBrightness: Int = 5,

@@ -45,4 +45,10 @@ sealed class EqSideEffect : Parcelable {
         @Parcelize
         object Failure : EqSideEffect()
     }
+
+    sealed class Request : EqSideEffect() {
+
+        @Parcelize
+        object Failure : Request()
+    }
 }

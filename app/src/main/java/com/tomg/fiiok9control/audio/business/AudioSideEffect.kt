@@ -45,4 +45,10 @@ sealed class AudioSideEffect : Parcelable {
         @Parcelize
         object Failure : AudioSideEffect()
     }
+
+    sealed class Request : AudioSideEffect() {
+
+        @Parcelize
+        object Failure : Request()
+    }
 }
