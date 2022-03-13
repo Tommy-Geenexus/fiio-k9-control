@@ -94,23 +94,21 @@ class FiioK9ControlActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         val binding = ActivityFiioK9ControlBinding.inflate(layoutInflater)
+        window.statusBarColor =
+            SurfaceColors.getColorForElevation(this, binding.toolbar.elevation)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
-        binding.root.applyInsetMargins()
-        window.apply {
-            statusBarColor = SurfaceColors.getColorForElevation(
-                this@FiioK9ControlActivity,
-                resources.getDimension(R.dimen.elevation_toolbar)
-            )
-            navigationBarColor = SurfaceColors.SURFACE_2.getColor(this@FiioK9ControlActivity)
-        }
+        binding.toolbar.applyInsetMargins()
         val navController =
             (supportFragmentManager.findFragmentById(R.id.nav_controller) as NavHostFragment)
                 .navController
         navController.addOnDestinationChangedListener { _, navDestination, _ ->
             if (navDestination.id == R.id.fragment_state && binding.nav.isInvisible) {
+                window.navigationBarColor =
+                    SurfaceColors.getColorForElevation(this, binding.nav.elevation)
                 binding.nav.isInvisible = false
             } else if (navDestination.id == R.id.fragment_setup) {
+                window.navigationBarColor = getColor(android.R.color.transparent)
                 binding.nav.isInvisible = true
             }
         }

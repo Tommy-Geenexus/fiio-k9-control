@@ -1,15 +1,7 @@
 <resources>
-    <!-- Base application theme. -->
+
     <style name="Theme.FiioK9Control" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@android:color/system_accent1_200</item>
-        <item name="colorPrimaryVariant">@android:color/system_accent1_200</item>
-        <item name="colorOnPrimary">@android:color/system_accent1_800</item>
-        <!-- Secondary brand color. -->
-        <item name="colorSecondary">@android:color/system_accent2_200</item>
-        <item name="colorSecondaryVariant">@android:color/system_accent2_200</item>
-        <item name="colorOnSecondary">@android:color/system_accent2_800</item>
-        <!-- Customize your theme here. -->
         <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:enforceNavigationBarContrast">false</item>
     </style>
 </resources>
