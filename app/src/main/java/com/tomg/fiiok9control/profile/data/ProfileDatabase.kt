@@ -18,37 +18,19 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.fiiok9control.audio.business
+package com.tomg.fiiok9control.profile.data
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import androidx.room.Database
+import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 
-sealed class AudioSideEffect : Parcelable {
+@Database(
+    entities = [Profile::class],
+    version = 1,
+    exportSchema = false
+)
+@TypeConverters(Converters::class)
+abstract class ProfileDatabase : RoomDatabase() {
 
-    sealed class Characteristic : AudioSideEffect() {
-
-        @Parcelize
-        object Write : Characteristic()
-
-        @Parcelize
-        object Changed : Characteristic()
-    }
-
-    sealed class Reconnect : AudioSideEffect() {
-
-        @Parcelize
-        object Initiated : Reconnect()
-
-        @Parcelize
-        object Success : Reconnect()
-
-        @Parcelize
-        object Failure : Reconnect()
-    }
-
-    sealed class Request : AudioSideEffect() {
-
-        @Parcelize
-        object Failure : Request()
-    }
+    abstract fun profileDao(): ProfileDao
 }

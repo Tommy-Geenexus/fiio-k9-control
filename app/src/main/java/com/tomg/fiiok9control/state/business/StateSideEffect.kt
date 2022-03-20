@@ -25,25 +25,34 @@ import kotlinx.parcelize.Parcelize
 
 sealed class StateSideEffect : Parcelable {
 
-    sealed class Characteristic {
+    sealed class Characteristic : StateSideEffect() {
 
         @Parcelize
-        object Write : StateSideEffect()
+        object Write : Characteristic()
 
         @Parcelize
-        object Changed : StateSideEffect()
+        object Changed : Characteristic()
     }
 
-    sealed class Reconnect : StateSideEffect() {
+    sealed class ExportProfile : StateSideEffect() {
 
         @Parcelize
-        object Initiated : StateSideEffect()
+        object Success : ExportProfile()
 
         @Parcelize
-        object Success : StateSideEffect()
+        object Failure : ExportProfile()
+    }
+
+    sealed class Reconnect : Characteristic() {
 
         @Parcelize
-        object Failure : StateSideEffect()
+        object Initiated : Reconnect()
+
+        @Parcelize
+        object Success : Reconnect()
+
+        @Parcelize
+        object Failure : Reconnect()
     }
 
     sealed class Request : StateSideEffect() {

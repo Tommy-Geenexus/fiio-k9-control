@@ -18,37 +18,28 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.fiiok9control.audio.business
+package com.tomg.fiiok9control.di
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import android.content.Context
+import androidx.room.Room
+import com.tomg.fiiok9control.profile.data.ProfileDatabase
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
 
-sealed class AudioSideEffect : Parcelable {
+@Module
+@InstallIn(SingletonComponent::class)
+object DbModule {
 
-    sealed class Characteristic : AudioSideEffect() {
+    @Provides
+    fun provideAppDatabase(
+        @ApplicationContext context: Context
+    ) = Room
+        .databaseBuilder(context, ProfileDatabase::class.java, "app.db")
+        .build()
 
-        @Parcelize
-        object Write : Characteristic()
-
-        @Parcelize
-        object Changed : Characteristic()
-    }
-
-    sealed class Reconnect : AudioSideEffect() {
-
-        @Parcelize
-        object Initiated : Reconnect()
-
-        @Parcelize
-        object Success : Reconnect()
-
-        @Parcelize
-        object Failure : Reconnect()
-    }
-
-    sealed class Request : AudioSideEffect() {
-
-        @Parcelize
-        object Failure : Request()
-    }
+    @Provides
+    fun provideProfileDao(profileDatabase: ProfileDatabase) = profileDatabase.profileDao()
 }

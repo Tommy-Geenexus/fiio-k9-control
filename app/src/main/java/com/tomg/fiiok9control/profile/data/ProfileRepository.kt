@@ -18,37 +18,45 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.fiiok9control.audio.business
+package com.tomg.fiiok9control.profile.data
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import timber.log.Timber
+import javax.inject.Inject
+import javax.inject.Singleton
 
-sealed class AudioSideEffect : Parcelable {
+@Singleton
+class ProfileRepository @Inject constructor(
+    private val profileDao: ProfileDao
+) {
 
-    sealed class Characteristic : AudioSideEffect() {
+    private companion object {
 
-        @Parcelize
-        object Write : Characteristic()
-
-        @Parcelize
-        object Changed : Characteristic()
+        const val PROFILES_MAX = 100
     }
 
-    sealed class Reconnect : AudioSideEffect() {
+    fun getProfiles() = profileDao.getProfiles()
 
-        @Parcelize
-        object Initiated : Reconnect()
-
-        @Parcelize
-        object Success : Reconnect()
-
-        @Parcelize
-        object Failure : Reconnect()
+    suspend fun insertProfile(profile: Profile): Boolean {
+        return runCatching {
+            if (profileDao.getProfileCount() < PROFILES_MAX) {
+                profileDao.insert(profile)
+                true
+            } else {
+                false
+            }
+        }.getOrElse { exception ->
+            Timber.e(exception)
+            false
+        }
     }
 
-    sealed class Request : AudioSideEffect() {
-
-        @Parcelize
-        object Failure : Request()
+    suspend fun deleteProfile(profile: Profile): Boolean {
+        return runCatching {
+            profileDao.delete(profile)
+            true
+        }.getOrElse { exception ->
+            Timber.e(exception)
+            false
+        }
     }
 }

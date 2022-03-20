@@ -18,37 +18,26 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.fiiok9control.audio.business
+package com.tomg.fiiok9control.profile.ui
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import androidx.recyclerview.widget.RecyclerView
+import com.tomg.fiiok9control.databinding.ItemProfileBinding
 
-sealed class AudioSideEffect : Parcelable {
+class ItemProfileViewHolder(
+    private val binding: ItemProfileBinding,
+    private val listener: ProfileAdapter.Listener
+) : RecyclerView.ViewHolder(binding.root) {
 
-    sealed class Characteristic : AudioSideEffect() {
-
-        @Parcelize
-        object Write : Characteristic()
-
-        @Parcelize
-        object Changed : Characteristic()
+    init {
+        binding.profileApply.setOnClickListener {
+            listener.onProfileApply(absoluteAdapterPosition)
+        }
+        binding.profileDelete.setOnClickListener {
+            listener.onProfileDelete(absoluteAdapterPosition)
+        }
     }
 
-    sealed class Reconnect : AudioSideEffect() {
-
-        @Parcelize
-        object Initiated : Reconnect()
-
-        @Parcelize
-        object Success : Reconnect()
-
-        @Parcelize
-        object Failure : Reconnect()
-    }
-
-    sealed class Request : AudioSideEffect() {
-
-        @Parcelize
-        object Failure : Request()
+    fun bindItemProfile(profileName: String) {
+        binding.profileName.text = profileName
     }
 }

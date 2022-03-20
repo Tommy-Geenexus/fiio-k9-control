@@ -24,6 +24,8 @@
 
     <string name="app_name">FiioK9Control</string>
 
+    <string name="apply">Apply</string>
+
     <string name="aptx">aptX</string>
     <string name="aptx_adaptive">aptX-adaptive</string>
     <string name="aptx_hd">aptX-HD</string>
@@ -37,6 +39,8 @@
 
     <string name="channel_balance">Channel balance</string>
 
+    <string name="choose_a_profile_name">Choose a profile name</string>
+
     <string name="classical">Classical</string>
 
     <string name="coaxial">Coaxial</string>
@@ -47,6 +51,8 @@
     <string name="custom_equalizer_preset">Custom equalizer preset</string>
 
     <string name="dance">Dance</string>
+
+    <string name="delete">Delete</string>
 
     <string name="disabled">Disabled</string>
 
@@ -59,6 +65,8 @@
 
     <string name="equalizer">Equalizer</string>
     <string name="equalizer_preset">Equalizer preset</string>
+
+    <string name="export_profile">Export profile</string>
 
     <string name="fw_version">Bluetooth firmware version: %s</string>
 
@@ -90,6 +98,11 @@
     <string name="pair_device">Pair device</string>
 
     <string name="pop">Pop</string>
+
+    <string name="profile">Profile</string>
+    <string name="profile_export_failure">Failed to export profile</string>
+    <string name="profile_export_success">Successfully exported profile</string>
+    <string name="profile_name">Profile name</string>
 
     <string name="r_b">
         <![CDATA[R&B]]>

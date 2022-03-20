@@ -34,5 +34,6 @@ data class StateState(
     val indicatorState: IndicatorState = IndicatorState.EnabledDefault,
     val indicatorBrightness: Int = 5,
     val isMuted: Boolean = false,
-    val isMqaEnabled: Boolean = true
+    val isMqaEnabled: Boolean = true,
+    val isProfileExporting: Boolean = false
 ) : Parcelable

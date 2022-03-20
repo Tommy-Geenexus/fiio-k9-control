@@ -25,15 +25,18 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tomg.fiiok9control.BaseFragment
+import com.tomg.fiiok9control.Empty
 import com.tomg.fiiok9control.R
 import com.tomg.fiiok9control.databinding.FragmentStateBinding
 import com.tomg.fiiok9control.gaia.GaiaGattSideEffect
+import com.tomg.fiiok9control.showSnackbar
 import com.tomg.fiiok9control.state.IndicatorState
 import com.tomg.fiiok9control.state.InputSource
 import com.tomg.fiiok9control.state.business.StateSideEffect
@@ -59,6 +62,10 @@ class StateFragment :
             layoutManager = LinearLayoutManager(context)
             adapter = StateAdapter(listener = this@StateFragment)
             itemAnimator = null
+        }
+        setFragmentResultListener(ExportProfileFragment.KEY_PROFILE_NAME) { _, args ->
+            val profileName = args.getString(ExportProfileFragment.KEY_PROFILE_NAME, String.Empty)
+            stateViewModel.exportStateProfile(profileName)
         }
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -111,6 +118,10 @@ class StateFragment :
         return when (item.itemId) {
             R.id.disconnect -> {
                 stateViewModel.disconnect(gaiaGattService())
+                true
+            }
+            R.id.export -> {
+                navigate(StateFragmentDirections.stateToExportProfile())
                 true
             }
             R.id.mute -> {
@@ -198,6 +209,11 @@ class StateFragment :
 
     private fun renderState(state: StateState) {
         requireActivity().invalidateOptionsMenu()
+        if (state.isProfileExporting) {
+            binding.progress2.show()
+        } else {
+            binding.progress2.hide()
+        }
         (binding.state.adapter as? StateAdapter)?.submitList(
             listOf(
                 Triple(state.fwVersion, state.audioFmt, state.volume),
@@ -214,6 +230,18 @@ class StateFragment :
             }
             StateSideEffect.Characteristic.Write -> {
                 binding.progress.show()
+            }
+            StateSideEffect.ExportProfile.Failure -> {
+                requireView().showSnackbar(
+                    anchor = requireActivity().findViewById(R.id.nav),
+                    msgRes = R.string.profile_export_failure
+                )
+            }
+            StateSideEffect.ExportProfile.Success -> {
+                requireView().showSnackbar(
+                    anchor = requireActivity().findViewById(R.id.nav),
+                    msgRes = R.string.profile_export_success
+                )
             }
             StateSideEffect.Reconnect.Failure -> {
                 binding.progress.hide()

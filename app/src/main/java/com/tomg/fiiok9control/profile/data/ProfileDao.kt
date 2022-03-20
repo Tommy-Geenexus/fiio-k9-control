@@ -18,37 +18,27 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.fiiok9control.audio.business
+package com.tomg.fiiok9control.profile.data
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
-sealed class AudioSideEffect : Parcelable {
+@Dao
+interface ProfileDao {
 
-    sealed class Characteristic : AudioSideEffect() {
+    @Query("SELECT * FROM Profile")
+    fun getProfiles(): Flow<List<Profile>>
 
-        @Parcelize
-        object Write : Characteristic()
+    @Query("SELECT COUNT(*) FROM Profile")
+    suspend fun getProfileCount(): Int
 
-        @Parcelize
-        object Changed : Characteristic()
-    }
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(vararg profiles: Profile)
 
-    sealed class Reconnect : AudioSideEffect() {
-
-        @Parcelize
-        object Initiated : Reconnect()
-
-        @Parcelize
-        object Success : Reconnect()
-
-        @Parcelize
-        object Failure : Reconnect()
-    }
-
-    sealed class Request : AudioSideEffect() {
-
-        @Parcelize
-        object Failure : Request()
-    }
+    @Delete
+    suspend fun delete(profile: Profile)
 }

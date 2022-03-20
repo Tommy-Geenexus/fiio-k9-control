@@ -29,6 +29,8 @@ import com.tomg.fiiok9control.gaia.fiio.K9Command
 import com.tomg.fiiok9control.gaia.fiio.K9PacketDecoder
 import com.tomg.fiiok9control.gaia.fiio.K9PacketFactory
 import com.tomg.fiiok9control.gaia.isFiioPacket
+import com.tomg.fiiok9control.profile.data.Profile
+import com.tomg.fiiok9control.profile.data.ProfileRepository
 import com.tomg.fiiok9control.setup.data.SetupRepository
 import com.tomg.fiiok9control.state.IndicatorState
 import com.tomg.fiiok9control.state.InputSource
@@ -47,6 +49,7 @@ import javax.inject.Inject
 @HiltViewModel
 class StateViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val profileRepository: ProfileRepository,
     private val setupRepository: SetupRepository
 ) : ViewModel(),
     ContainerHost<StateState, StateSideEffect> {
@@ -68,6 +71,34 @@ class StateViewModel @Inject constructor(
             service.disconnectDeviceAndReset()
             postSideEffect(StateSideEffect.Reconnect.Failure)
         }
+    }
+
+    fun exportStateProfile(profileName: String?) = intent {
+        if (profileName.isNullOrEmpty()) {
+            postSideEffect(StateSideEffect.ExportProfile.Failure)
+            return@intent
+        }
+        reduce {
+            state.copy(isProfileExporting = true)
+        }
+        val success = profileRepository.insertProfile(
+            Profile(
+                name = profileName,
+                inputSource = state.inputSource,
+                indicatorState = state.indicatorState,
+                indicatorBrightness = state.indicatorBrightness
+            )
+        )
+        reduce {
+            state.copy(isProfileExporting = false)
+        }
+        postSideEffect(
+            if (success) {
+                StateSideEffect.ExportProfile.Success
+            } else {
+                StateSideEffect.ExportProfile.Failure
+            }
+        )
     }
 
     fun handleGaiaPacket(data: ByteArray) = intent {
@@ -169,7 +200,7 @@ class StateViewModel @Inject constructor(
             postSideEffect(StateSideEffect.Characteristic.Write)
             scope.launch(context = Dispatchers.IO) {
                 val success = service.sendGaiaPacket(
-                    K9PacketFactory.createGaiaPacketSetIndicatorStateOrBrightness(
+                    K9PacketFactory.createGaiaPacketSetIndicatorStateAndBrightness(
                         indicatorState = state.indicatorState,
                         indicatorBrightness = indicatorBrightness
                     )
@@ -196,7 +227,7 @@ class StateViewModel @Inject constructor(
             postSideEffect(StateSideEffect.Characteristic.Write)
             scope.launch(context = Dispatchers.IO) {
                 val success = service.sendGaiaPacket(
-                    K9PacketFactory.createGaiaPacketSetIndicatorStateOrBrightness(
+                    K9PacketFactory.createGaiaPacketSetIndicatorStateAndBrightness(
                         indicatorState = indicatorState,
                         indicatorBrightness = state.indicatorBrightness
                     )

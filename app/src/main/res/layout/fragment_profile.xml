@@ -16,7 +16,7 @@
         app:showAnimationBehavior="inward" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/state"
+        android:id="@+id/profile"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/progress2"
@@ -30,7 +30,7 @@
         android:indeterminate="true"
         android:visibility="gone"
         app:hideAnimationBehavior="outward"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:showAnimationBehavior="inward" />
 </androidx.constraintlayout.widget.ConstraintLayout>

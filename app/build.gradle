@@ -95,6 +95,7 @@ ktlint {
 spotless {
     kotlin {
         target("src/*/java/**/*.kt")
+        //noinspection GroovyImplicitNullArgumentCall
         ktlint()
         endWithNewline()
         licenseHeaderFile rootProject.file("spotless/copyright.txt")

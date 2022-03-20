@@ -18,37 +18,24 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.fiiok9control.audio.business
+package com.tomg.fiiok9control.profile.data
 
 import android.os.Parcelable
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import com.tomg.fiiok9control.Empty
+import com.tomg.fiiok9control.state.IndicatorState
+import com.tomg.fiiok9control.state.InputSource
 import kotlinx.parcelize.Parcelize
 
-sealed class AudioSideEffect : Parcelable {
-
-    sealed class Characteristic : AudioSideEffect() {
-
-        @Parcelize
-        object Write : Characteristic()
-
-        @Parcelize
-        object Changed : Characteristic()
-    }
-
-    sealed class Reconnect : AudioSideEffect() {
-
-        @Parcelize
-        object Initiated : Reconnect()
-
-        @Parcelize
-        object Success : Reconnect()
-
-        @Parcelize
-        object Failure : Reconnect()
-    }
-
-    sealed class Request : AudioSideEffect() {
-
-        @Parcelize
-        object Failure : Request()
-    }
-}
+@Entity
+@Parcelize
+data class Profile(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val name: String = String.Empty,
+    @ColumnInfo(name = "input_source") val inputSource: InputSource = InputSource.Usb,
+    @ColumnInfo(name = "indicator_state")
+    val indicatorState: IndicatorState = IndicatorState.EnabledDefault,
+    @ColumnInfo(name = "indicator_brightness") val indicatorBrightness: Int = 5
+) : Parcelable

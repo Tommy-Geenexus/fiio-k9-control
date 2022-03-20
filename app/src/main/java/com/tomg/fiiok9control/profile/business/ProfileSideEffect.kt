@@ -18,14 +18,14 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.fiiok9control.audio.business
+package com.tomg.fiiok9control.profile.business
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
-sealed class AudioSideEffect : Parcelable {
+sealed class ProfileSideEffect : Parcelable {
 
-    sealed class Characteristic : AudioSideEffect() {
+    sealed class Characteristic : ProfileSideEffect() {
 
         @Parcelize
         object Write : Characteristic()
@@ -34,7 +34,7 @@ sealed class AudioSideEffect : Parcelable {
         object Changed : Characteristic()
     }
 
-    sealed class Reconnect : AudioSideEffect() {
+    sealed class Reconnect : ProfileSideEffect() {
 
         @Parcelize
         object Initiated : Reconnect()
@@ -46,7 +46,7 @@ sealed class AudioSideEffect : Parcelable {
         object Failure : Reconnect()
     }
 
-    sealed class Request : AudioSideEffect() {
+    sealed class Request : ProfileSideEffect() {
 
         @Parcelize
         object Failure : Request()

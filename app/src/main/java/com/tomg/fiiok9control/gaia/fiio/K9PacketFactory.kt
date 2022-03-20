@@ -33,7 +33,7 @@ import com.tomg.fiiok9control.toBytes
 
 object K9PacketFactory {
 
-    fun createGaiaPacketSetIndicatorStateOrBrightness(
+    fun createGaiaPacketSetIndicatorStateAndBrightness(
         indicatorState: IndicatorState,
         @IntRange(from = 1, to = 5) indicatorBrightness: Int
     ) = GaiaPacketFactory.createGaiaPacket(

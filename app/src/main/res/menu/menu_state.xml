@@ -26,4 +26,9 @@
         android:id="@+id/reset"
         android:title="@string/reset_settings"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/export"
+        android:title="@string/export_profile"
+        app:showAsAction="never" />
 </menu>

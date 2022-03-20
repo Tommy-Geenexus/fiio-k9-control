@@ -4,8 +4,7 @@
     style="?materialCardViewOutlinedStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/spacing_normal"
-    app:shapeAppearance="@style/ShapeAppearance.Material3.LargeComponent">
+    android:layout_margin="@dimen/spacing_small">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -22,13 +21,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <include
-            android:id="@+id/include_channel_balance"
-            layout="@layout/slider_no_active_track"
+        <com.google.android.material.slider.Slider
+            android:id="@+id/channel_balance_slider"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/spacing_normal"
+            android:stepSize="1"
+            android:value="0"
+            android:valueFrom="-12"
+            android:valueTo="12"
+            app:labelBehavior="floating"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/channel_balance" />
+            app:layout_constraintTop_toBottomOf="@id/channel_balance"
+            app:tickColor="?attr/colorPrimary"
+            app:trackColor="?attr/colorSurfaceVariant" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

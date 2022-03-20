@@ -18,37 +18,28 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.fiiok9control.audio.business
+package com.tomg.fiiok9control.profile.data
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import androidx.room.TypeConverter
+import com.tomg.fiiok9control.state.IndicatorState
+import com.tomg.fiiok9control.state.InputSource
 
-sealed class AudioSideEffect : Parcelable {
+class Converters {
 
-    sealed class Characteristic : AudioSideEffect() {
-
-        @Parcelize
-        object Write : Characteristic()
-
-        @Parcelize
-        object Changed : Characteristic()
+    @TypeConverter
+    fun fromInputSourceId(id: Int?): InputSource {
+        return InputSource.findById(id ?: InputSource.Usb.id) ?: InputSource.Usb
     }
 
-    sealed class Reconnect : AudioSideEffect() {
+    @TypeConverter
+    fun toInputSourceId(inputSource: InputSource) = inputSource.id
 
-        @Parcelize
-        object Initiated : Reconnect()
-
-        @Parcelize
-        object Success : Reconnect()
-
-        @Parcelize
-        object Failure : Reconnect()
+    @TypeConverter
+    fun fromIndicatorStateId(id: Int?): IndicatorState {
+        return IndicatorState.findById(id ?: IndicatorState.EnabledDefault.id)
+            ?: IndicatorState.EnabledDefault
     }
 
-    sealed class Request : AudioSideEffect() {
-
-        @Parcelize
-        object Failure : Request()
-    }
+    @TypeConverter
+    fun toIndicatorStateId(indicatorState: IndicatorState) = indicatorState.id
 }

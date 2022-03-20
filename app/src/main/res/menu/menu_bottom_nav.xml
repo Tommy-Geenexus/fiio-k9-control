@@ -16,4 +16,8 @@
         android:icon="@drawable/ic_graphic_eq"
         android:title="@string/equalizer" />
 
+    <item
+        android:id="@id/fragment_profile"
+        android:icon="@drawable/ic_view_list"
+        android:title="@string/profile" />
 </menu>

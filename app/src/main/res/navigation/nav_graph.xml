@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/fragment_setup">
 
     <fragment
         android:id="@+id/fragment_setup"
-        android:name="com.tomg.fiiok9control.setup.ui.SetupFragment">
+        android:name="com.tomg.fiiok9control.setup.ui.SetupFragment"
+        tools:layout="@layout/fragment_setup">
 
         <action
             android:id="@+id/setup_to_state"
@@ -17,13 +19,31 @@
 
     <fragment
         android:id="@+id/fragment_state"
-        android:name="com.tomg.fiiok9control.state.ui.StateFragment" />
+        android:name="com.tomg.fiiok9control.state.ui.StateFragment"
+        tools:layout="@layout/fragment_state">
+
+        <action
+            android:id="@+id/state_to_export_profile"
+            app:destination="@id/fragment_export_profile" />
+    </fragment>
+
+    <dialog
+        android:id="@+id/fragment_export_profile"
+        android:name="com.tomg.fiiok9control.state.ui.ExportProfileFragment"
+        tools:layout="@layout/fragment_export_profile" />
 
     <fragment
         android:id="@+id/fragment_audio"
-        android:name="com.tomg.fiiok9control.audio.ui.AudioFragment" />
+        android:name="com.tomg.fiiok9control.audio.ui.AudioFragment"
+        tools:layout="@layout/fragment_audio" />
 
     <fragment
         android:id="@+id/fragment_eq"
-        android:name="com.tomg.fiiok9control.eq.ui.EqFragment" />
+        android:name="com.tomg.fiiok9control.eq.ui.EqFragment"
+        tools:layout="@layout/fragment_eq" />
+
+    <fragment
+        android:id="@+id/fragment_profile"
+        android:name="com.tomg.fiiok9control.profile.ui.ProfileFragment"
+        tools:layout="@layout/fragment_profile" />
 </navigation>
