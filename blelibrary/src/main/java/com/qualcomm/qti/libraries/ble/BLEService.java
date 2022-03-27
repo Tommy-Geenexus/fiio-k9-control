@@ -6,6 +6,7 @@
 
 package com.qualcomm.qti.libraries.ble;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
@@ -18,6 +19,7 @@ import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -25,6 +27,7 @@ import android.util.ArrayMap;
 import android.util.Log;
 
 import androidx.annotation.IntDef;
+import androidx.core.app.ActivityCompat;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -54,7 +57,6 @@ import java.util.UUID;
  *     {@link #setDelayForRequest(int) setDelayForRequest}.</li>
  * </ol></p>
  */
-@SuppressLint("MissingPermission")
 @SuppressWarnings({"SameParameterValue", "unused"})
 public abstract class BLEService extends Service {
 
@@ -108,7 +110,8 @@ public abstract class BLEService extends Service {
     /**
      * <p>The connection state of this service with a Bluetooth device.</p>
      */
-    private @State int mConnectionState = State.DISCONNECTED;
+    private @State
+    int mConnectionState = State.DISCONNECTED;
     /**
      * <p>The queue of pending transmissions</p>
      */
@@ -197,7 +200,7 @@ public abstract class BLEService extends Service {
     /**
      * <p>The possible values for the Bluetooth connection state of this service.</p>
      */
-    @IntDef({ State.CONNECTED, State.DISCONNECTED, State.CONNECTING, State.DISCONNECTING })
+    @IntDef({State.CONNECTED, State.DISCONNECTED, State.CONNECTING, State.DISCONNECTING})
     @Retention(RetentionPolicy.SOURCE)
     public @interface State {
         int DISCONNECTED = 0;
@@ -412,8 +415,8 @@ public abstract class BLEService extends Service {
         }
 
         if ((characteristic.getProperties() & BluetoothGattCharacteristic.PROPERTY_WRITE) <= 0) {
-                Log.w(TAG, "request write characteristic not initiated: characteristic does not have the " +
-                        "WRITE property.");
+            Log.w(TAG, "request write characteristic not initiated: characteristic does not have the " +
+                    "WRITE property.");
             return false;
         }
 
@@ -699,7 +702,7 @@ public abstract class BLEService extends Service {
         Request request = Request.createReadCharacteristicRequestToInducePairing(characteristic);
         // the request will be done only once as it is used to induce the pairing
         // if the Callback receives an unsuccessful status for this request there is no need to do this request again
-        request.setAttempts(REQUEST_MAX_ATTEMPTS-1);
+        request.setAttempts(REQUEST_MAX_ATTEMPTS - 1);
         addToRequestsQueue(request);
         return true;
     }
@@ -774,6 +777,13 @@ public abstract class BLEService extends Service {
 
         if (mDevice == null) {
             Log.w(TAG, "request read RSSI level not initiated: device is null.");
+            return false;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                ActivityCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            Log.e(TAG, Manifest.permission.BLUETOOTH_CONNECT + " required");
             return false;
         }
 
@@ -953,6 +963,13 @@ public abstract class BLEService extends Service {
      */
     @SuppressLint("ObsoleteSdkInt")
     protected boolean connectToDevice(BluetoothDevice device) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                ActivityCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            Log.e(TAG, Manifest.permission.BLUETOOTH_CONNECT + " required");
+            return false;
+        }
+
         if (mShowDebugLogs) {
             Log.d(TAG, "Request received to connect to a BluetoothDevice");
         }
@@ -1001,6 +1018,13 @@ public abstract class BLEService extends Service {
     @SuppressLint("ObsoleteSdkInt")
     @SuppressWarnings("UnusedReturnValue") // the return value is used for some implementations
     protected boolean reconnectToDevice() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                ActivityCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            Log.e(TAG, Manifest.permission.BLUETOOTH_CONNECT + " required");
+            return false;
+        }
+
         if (mShowDebugLogs) {
             Log.d(TAG, "Request received to reconnect to a BluetoothDevice");
         }
@@ -1045,6 +1069,13 @@ public abstract class BLEService extends Service {
      * {@code BluetoothGattCallback#onConnectionStateChange(android.bluetooth.BluetoothGatt, int, int)} callback.</p>
      */
     protected void disconnectFromDevice() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                ActivityCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            Log.e(TAG, Manifest.permission.BLUETOOTH_CONNECT + " required");
+            return;
+        }
+
         resetQueue();
         mCharacteristics.clear();
 
@@ -1220,6 +1251,13 @@ public abstract class BLEService extends Service {
      *              The new connection state: Can be one of {@link BluetoothProfile#STATE_DISCONNECTED} or {@link BluetoothProfile#STATE_CONNECTED}.
      */
     private void receiveConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                ActivityCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            Log.e(TAG, Manifest.permission.BLUETOOTH_CONNECT + " required");
+            return;
+        }
+
         if (mShowDebugLogs) {
             Log.d(TAG, "GattCallback - onConnectionStateChange, newState=" + newState + ", status=" + status);
         }
@@ -1497,6 +1535,13 @@ public abstract class BLEService extends Service {
      * @return true, if the read operation was initiated successfully.
      */
     private boolean readCharacteristic(BluetoothGattCharacteristic characteristic) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                ActivityCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            Log.e(TAG, Manifest.permission.BLUETOOTH_CONNECT + " required");
+            return false;
+        }
+
         if (mShowDebugLogs) {
             Log.d(TAG, "Process request read characteristic for characteristic " + characteristic.getUuid());
         }
@@ -1526,6 +1571,12 @@ public abstract class BLEService extends Service {
      * @return true, if the read operation was initiated successfully.
      */
     private boolean setCharacteristicNotification(BluetoothGattCharacteristic characteristic, boolean enabled) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                ActivityCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            Log.e(TAG, Manifest.permission.BLUETOOTH_CONNECT + " required");
+            return false;
+        }
         if (mShowDebugLogs) {
             Log.d(TAG, "Process request set characteristic notification for characteristic " + characteristic.getUuid
                     () + " with enabled=" + enabled);
@@ -1554,6 +1605,12 @@ public abstract class BLEService extends Service {
      * @return true, if the read operation was initiated successfully.
      */
     private boolean readDescriptor(BluetoothGattDescriptor descriptor) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                ActivityCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            Log.e(TAG, Manifest.permission.BLUETOOTH_CONNECT + " required");
+            return false;
+        }
         if (mShowDebugLogs) {
             Log.d(TAG, "Process request read descriptor for descriptor " + descriptor.getUuid());
         }
@@ -1581,6 +1638,12 @@ public abstract class BLEService extends Service {
      * @return true, if the read operation was initiated successfully.
      */
     private boolean writeDescriptor(BluetoothGattDescriptor descriptor) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                ActivityCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            Log.e(TAG, Manifest.permission.BLUETOOTH_CONNECT + " required");
+            return false;
+        }
         if (mShowDebugLogs) {
             Log.d(TAG, "Process request write descriptor for descriptor " + descriptor.getUuid());
         }
@@ -1608,6 +1671,12 @@ public abstract class BLEService extends Service {
      * @return true, if the read operation was initiated successfully.
      */
     private boolean writeCharacteristic(BluetoothGattCharacteristic characteristic) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                ActivityCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            Log.e(TAG, Manifest.permission.BLUETOOTH_CONNECT + " required");
+            return false;
+        }
         if (mShowDebugLogs) {
             Log.d(TAG, "Process request write characteristic for characteristic " + characteristic.getUuid());
         }
@@ -1633,6 +1702,12 @@ public abstract class BLEService extends Service {
      * @return true, if the read operation was initiated successfully.
      */
     private boolean readRemoteRssi() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                ActivityCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            Log.e(TAG, Manifest.permission.BLUETOOTH_CONNECT + " required");
+            return false;
+        }
         if (mShowDebugLogs) {
             Log.d(TAG, "Process read remote RSSI");
         }
@@ -1665,6 +1740,12 @@ public abstract class BLEService extends Service {
      */
     @SuppressLint("ObsoleteSdkInt")
     private boolean requestMTU(int mtu) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                ActivityCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            Log.e(TAG, Manifest.permission.BLUETOOTH_CONNECT + " required");
+            return false;
+        }
         if (mShowDebugLogs) {
             Log.d(TAG, "Process request MTU");
         }
@@ -1721,6 +1802,12 @@ public abstract class BLEService extends Service {
      *        The request which has failed.
      */
     private void onRequestFailed(Request request) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                ActivityCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            Log.e(TAG, Manifest.permission.BLUETOOTH_CONNECT + " required");
+            return;
+        }
         if (request != null && request.getAttempts() < REQUEST_MAX_ATTEMPTS) {
             addToRequestsQueue(request);
         }

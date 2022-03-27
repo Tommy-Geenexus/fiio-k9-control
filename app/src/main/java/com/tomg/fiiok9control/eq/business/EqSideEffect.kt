@@ -49,6 +49,8 @@ sealed class EqSideEffect : Parcelable {
     sealed class Request : EqSideEffect() {
 
         @Parcelize
-        object Failure : Request()
+        data class Failure(
+            val disconnected: Boolean = false
+        ) : Request()
     }
 }

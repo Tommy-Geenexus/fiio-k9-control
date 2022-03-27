@@ -58,6 +58,8 @@ sealed class StateSideEffect : Parcelable {
     sealed class Request : StateSideEffect() {
 
         @Parcelize
-        object Failure : Request()
+        data class Failure(
+            val disconnected: Boolean = false
+        ) : Request()
     }
 }

@@ -49,6 +49,8 @@ sealed class ProfileSideEffect : Parcelable {
     sealed class Request : ProfileSideEffect() {
 
         @Parcelize
-        object Failure : Request()
+        data class Failure(
+            val disconnected: Boolean = false
+        ) : Request()
     }
 }

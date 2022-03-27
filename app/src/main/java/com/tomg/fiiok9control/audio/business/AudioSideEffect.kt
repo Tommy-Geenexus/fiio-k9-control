@@ -49,6 +49,8 @@ sealed class AudioSideEffect : Parcelable {
     sealed class Request : AudioSideEffect() {
 
         @Parcelize
-        object Failure : Request()
+        data class Failure(
+            val disconnected: Boolean = false
+        ) : Request()
     }
 }

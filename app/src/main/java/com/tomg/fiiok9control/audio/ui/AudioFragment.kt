@@ -162,8 +162,11 @@ class AudioFragment :
                     gaiaGattService()
                 )
             }
-            AudioSideEffect.Request.Failure -> {
+            is AudioSideEffect.Request.Failure -> {
                 binding.progress.hide()
+                if (sideEffect.disconnected) {
+                    onBluetoothStateChanged(false)
+                }
             }
         }
     }

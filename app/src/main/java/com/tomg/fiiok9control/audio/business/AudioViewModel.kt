@@ -141,13 +141,13 @@ class AudioViewModel @Inject constructor(
                 val success = service.sendGaiaPacket(
                     K9PacketFactory.createGaiaPacketSetCodecEnabled(codecsEnabled)
                 )
-                if (success) {
+                if (success == true) {
                     reduce {
                         state.copy(codecsEnabled = codecsEnabled)
                     }
                 } else {
                     gaiaPacketResponses.remove(K9Command.Set.CodecEnabled.commandId)
-                    postSideEffect(AudioSideEffect.Request.Failure)
+                    postSideEffect(AudioSideEffect.Request.Failure(disconnected = success == null))
                 }
             }
         }
@@ -165,13 +165,13 @@ class AudioViewModel @Inject constructor(
                 val success = service.sendGaiaPacket(
                     K9PacketFactory.createGaiaPacketSetLowPassFilter(lowPassFilter)
                 )
-                if (success) {
+                if (success == true) {
                     reduce {
                         state.copy(lowPassFilter = lowPassFilter)
                     }
                 } else {
                     gaiaPacketResponses.remove(K9Command.Set.LowPassFilter.commandId)
-                    postSideEffect(AudioSideEffect.Request.Failure)
+                    postSideEffect(AudioSideEffect.Request.Failure(disconnected = success == null))
                 }
             }
         }
@@ -189,13 +189,13 @@ class AudioViewModel @Inject constructor(
                 val success = service.sendGaiaPacket(
                     K9PacketFactory.createGaiaPacketSetChannelBalance(channelBalance)
                 )
-                if (success) {
+                if (success == true) {
                     reduce {
                         state.copy(channelBalance = channelBalance)
                     }
                 } else {
                     gaiaPacketResponses.remove(K9Command.Set.ChannelBalance.commandId)
-                    postSideEffect(AudioSideEffect.Request.Failure)
+                    postSideEffect(AudioSideEffect.Request.Failure(disconnected = success == null))
                 }
             }
         }
@@ -217,9 +217,11 @@ class AudioViewModel @Inject constructor(
                 commandIds.forEachIndexed { index, commandId ->
                     val packet = GaiaPacketFactory.createGaiaPacket(commandId = commandId)
                     val success = service.sendGaiaPacket(packet)
-                    if (!success) {
+                    if (success == null || !success) {
                         gaiaPacketResponses.removeAll(commandIds)
-                        postSideEffect(AudioSideEffect.Request.Failure)
+                        postSideEffect(
+                            AudioSideEffect.Request.Failure(disconnected = success == null)
+                        )
                         return@launch
                     }
                     if (index < commandIds.lastIndex) {

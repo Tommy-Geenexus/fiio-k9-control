@@ -205,13 +205,13 @@ class StateViewModel @Inject constructor(
                         indicatorBrightness = indicatorBrightness
                     )
                 )
-                if (success) {
+                if (success == true) {
                     reduce {
                         state.copy(indicatorBrightness = indicatorBrightness)
                     }
                 } else {
                     gaiaPacketResponses.remove(K9Command.Set.IndicatorRgbLighting.commandId)
-                    postSideEffect(StateSideEffect.Request.Failure)
+                    postSideEffect(StateSideEffect.Request.Failure(disconnected = success == null))
                 }
             }
         }
@@ -232,13 +232,13 @@ class StateViewModel @Inject constructor(
                         indicatorBrightness = state.indicatorBrightness
                     )
                 )
-                if (success) {
+                if (success == true) {
                     reduce {
                         state.copy(indicatorState = indicatorState)
                     }
                 } else {
                     gaiaPacketResponses.remove(K9Command.Set.IndicatorRgbLighting.commandId)
-                    postSideEffect(StateSideEffect.Request.Failure)
+                    postSideEffect(StateSideEffect.Request.Failure(disconnected = success == null))
                 }
             }
         }
@@ -255,13 +255,13 @@ class StateViewModel @Inject constructor(
                 val success = service.sendGaiaPacket(
                     K9PacketFactory.createGaiaPacketSetMqa(state.isMqaEnabled)
                 )
-                if (success) {
+                if (success == true) {
                     reduce {
                         state.copy(isMqaEnabled = !state.isMqaEnabled)
                     }
                 } else {
                     gaiaPacketResponses.remove(K9Command.Set.MqaEnabled.commandId)
-                    postSideEffect(StateSideEffect.Request.Failure)
+                    postSideEffect(StateSideEffect.Request.Failure(disconnected = success == null))
                 }
             }
         }
@@ -278,13 +278,13 @@ class StateViewModel @Inject constructor(
                 val success = service.sendGaiaPacket(
                     K9PacketFactory.createGaiaPacketSetMuteEnabled(state.isMuted)
                 )
-                if (success) {
+                if (success == true) {
                     reduce {
                         state.copy(isMuted = !state.isMuted)
                     }
                 } else {
                     gaiaPacketResponses.remove(K9Command.Set.MuteEnabled.commandId)
-                    postSideEffect(StateSideEffect.Request.Failure)
+                    postSideEffect(StateSideEffect.Request.Failure(disconnected = success == null))
                 }
             }
         }
@@ -300,9 +300,9 @@ class StateViewModel @Inject constructor(
             scope.launch(context = Dispatchers.IO) {
                 val packet = K9PacketFactory.createGaiaPacketSetRestore()
                 val success = service.sendGaiaPacket(packet)
-                if (!success) {
+                if (success == null || !success) {
                     gaiaPacketResponses.remove(K9Command.Set.Restore.commandId)
-                    postSideEffect(StateSideEffect.Request.Failure)
+                    postSideEffect(StateSideEffect.Request.Failure(disconnected = success == null))
                 }
             }
         }
@@ -318,9 +318,9 @@ class StateViewModel @Inject constructor(
             scope.launch(context = Dispatchers.IO) {
                 val packet = K9PacketFactory.createGaiaPacketSetStandby()
                 val success = service.sendGaiaPacket(packet)
-                if (!success) {
+                if (success == null || !success) {
                     gaiaPacketResponses.remove(K9Command.Set.Standby.commandId)
-                    postSideEffect(StateSideEffect.Request.Failure)
+                    postSideEffect(StateSideEffect.Request.Failure(disconnected = success == null))
                 }
             }
         }
@@ -346,9 +346,11 @@ class StateViewModel @Inject constructor(
                 commandIds.forEachIndexed { index, commandId ->
                     val packet = GaiaPacketFactory.createGaiaPacket(commandId = commandId)
                     val success = service.sendGaiaPacket(packet)
-                    if (!success) {
+                    if (success == null || !success) {
                         gaiaPacketResponses.removeAll(commandIds)
-                        postSideEffect(StateSideEffect.Request.Failure)
+                        postSideEffect(
+                            StateSideEffect.Request.Failure(disconnected = success == null)
+                        )
                         return@launch
                     }
                     if (index < commandIds.lastIndex) {
@@ -384,9 +386,11 @@ class StateViewModel @Inject constructor(
                 }
                 packets.forEach { packet ->
                     val success = service.sendGaiaPacket(packet)
-                    if (!success) {
+                    if (success == null || !success) {
                         gaiaPacketResponses.removeAll(commandIds)
-                        postSideEffect(StateSideEffect.Request.Failure)
+                        postSideEffect(
+                            StateSideEffect.Request.Failure(disconnected = success == null)
+                        )
                         return@launch
                     }
                 }

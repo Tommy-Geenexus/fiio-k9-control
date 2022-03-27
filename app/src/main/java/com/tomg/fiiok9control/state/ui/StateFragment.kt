@@ -257,8 +257,11 @@ class StateFragment :
                     gaiaGattService()
                 )
             }
-            StateSideEffect.Request.Failure -> {
+            is StateSideEffect.Request.Failure -> {
                 binding.progress.hide()
+                if (sideEffect.disconnected) {
+                    onBluetoothStateChanged(false)
+                }
             }
         }
     }

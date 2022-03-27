@@ -129,13 +129,13 @@ class EqViewModel @Inject constructor(
                 val success = service.sendGaiaPacket(
                     K9PacketFactory.createGaiaPacketSetEqEnabled(eqEnabled)
                 )
-                if (success) {
+                if (success == true) {
                     reduce {
                         state.copy(eqEnabled = eqEnabled)
                     }
                 } else {
                     gaiaPacketResponses.remove(K9Command.Set.EqEnabled.commandId)
-                    postSideEffect(EqSideEffect.Request.Failure)
+                    postSideEffect(EqSideEffect.Request.Failure(disconnected = success == null))
                 }
             }
         }
@@ -153,13 +153,13 @@ class EqViewModel @Inject constructor(
                 val success = service.sendGaiaPacket(
                     K9PacketFactory.createGaiaPacketSetEqPreSet(eqPreSet)
                 )
-                if (success) {
+                if (success == true) {
                     reduce {
                         state.copy(eqPreSet = eqPreSet)
                     }
                 } else {
                     gaiaPacketResponses.remove(K9Command.Set.EqEnabled.commandId)
-                    postSideEffect(EqSideEffect.Request.Failure)
+                    postSideEffect(EqSideEffect.Request.Failure(disconnected = success == null))
                 }
             }
         }
@@ -177,7 +177,7 @@ class EqViewModel @Inject constructor(
                 val success = service.sendGaiaPacket(
                     K9PacketFactory.createGaiaPacketSetEqValue(eqValue)
                 )
-                if (success) {
+                if (success == true) {
                     reduce {
                         state.copy(
                             eqValues = state.eqValues.map { v ->
@@ -187,7 +187,7 @@ class EqViewModel @Inject constructor(
                     }
                 } else {
                     gaiaPacketResponses.remove(K9Command.Set.EqEnabled.commandId)
-                    postSideEffect(EqSideEffect.Request.Failure)
+                    postSideEffect(EqSideEffect.Request.Failure(disconnected = success == null))
                 }
             }
         }
@@ -208,9 +208,9 @@ class EqViewModel @Inject constructor(
                 commandIds.forEachIndexed { index, commandId ->
                     val packet = GaiaPacketFactory.createGaiaPacket(commandId = commandId)
                     val success = service.sendGaiaPacket(packet)
-                    if (!success) {
+                    if (success == null || !success) {
                         gaiaPacketResponses.removeAll(commandIds)
-                        postSideEffect(EqSideEffect.Request.Failure)
+                        postSideEffect(EqSideEffect.Request.Failure(disconnected = success == null))
                         return@launch
                     }
                     if (index < commandIds.lastIndex) {
@@ -236,7 +236,7 @@ class EqViewModel @Inject constructor(
                     val success = service.sendGaiaPacket(
                         K9PacketFactory.createGaiaPacketSetEqValue(eqValue)
                     )
-                    if (success) {
+                    if (success == true) {
                         reduce {
                             state.copy(
                                 eqValues = state.eqValues.map { v ->
@@ -246,7 +246,7 @@ class EqViewModel @Inject constructor(
                         }
                     } else {
                         gaiaPacketResponses.removeAll(commandIds)
-                        postSideEffect(EqSideEffect.Request.Failure)
+                        postSideEffect(EqSideEffect.Request.Failure(disconnected = success == null))
                         return@launch
                     }
                 }

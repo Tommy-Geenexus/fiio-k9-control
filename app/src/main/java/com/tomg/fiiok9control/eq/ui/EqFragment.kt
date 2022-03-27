@@ -190,8 +190,11 @@ class EqFragment :
                     gaiaGattService()
                 )
             }
-            EqSideEffect.Request.Failure -> {
+            is EqSideEffect.Request.Failure -> {
                 binding.progress.hide()
+                if (sideEffect.disconnected) {
+                    onBluetoothStateChanged(false)
+                }
             }
         }
     }

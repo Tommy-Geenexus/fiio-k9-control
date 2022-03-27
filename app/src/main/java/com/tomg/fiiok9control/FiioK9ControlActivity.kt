@@ -74,17 +74,16 @@ class FiioK9ControlActivity : AppCompatActivity() {
     var gaiaGattService: GaiaGattService? = null
         set(value) {
             field = value
-            val connected = value != null
-            if (connected) {
+            if (value != null) {
                 lifecycleScope.launch {
                     _gaiaGattSideEffectFlow.emitAll(
-                        value!!.gaiaGattSideEffectChannel.consumeAsFlow()
+                        value.gaiaGattSideEffectChannel.consumeAsFlow()
                     )
                 }
             }
             supportFragmentManager.setFragmentResult(
                 KEY_SERVICE_CONNECTED,
-                bundleOf(KEY_SERVICE_CONNECTED to connected)
+                bundleOf(KEY_SERVICE_CONNECTED to (value != null))
             )
         }
     private val _gaiaGattSideEffectFlow: MutableSharedFlow<GaiaGattSideEffect> = MutableSharedFlow()

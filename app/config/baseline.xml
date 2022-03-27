@@ -28,6 +28,7 @@
     <ID>MagicNumber:K9PacketFactory.kt$K9PacketFactory$60f</ID>
     <ID>MagicNumber:StateViewModel.kt$StateViewModel$200</ID>
     <ID>NestedBlockDepth:GaiaGattService.kt$GaiaGattService$private fun checkService(gattService: BluetoothGattService): Boolean</ID>
+    <ID>ReturnCount:GaiaGattService.kt$GaiaGattService$fun sendGaiaPacket(packet: GaiaPacket): Boolean?</ID>
     <ID>TooManyFunctions:AudioFragment.kt$AudioFragment : BaseFragmentListener</ID>
     <ID>TooManyFunctions:EqFragment.kt$EqFragment : BaseFragmentListener</ID>
     <ID>TooManyFunctions:GaiaGattService.kt$GaiaGattService : BLEService</ID>

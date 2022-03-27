@@ -138,8 +138,11 @@ class ProfileFragment :
             ProfileSideEffect.Reconnect.Success -> {
                 binding.progress.hide()
             }
-            ProfileSideEffect.Request.Failure -> {
+            is ProfileSideEffect.Request.Failure -> {
                 binding.progress.hide()
+                if (sideEffect.disconnected) {
+                    onBluetoothStateChanged(false)
+                }
             }
         }
     }
