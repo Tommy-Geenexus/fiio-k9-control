@@ -55,6 +55,7 @@ class EqFragment :
     ) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
+        binding.progress.setVisibilityAfterHide(View.GONE)
         binding.eq.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = EqAdapter(listener = this@EqFragment)

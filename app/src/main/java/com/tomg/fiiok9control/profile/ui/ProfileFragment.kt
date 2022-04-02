@@ -49,6 +49,8 @@ class ProfileFragment :
         savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
+        binding.progress.setVisibilityAfterHide(View.GONE)
+        binding.progress2.setVisibilityAfterHide(View.GONE)
         binding.profile.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = ProfileAdapter(listener = this@ProfileFragment)

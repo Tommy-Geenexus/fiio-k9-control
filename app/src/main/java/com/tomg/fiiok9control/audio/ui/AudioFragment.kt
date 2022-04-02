@@ -51,6 +51,7 @@ class AudioFragment :
         savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
+        binding.progress.setVisibilityAfterHide(View.GONE)
         binding.audio.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = AudioAdapter(listener = this@AudioFragment)

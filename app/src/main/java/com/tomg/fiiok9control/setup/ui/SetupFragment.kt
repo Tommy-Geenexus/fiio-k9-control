@@ -68,6 +68,7 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>(R.layout.fragment_setup
         ) { _, args: Bundle ->
             handleGaiaGattSideEffect(args.getParcelable(KEY_EVENT))
         }
+        binding.progress.setVisibilityAfterHide(View.GONE)
         binding.action.setOnClickListener {
             handleActionClick()
         }

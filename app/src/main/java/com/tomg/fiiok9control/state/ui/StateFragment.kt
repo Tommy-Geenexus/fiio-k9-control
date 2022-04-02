@@ -58,6 +58,8 @@ class StateFragment :
     ) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
+        binding.progress.setVisibilityAfterHide(View.GONE)
+        binding.progress2.setVisibilityAfterHide(View.GONE)
         binding.state.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = StateAdapter(listener = this@StateFragment)
