@@ -235,13 +235,13 @@ class StateFragment :
             }
             StateSideEffect.ExportProfile.Failure -> {
                 requireView().showSnackbar(
-                    anchor = requireActivity().findViewById(R.id.nav),
+                    anchor = binding.progress2,
                     msgRes = R.string.profile_export_failure
                 )
             }
             StateSideEffect.ExportProfile.Success -> {
                 requireView().showSnackbar(
-                    anchor = requireActivity().findViewById(R.id.nav),
+                    anchor = binding.progress2,
                     msgRes = R.string.profile_export_success
                 )
             }
