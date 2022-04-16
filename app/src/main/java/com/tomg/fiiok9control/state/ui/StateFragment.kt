@@ -25,6 +25,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -57,7 +58,75 @@ class StateFragment :
         savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
-        setHasOptionsMenu(true)
+        val menuProvider = object : MenuProvider {
+
+            override fun onCreateMenu(
+                menu: Menu,
+                menuInflater: MenuInflater
+            ) {
+                menuInflater.inflate(R.menu.menu_state, menu)
+            }
+
+            override fun onPrepareMenu(menu: Menu) {
+                menu.findItem(R.id.mqa).setTitle(
+                    if (stateViewModel.container.stateFlow.value.isMqaEnabled) {
+                        R.string.mqa_disable
+                    } else {
+                        R.string.mqa_enable
+                    }
+                )
+                menu.findItem(R.id.mute).setIcon(
+                    if (stateViewModel.container.stateFlow.value.isMuted) {
+                        R.drawable.ic_volume_mute_off
+                    } else {
+                        R.drawable.ic_volume_mute
+                    }
+                )
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.disconnect -> {
+                        stateViewModel.disconnect(gaiaGattService())
+                        true
+                    }
+                    R.id.export -> {
+                        navigate(StateFragmentDirections.stateToExportProfile())
+                        true
+                    }
+                    R.id.mute -> {
+                        stateViewModel.sendGaiaPacketMuteEnabled(
+                            lifecycleScope,
+                            gaiaGattService()
+                        )
+                        true
+                    }
+                    R.id.mqa -> {
+                        stateViewModel.sendGaiaPacketMqa(
+                            lifecycleScope,
+                            gaiaGattService()
+                        )
+                        true
+                    }
+                    R.id.standby -> {
+                        stateViewModel.sendGaiaPacketStandby(
+                            lifecycleScope,
+                            gaiaGattService()
+                        )
+                        true
+                    }
+                    R.id.reset -> {
+                        stateViewModel.sendGaiaPacketRestore(
+                            lifecycleScope,
+                            gaiaGattService()
+                        )
+                        true
+                    }
+                    else -> false
+                }
+            }
+        }
+        requireActivity().addMenuProvider(menuProvider, viewLifecycleOwner)
         binding.progress.setVisibilityAfterHide(View.GONE)
         binding.progress2.setVisibilityAfterHide(View.GONE)
         binding.state.apply {
@@ -89,72 +158,6 @@ class StateFragment :
                     handleGaiaGattSideEffect(sideEffect)
                 }
             }
-        }
-    }
-
-    override fun onCreateOptionsMenu(
-        menu: Menu,
-        inflater: MenuInflater
-    ) {
-        inflater.inflate(R.menu.menu_state, menu)
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        menu.findItem(R.id.mqa).setTitle(
-            if (stateViewModel.container.stateFlow.value.isMqaEnabled) {
-                R.string.mqa_disable
-            } else {
-                R.string.mqa_enable
-            }
-        )
-        menu.findItem(R.id.mute).setIcon(
-            if (stateViewModel.container.stateFlow.value.isMuted) {
-                R.drawable.ic_volume_mute_off
-            } else {
-                R.drawable.ic_volume_mute
-            }
-        )
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.disconnect -> {
-                stateViewModel.disconnect(gaiaGattService())
-                true
-            }
-            R.id.export -> {
-                navigate(StateFragmentDirections.stateToExportProfile())
-                true
-            }
-            R.id.mute -> {
-                stateViewModel.sendGaiaPacketMuteEnabled(
-                    lifecycleScope,
-                    gaiaGattService()
-                )
-                true
-            }
-            R.id.mqa -> {
-                stateViewModel.sendGaiaPacketMqa(
-                    lifecycleScope,
-                    gaiaGattService()
-                )
-                true
-            }
-            R.id.standby -> {
-                stateViewModel.sendGaiaPacketStandby(
-                    lifecycleScope,
-                    gaiaGattService()
-                )
-                true
-            }
-            R.id.reset -> {
-                stateViewModel.sendGaiaPacketRestore(
-                    lifecycleScope,
-                    gaiaGattService()
-                )
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -235,13 +238,13 @@ class StateFragment :
             }
             StateSideEffect.ExportProfile.Failure -> {
                 requireView().showSnackbar(
-                    anchor = binding.progress2,
+                    anchor = requireActivity().findViewById(R.id.nav),
                     msgRes = R.string.profile_export_failure
                 )
             }
             StateSideEffect.ExportProfile.Success -> {
                 requireView().showSnackbar(
-                    anchor = binding.progress2,
+                    anchor = requireActivity().findViewById(R.id.nav),
                     msgRes = R.string.profile_export_success
                 )
             }

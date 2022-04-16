@@ -30,7 +30,7 @@
         android:indeterminate="true"
         android:visibility="gone"
         app:hideAnimationBehavior="inward"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:showAnimationBehavior="outward" />
 </androidx.constraintlayout.widget.ConstraintLayout>

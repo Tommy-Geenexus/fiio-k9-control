@@ -25,6 +25,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -54,7 +55,33 @@ class EqFragment :
         savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
-        setHasOptionsMenu(true)
+        val menuProvider = object : MenuProvider {
+
+            override fun onCreateMenu(
+                menu: Menu,
+                menuInflater: MenuInflater
+            ) {
+                menuInflater.inflate(R.menu.menu_eq, menu)
+            }
+
+            override fun onPrepareMenu(menu: Menu) {
+                menu.findItem(R.id.restore_default).isVisible = eqViewModel.hasCustomEqValues()
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.restore_default -> {
+                        eqViewModel.sendGaiaPacketsEqValue(
+                            lifecycleScope,
+                            gaiaGattService()
+                        )
+                        true
+                    }
+                    else -> false
+                }
+            }
+        }
+        requireActivity().addMenuProvider(menuProvider, viewLifecycleOwner)
         binding.progress.setVisibilityAfterHide(View.GONE)
         binding.eq.apply {
             layoutManager = LinearLayoutManager(context)
@@ -81,30 +108,6 @@ class EqFragment :
                     handleGaiaGattSideEffect(sideEffect)
                 }
             }
-        }
-    }
-
-    override fun onCreateOptionsMenu(
-        menu: Menu,
-        inflater: MenuInflater
-    ) {
-        inflater.inflate(R.menu.menu_eq, menu)
-    }
-
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        menu.findItem(R.id.restore_default).isVisible = eqViewModel.hasCustomEqValues()
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.restore_default -> {
-                eqViewModel.sendGaiaPacketsEqValue(
-                    lifecycleScope,
-                    gaiaGattService()
-                )
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
         }
     }
 
