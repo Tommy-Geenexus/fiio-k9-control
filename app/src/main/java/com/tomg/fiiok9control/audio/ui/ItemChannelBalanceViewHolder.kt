@@ -21,7 +21,10 @@
 package com.tomg.fiiok9control.audio.ui
 
 import androidx.recyclerview.widget.RecyclerView
+import com.tomg.fiiok9control.Empty
+import com.tomg.fiiok9control.R
 import com.tomg.fiiok9control.databinding.ItemChannelBalanceBinding
+import kotlin.math.absoluteValue
 
 class ItemChannelBalanceViewHolder(
     private val binding: ItemChannelBalanceBinding,
@@ -37,6 +40,29 @@ class ItemChannelBalanceViewHolder(
     }
 
     fun bindItemChannelBalance(channelBalance: Int) {
+        binding.channelBalanceDb.text = when {
+            channelBalance < 0 -> {
+                itemView.context.getString(
+                    R.string.channel_balance_offset,
+                    channelBalance.absoluteValue.toFloat() / 2,
+                    itemView.context.getString(R.string.left)
+                )
+            }
+            channelBalance > 0 -> {
+                itemView.context.getString(
+                    R.string.channel_balance_offset,
+                    channelBalance.toFloat() / 2,
+                    itemView.context.getString(R.string.right)
+                )
+            }
+            else -> {
+                itemView.context.getString(
+                    R.string.channel_balance_offset,
+                    channelBalance.toFloat(),
+                    String.Empty
+                )
+            }
+        }
         binding.channelBalanceSlider.value = channelBalance.toFloat()
     }
 }

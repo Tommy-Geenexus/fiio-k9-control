@@ -38,6 +38,7 @@
     <string name="bluetooth_codecs">Bluetooth codecs</string>
 
     <string name="channel_balance">Channel balance</string>
+    <string name="channel_balance_offset">Offset: %.1f dB %s</string>
 
     <string name="choose_a_profile_name">Choose a profile name</string>
 
@@ -85,6 +86,8 @@
 
     <string name="ldac">LDAC</string>
 
+    <string name="left">left</string>
+
     <string name="line_in">Line in</string>
 
     <string name="low_dispersion_short_delay">Low dispersion short delay</string>
@@ -111,6 +114,8 @@
     <string name="reset_settings">Reset settings</string>
 
     <string name="restore_default">Restore defaults</string>
+
+    <string name="right">right</string>
 
     <string name="rock">Rock</string>
 
