@@ -70,39 +70,39 @@ sealed class K9Command(val commandId: Int) : Parcelable {
     sealed class Set(commandId: Int) : K9Command(commandId) {
 
         @Parcelize
-        object ChannelBalance : Get(commandId = 0x0403)
+        object ChannelBalance : Set(commandId = 0x0403)
 
         @Parcelize
-        object CodecEnabled : Get(commandId = 0x0407)
+        object CodecEnabled : Set(commandId = 0x0407)
 
         @Parcelize
-        object EqEnabled : Get(commandId = 0x0408)
+        object EqEnabled : Set(commandId = 0x0408)
 
         @Parcelize
-        object EqPreSet : Get(commandId = 0x0423)
+        object EqPreSet : Set(commandId = 0x0423)
 
         @Parcelize
-        object EqValue : Get(commandId = 0x0409)
+        object EqValue : Set(commandId = 0x0409)
 
         @Parcelize
-        object IndicatorRgbLighting : Get(commandId = 0x043e)
+        object IndicatorRgbLighting : Set(commandId = 0x043e)
 
         @Parcelize
-        object InputSource : Get(commandId = 0x0449)
+        object InputSource : Set(commandId = 0x0449)
 
         @Parcelize
-        object LowPassFilter : Get(commandId = 0x0401)
+        object LowPassFilter : Set(commandId = 0x0401)
 
         @Parcelize
-        object MqaEnabled : Get(commandId = 0x0450)
+        object MqaEnabled : Set(commandId = 0x0450)
 
         @Parcelize
-        object MuteEnabled : Get(commandId = 0x044b)
+        object MuteEnabled : Set(commandId = 0x044b)
 
         @Parcelize
-        object Restore : Get(commandId = 0x0404)
+        object Restore : Set(commandId = 0x0404)
 
         @Parcelize
-        object Standby : Get(commandId = 0x0425)
+        object Standby : Set(commandId = 0x0425)
     }
 }
