@@ -68,7 +68,7 @@ class StateViewModel @Inject constructor(
     fun disconnect(service: GaiaGattService?) = intent {
         if (service != null) {
             postSideEffect(StateSideEffect.Reconnect.Initiated)
-            service.disconnectDeviceAndReset()
+            service.disconnectAndReset()
             postSideEffect(StateSideEffect.Reconnect.Failure)
         }
     }
@@ -177,7 +177,7 @@ class StateViewModel @Inject constructor(
     fun reconnectToDevice(service: GaiaGattService?) = intent {
         postSideEffect(StateSideEffect.Reconnect.Initiated)
         if (service != null) {
-            val success = service.connectToDevice(setupRepository.getBondedDeviceAddressOrEmpty())
+            val success = service.connect(setupRepository.getBondedDeviceAddressOrEmpty())
             postSideEffect(
                 if (success) {
                     StateSideEffect.Reconnect.Success
@@ -347,7 +347,7 @@ class StateViewModel @Inject constructor(
                     val packet = GaiaPacketFactory.createGaiaPacket(commandId = commandId)
                     val success = service.sendGaiaPacket(packet)
                     if (success == null || !success) {
-                        gaiaPacketResponses.removeAll(commandIds)
+                        gaiaPacketResponses.removeAll(commandIds.toSet())
                         postSideEffect(
                             StateSideEffect.Request.Failure(disconnected = success == null)
                         )
@@ -387,7 +387,7 @@ class StateViewModel @Inject constructor(
                 packets.forEach { packet ->
                     val success = service.sendGaiaPacket(packet)
                     if (success == null || !success) {
-                        gaiaPacketResponses.removeAll(commandIds)
+                        gaiaPacketResponses.removeAll(commandIds.toSet())
                         postSideEffect(
                             StateSideEffect.Request.Failure(disconnected = success == null)
                         )

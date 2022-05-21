@@ -110,7 +110,7 @@ class AudioViewModel @Inject constructor(
     fun reconnectToDevice(service: GaiaGattService?) = intent {
         postSideEffect(AudioSideEffect.Reconnect.Initiated)
         if (service != null) {
-            val success = service.connectToDevice(setupRepository.getBondedDeviceAddressOrEmpty())
+            val success = service.connect(setupRepository.getBondedDeviceAddressOrEmpty())
             postSideEffect(
                 if (success) {
                     AudioSideEffect.Reconnect.Success

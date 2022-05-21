@@ -22,7 +22,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Handler;
-import android.os.Looper;
 import android.util.ArrayMap;
 import android.util.Log;
 
@@ -123,7 +122,8 @@ public abstract class BLEService extends Service {
     /**
      * <p>The main handler to run some tasks.</p>>
      */
-    private final Handler mHandler = new Handler(Looper.myLooper());
+    private Handler mHandler;
+    
     /**
      * <p>A runnable used to time out the requests.</p>
      */
@@ -209,6 +209,14 @@ public abstract class BLEService extends Service {
         int DISCONNECTING = 3;
     }
 
+    public abstract Handler provideHandler();
+
+    private Handler getHandler() {
+        if (mHandler == null) {
+            mHandler = provideHandler();
+        }
+        return mHandler;
+    }
 
     // ====== PROTECTED METHODS =======================================================================
 
@@ -1953,7 +1961,7 @@ public abstract class BLEService extends Service {
      */
     private void cancelTimeOutRequestRunnable() {
         if (mTimeOutRequestRunnable != null) {
-            mHandler.removeCallbacks(mTimeOutRequestRunnable);
+            getHandler().removeCallbacks(mTimeOutRequestRunnable);
             mTimeOutRequestRunnable = null;
         }
     }
@@ -1998,35 +2006,35 @@ public abstract class BLEService extends Service {
             case Request.RequestType.READ_CHARACTERISTIC:
             case Request.RequestType.READ_CHARACTERISTIC_TO_INDUCE_PAIRING:
                 mTimeOutRequestRunnable = new TimeOutRequestRunnable(request);
-                mHandler.postDelayed(mTimeOutRequestRunnable, mDelay);
+                getHandler().postDelayed(mTimeOutRequestRunnable, mDelay);
                 BluetoothGattCharacteristic readCharacteristic = request.buildReadCharacteristic();
                 done = readCharacteristic != null && readCharacteristic(readCharacteristic);
                 break;
 
             case Request.RequestType.WRITE_DESCRIPTOR:
                 mTimeOutRequestRunnable = new TimeOutRequestRunnable(request);
-                mHandler.postDelayed(mTimeOutRequestRunnable, mDelay);
+                getHandler().postDelayed(mTimeOutRequestRunnable, mDelay);
                 BluetoothGattDescriptor descriptor = request.buildWriteDescriptor();
                 done = descriptor != null && writeDescriptor(descriptor);
                 break;
 
             case Request.RequestType.WRITE_CHARACTERISTIC:
                 mTimeOutRequestRunnable = new TimeOutRequestRunnable(request);
-                mHandler.postDelayed(mTimeOutRequestRunnable, mDelay);
+                getHandler().postDelayed(mTimeOutRequestRunnable, mDelay);
                 BluetoothGattCharacteristic writeCharacteristic = request.buildWriteCharacteristic();
                 done = writeCharacteristic != null && writeCharacteristic(writeCharacteristic);
                 break;
 
             case Request.RequestType.WRITE_NO_RESPONSE_CHARACTERISTIC:
                 mTimeOutRequestRunnable = new TimeOutRequestRunnable(request);
-                mHandler.postDelayed(mTimeOutRequestRunnable, mDelay);
+                getHandler().postDelayed(mTimeOutRequestRunnable, mDelay);
                 BluetoothGattCharacteristic writeNoResponse = request.buildWriteNoResponseCharacteristic();
                 done = writeNoResponse != null && writeCharacteristic(writeNoResponse);
                 break;
 
             case Request.RequestType.READ_DESCRIPTOR:
                 mTimeOutRequestRunnable = new TimeOutRequestRunnable(request);
-                mHandler.postDelayed(mTimeOutRequestRunnable, mDelay);
+                getHandler().postDelayed(mTimeOutRequestRunnable, mDelay);
                 BluetoothGattDescriptor readDescriptor = request.buildReadDescriptor();
                 done = readDescriptor != null && readDescriptor(readDescriptor);
                 break;
@@ -2038,13 +2046,13 @@ public abstract class BLEService extends Service {
 
             case Request.RequestType.READ_RSSI:
                 mTimeOutRequestRunnable = new TimeOutRequestRunnable(request);
-                mHandler.postDelayed(mTimeOutRequestRunnable, mDelay);
+                getHandler().postDelayed(mTimeOutRequestRunnable, mDelay);
                 done = readRemoteRssi();
                 break;
 
             case Request.RequestType.REQUEST_MTU:
                 mTimeOutRequestRunnable = new TimeOutRequestRunnable(request);
-                mHandler.postDelayed(mTimeOutRequestRunnable, mDelay);
+                getHandler().postDelayed(mTimeOutRequestRunnable, mDelay);
                 int mtu = request.getInteger();
                 done = requestMTU(mtu);
                 break;
@@ -2079,12 +2087,12 @@ public abstract class BLEService extends Service {
         }
         else if (done) {
             // needs a delay before to start the next request
-            mHandler.postDelayed(this::processNextRequest, DEFAULT_DELAY_FOR_NOTIFICATION_REQUEST);
+            getHandler().postDelayed(this::processNextRequest, DEFAULT_DELAY_FOR_NOTIFICATION_REQUEST);
         }
         else {
             request.setAttempts(REQUEST_MAX_ATTEMPTS);
             mTimeOutRequestRunnable = new TimeOutRequestRunnable(request);
-            mHandler.postDelayed(mTimeOutRequestRunnable, DEFAULT_DELAY_FOR_NOTIFICATION_REQUEST);
+            getHandler().postDelayed(mTimeOutRequestRunnable, DEFAULT_DELAY_FOR_NOTIFICATION_REQUEST);
         }
     }
 

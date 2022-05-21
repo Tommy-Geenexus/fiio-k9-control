@@ -80,7 +80,7 @@ class SetupViewModel @Inject constructor(
         if (service != null) {
             postSideEffect(SetupSideEffect.Connection.Establishing)
             scope.launch(context = Dispatchers.IO) {
-                service.connectToDevice(deviceAddress)
+                service.connect(deviceAddress)
             }
         } else {
             postSideEffect(SetupSideEffect.Connection.EstablishFailed)
