@@ -4,5 +4,5 @@
     <dimen name="spacing_normal">16dp</dimen>
     <dimen name="spacing_large">24dp</dimen>
 
-    <dimen name="elevation_toolbar">4dp</dimen>
+    <dimen name="elevation_toolbar">3dp</dimen>
 </resources>
