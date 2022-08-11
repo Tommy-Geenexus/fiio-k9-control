@@ -160,7 +160,7 @@ class ProfileViewModel @Inject constructor(
                 packets.forEach { packet ->
                     val success = service.sendGaiaPacket(packet)
                     if (success == null || !success) {
-                        gaiaPacketResponses.removeAll(commandIds)
+                        gaiaPacketResponses.removeAll(commandIds.toSet())
                         postSideEffect(
                             ProfileSideEffect.Request.Failure(disconnected = success == null)
                         )

@@ -218,7 +218,7 @@ class AudioViewModel @Inject constructor(
                     val packet = GaiaPacketFactory.createGaiaPacket(commandId = commandId)
                     val success = service.sendGaiaPacket(packet)
                     if (success == null || !success) {
-                        gaiaPacketResponses.removeAll(commandIds)
+                        gaiaPacketResponses.removeAll(commandIds.toSet())
                         postSideEffect(
                             AudioSideEffect.Request.Failure(disconnected = success == null)
                         )
