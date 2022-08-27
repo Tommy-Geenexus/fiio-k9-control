@@ -31,7 +31,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.tomg.fiiok9control.BaseFragment
-import com.tomg.fiiok9control.KEY_EVENT
 import com.tomg.fiiok9control.R
 import com.tomg.fiiok9control.databinding.FragmentSetupBinding
 import com.tomg.fiiok9control.gaia.GaiaGattSideEffect
@@ -62,12 +61,6 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>(R.layout.fragment_setup
         savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
-        requireActivity().supportFragmentManager.setFragmentResultListener(
-            KEY_EVENT,
-            viewLifecycleOwner
-        ) { _, args: Bundle ->
-            handleGaiaGattSideEffect(args.getParcelable(KEY_EVENT))
-        }
         binding.progress.setVisibilityAfterHide(View.GONE)
         binding.action.setOnClickListener {
             handleActionClick()

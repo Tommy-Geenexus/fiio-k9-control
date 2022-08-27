@@ -23,6 +23,5 @@ package com.tomg.fiiok9control
 const val TOP_LEVEL_PACKAGE_NAME = "com.tomg.fiiok9control."
 const val KEY_BLUETOOTH_ENABLED = TOP_LEVEL_PACKAGE_NAME + "BLUETOOTH_ENABLED"
 const val KEY_SERVICE_CONNECTED = TOP_LEVEL_PACKAGE_NAME + "SERVICE_CONNECTED"
-const val KEY_EVENT = TOP_LEVEL_PACKAGE_NAME + "EVENT"
 
 val String.Companion.Empty: String get() = ""
