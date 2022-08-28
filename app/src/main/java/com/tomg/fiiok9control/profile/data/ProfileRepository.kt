@@ -20,12 +20,22 @@
 
 package com.tomg.fiiok9control.profile.data
 
+import android.content.Context
+import androidx.core.content.pm.ShortcutInfoCompat
+import androidx.core.content.pm.ShortcutManagerCompat
+import androidx.core.graphics.drawable.IconCompat
+import com.tomg.fiiok9control.INTENT_ACTION_SHORTCUT_PROFILE
+import com.tomg.fiiok9control.R
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class ProfileRepository @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val profileDao: ProfileDao
 ) {
 
@@ -57,6 +67,47 @@ class ProfileRepository @Inject constructor(
         }.getOrElse { exception ->
             Timber.e(exception)
             false
+        }
+    }
+
+    suspend fun addProfileShortcut(profile: Profile): Boolean {
+        return withContext(Dispatchers.IO) {
+            runCatching {
+                val intent = context
+                    .packageManager
+                    .getLaunchIntentForPackage(context.packageName)
+                    ?.apply {
+                        putExtra(INTENT_ACTION_SHORTCUT_PROFILE, profile.toPersistableBundle())
+                    }
+                    ?: return@runCatching false
+                val shortcut = ShortcutInfoCompat.Builder(context, profile.id.toString())
+                    .setShortLabel(profile.name)
+                    .setLongLabel(profile.name)
+                    .setIcon(
+                        IconCompat.createWithResource(context, R.drawable.ic_shortcut_profile)
+                    )
+                    .setIntent(intent)
+                    .build()
+                ShortcutManagerCompat.pushDynamicShortcut(context, shortcut)
+            }.getOrElse { exception ->
+                Timber.e(exception)
+                false
+            }
+        }
+    }
+
+    suspend fun removeProfileShortcut(profile: Profile): Boolean {
+        return withContext(Dispatchers.IO) {
+            runCatching {
+                ShortcutManagerCompat.removeDynamicShortcuts(
+                    context,
+                    listOf(profile.id.toString())
+                )
+                true
+            }.getOrElse { exception ->
+                Timber.e(exception)
+                false
+            }
         }
     }
 }

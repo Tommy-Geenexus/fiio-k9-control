@@ -21,6 +21,7 @@
 package com.tomg.fiiok9control.profile.business
 
 import android.os.Parcelable
+import com.tomg.fiiok9control.profile.data.Profile
 import kotlinx.parcelize.Parcelize
 
 sealed class ProfileSideEffect : Parcelable {
@@ -52,5 +53,19 @@ sealed class ProfileSideEffect : Parcelable {
         data class Failure(
             val disconnected: Boolean = false
         ) : Request()
+    }
+
+    sealed class Shortcut : ProfileSideEffect() {
+
+        @Parcelize
+        object Added : Shortcut()
+
+        @Parcelize
+        object Removed : Shortcut()
+
+        @Parcelize
+        data class Selected(
+            val profile: Profile
+        ) : Shortcut()
     }
 }

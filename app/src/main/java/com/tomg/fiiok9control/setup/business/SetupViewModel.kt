@@ -26,7 +26,9 @@ import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
+import com.tomg.fiiok9control.KEY_PROFILE
 import com.tomg.fiiok9control.gaia.GaiaGattService
+import com.tomg.fiiok9control.profile.data.Profile
 import com.tomg.fiiok9control.setup.data.SetupRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -42,7 +44,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SetupViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
     @ApplicationContext context: Context,
     private val setupRepository: SetupRepository
 ) : AndroidViewModel(context as Application),
@@ -55,6 +57,14 @@ class SetupViewModel @Inject constructor(
             verifyHasBleSupport()
         }
     )
+
+    var shortcutProfile: Profile? = null
+        get() {
+            val p = savedStateHandle.get<Profile>(KEY_PROFILE)
+            field = null
+            return p
+        }
+        set(value) = savedStateHandle.set(KEY_PROFILE, value)
 
     fun checkIfPermissionsGrantedAndBluetoothEnabled(requiredPermissions: Array<String>) = intent {
         val permissionsGranted = requiredPermissions.none { permission ->
@@ -103,7 +113,14 @@ class SetupViewModel @Inject constructor(
     }
 
     fun handleConnectionEstablished() = intent {
-        postSideEffect(SetupSideEffect.Connection.Established)
+        val profile = shortcutProfile
+        postSideEffect(
+            if (profile != null) {
+                SetupSideEffect.NavigateToProfile(profile)
+            } else {
+                SetupSideEffect.Connection.Established
+            }
+        )
     }
 
     private fun verifyHasBleSupport() = intent {

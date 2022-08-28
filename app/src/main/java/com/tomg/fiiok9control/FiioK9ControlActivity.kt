@@ -24,7 +24,10 @@ import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
+import android.os.Parcelable
+import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.core.view.WindowCompat
@@ -85,9 +88,17 @@ class FiioK9ControlActivity : AppCompatActivity() {
                 KEY_SERVICE_CONNECTED,
                 bundleOf(KEY_SERVICE_CONNECTED to (value != null))
             )
+            consumeProfileShortcutIntent()
         }
     private val _gaiaGattSideEffectFlow: MutableSharedFlow<GaiaGattSideEffect> = MutableSharedFlow()
     val gaiaGattSideEffectFlow: Flow<GaiaGattSideEffect> = _gaiaGattSideEffectFlow
+
+    init {
+        addOnNewIntentListener { intent ->
+            setIntent(intent)
+            consumeProfileShortcutIntent()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,13 +113,13 @@ class FiioK9ControlActivity : AppCompatActivity() {
             (supportFragmentManager.findFragmentById(R.id.nav_controller) as NavHostFragment)
                 .navController
         navController.addOnDestinationChangedListener { _, navDestination, _ ->
-            if (navDestination.id == R.id.fragment_state && binding.nav.isInvisible) {
+            if (navDestination.id == R.id.fragment_setup) {
+                window.navigationBarColor = getColor(android.R.color.transparent)
+                binding.nav.isInvisible = true
+            } else if (binding.nav.isInvisible) {
                 window.navigationBarColor =
                     SurfaceColors.getColorForElevation(this, binding.nav.elevation)
                 binding.nav.isInvisible = false
-            } else if (navDestination.id == R.id.fragment_setup) {
-                window.navigationBarColor = getColor(android.R.color.transparent)
-                binding.nav.isInvisible = true
             }
         }
         binding.nav.setupWithNavController(navController)
@@ -124,5 +135,21 @@ class FiioK9ControlActivity : AppCompatActivity() {
         unregisterReceiver(bluetoothStateReceiver)
         unbindService(connection)
         gaiaGattService = null
+    }
+
+    @Suppress("DEPRECATION")
+    private fun consumeProfileShortcutIntent() {
+        val profile = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra(INTENT_ACTION_SHORTCUT_PROFILE, PersistableBundle::class.java)
+        } else {
+            intent.getParcelableExtra(INTENT_ACTION_SHORTCUT_PROFILE)
+        }
+        if (profile != null) {
+            intent.putExtra(INTENT_ACTION_SHORTCUT_PROFILE, (null as Parcelable?))
+            supportFragmentManager.setFragmentResult(
+                KEY_SHORTCUT_PROFILE,
+                bundleOf(KEY_SHORTCUT_PROFILE to profile)
+            )
+        }
     }
 }

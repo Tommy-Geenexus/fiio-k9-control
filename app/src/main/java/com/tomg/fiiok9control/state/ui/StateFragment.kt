@@ -37,6 +37,7 @@ import com.tomg.fiiok9control.Empty
 import com.tomg.fiiok9control.R
 import com.tomg.fiiok9control.databinding.FragmentStateBinding
 import com.tomg.fiiok9control.gaia.GaiaGattSideEffect
+import com.tomg.fiiok9control.profile.data.Profile
 import com.tomg.fiiok9control.showSnackbar
 import com.tomg.fiiok9control.state.IndicatorState
 import com.tomg.fiiok9control.state.InputSource
@@ -174,6 +175,10 @@ class StateFragment :
     override fun onDestroyView() {
         super.onDestroyView()
         stateViewModel.clearGaiaPacketResponses()
+    }
+
+    override fun onProfileShortcutSelected(profile: Profile) {
+        navigate(StateFragmentDirections.stateToProfile(profile))
     }
 
     override fun onBluetoothStateChanged(enabled: Boolean) {

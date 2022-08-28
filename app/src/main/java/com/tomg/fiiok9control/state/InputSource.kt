@@ -52,3 +52,5 @@ sealed class InputSource(val id: Int) : Parcelable {
     @Parcelize
     object Bluetooth : InputSource(id = 5)
 }
+
+fun InputSource?.orDefault() = this ?: InputSource.Usb

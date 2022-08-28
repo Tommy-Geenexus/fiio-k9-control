@@ -23,12 +23,13 @@ package com.tomg.fiiok9control.profile.data
 import androidx.room.TypeConverter
 import com.tomg.fiiok9control.state.IndicatorState
 import com.tomg.fiiok9control.state.InputSource
+import com.tomg.fiiok9control.state.orDefault
 
 class Converters {
 
     @TypeConverter
     fun fromInputSourceId(id: Int?): InputSource {
-        return InputSource.findById(id ?: InputSource.Usb.id) ?: InputSource.Usb
+        return InputSource.findById(id ?: InputSource.Usb.id).orDefault()
     }
 
     @TypeConverter
@@ -36,8 +37,7 @@ class Converters {
 
     @TypeConverter
     fun fromIndicatorStateId(id: Int?): IndicatorState {
-        return IndicatorState.findById(id ?: IndicatorState.EnabledDefault.id)
-            ?: IndicatorState.EnabledDefault
+        return IndicatorState.findById(id ?: IndicatorState.EnabledDefault.id).orDefault()
     }
 
     @TypeConverter

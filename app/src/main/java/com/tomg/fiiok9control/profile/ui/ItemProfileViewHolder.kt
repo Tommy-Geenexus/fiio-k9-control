@@ -29,6 +29,12 @@ class ItemProfileViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     init {
+        binding.shortcutAdd.setOnClickListener {
+            listener.onProfileShortcutAdd(absoluteAdapterPosition)
+        }
+        binding.shortcutDelete.setOnClickListener {
+            listener.onProfileShortcutRemove(absoluteAdapterPosition)
+        }
         binding.profileApply.setOnClickListener {
             listener.onProfileApply(absoluteAdapterPosition)
         }

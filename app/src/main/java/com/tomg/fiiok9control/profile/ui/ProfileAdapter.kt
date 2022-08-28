@@ -47,6 +47,8 @@ class ProfileAdapter(
 
     interface Listener {
 
+        fun onProfileShortcutAdd(position: Int)
+        fun onProfileShortcutRemove(position: Int)
         fun onProfileApply(position: Int)
         fun onProfileDelete(position: Int)
     }

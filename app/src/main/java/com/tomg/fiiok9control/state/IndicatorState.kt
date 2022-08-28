@@ -44,3 +44,5 @@ sealed class IndicatorState(val id: Int) : Parcelable {
     @Parcelize
     object EnabledGradientOnly : IndicatorState(id = 2)
 }
+
+fun IndicatorState?.orDefault() = this ?: IndicatorState.EnabledDefault

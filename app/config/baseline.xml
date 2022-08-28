@@ -29,10 +29,12 @@
     <ID>MagicNumber:StateViewModel.kt$StateViewModel$200</ID>
     <ID>NestedBlockDepth:GaiaGattService.kt$GaiaGattService$private fun checkService(gattService: BluetoothGattService): Boolean</ID>
     <ID>TooManyFunctions:AudioFragment.kt$AudioFragment : BaseFragmentListener</ID>
+    <ID>TooManyFunctions:BaseFragment.kt$BaseFragment&lt;B : ViewBinding> : Fragment</ID>
     <ID>TooManyFunctions:EqFragment.kt$EqFragment : BaseFragmentListener</ID>
     <ID>TooManyFunctions:GaiaGattService.kt$GaiaGattService : BLEService</ID>
     <ID>TooManyFunctions:K9PacketDecoder.kt$K9PacketDecoder$K9PacketDecoder</ID>
     <ID>TooManyFunctions:K9PacketFactory.kt$K9PacketFactory$K9PacketFactory</ID>
+    <ID>TooManyFunctions:ProfileFragment.kt$ProfileFragment : BaseFragmentListener</ID>
     <ID>TooManyFunctions:StateFragment.kt$StateFragment : BaseFragmentListener</ID>
     <ID>TooManyFunctions:StateViewModel.kt$StateViewModel : ViewModelContainerHost</ID>
   </CurrentIssues>

@@ -21,7 +21,9 @@
 package com.tomg.fiiok9control
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
@@ -29,6 +31,7 @@ import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.viewbinding.ViewBinding
 import com.tomg.fiiok9control.gaia.GaiaGattSideEffect
+import com.tomg.fiiok9control.profile.data.Profile
 import kotlinx.coroutines.flow.Flow
 
 abstract class BaseFragment<B : ViewBinding>(
@@ -45,6 +48,7 @@ abstract class BaseFragment<B : ViewBinding>(
         gaiaGattSideEffectFlow = (requireActivity() as FiioK9ControlActivity).gaiaGattSideEffectFlow
     }
 
+    @Suppress("DEPRECATION")
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?
@@ -59,6 +63,16 @@ abstract class BaseFragment<B : ViewBinding>(
                 val connected = args.getBoolean(KEY_SERVICE_CONNECTED, false)
                 if (connected && gaiaGattService()?.isConnected() == false) {
                     onReconnectToDevice()
+                }
+            }
+            setFragmentResultListener(KEY_SHORTCUT_PROFILE, viewLifecycleOwner) { _, args ->
+                val profile = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    args.getParcelable(KEY_SHORTCUT_PROFILE, PersistableBundle::class.java)
+                } else {
+                    args.getParcelable(KEY_SHORTCUT_PROFILE)
+                }
+                if (profile != null) {
+                    onProfileShortcutSelected(Profile.createFromPersistableBundle(profile))
                 }
             }
         }
@@ -76,6 +90,8 @@ abstract class BaseFragment<B : ViewBinding>(
         super.onDestroyView()
         _binding = null
     }
+
+    abstract fun onProfileShortcutSelected(profile: Profile)
 
     abstract fun onBluetoothStateChanged(enabled: Boolean)
 

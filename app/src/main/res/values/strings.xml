@@ -124,6 +124,9 @@
     <string name="short_delay_sharp_roll_off">Short delay sharp roll-off</string>
     <string name="short_delay_slow_roll_off">Short delay slow roll-off</string>
 
+    <string name="shortcut_profile_added">Added profile shorcut</string>
+    <string name="shortcut_profile_removed">Removed profile shorcut</string>
+
     <string name="slow_roll_off">Slow roll-off</string>
 
     <string name="standby_mode">Standby mode</string>

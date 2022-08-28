@@ -36,6 +36,7 @@ import com.tomg.fiiok9control.audio.business.AudioState
 import com.tomg.fiiok9control.audio.business.AudioViewModel
 import com.tomg.fiiok9control.databinding.FragmentAudioBinding
 import com.tomg.fiiok9control.gaia.GaiaGattSideEffect
+import com.tomg.fiiok9control.profile.data.Profile
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -93,6 +94,10 @@ class AudioFragment :
     override fun onDestroyView() {
         super.onDestroyView()
         audioViewModel.clearGaiaPacketResponses()
+    }
+
+    override fun onProfileShortcutSelected(profile: Profile) {
+        navigate(AudioFragmentDirections.audioToProfile(profile))
     }
 
     override fun onBluetoothStateChanged(enabled: Boolean) {

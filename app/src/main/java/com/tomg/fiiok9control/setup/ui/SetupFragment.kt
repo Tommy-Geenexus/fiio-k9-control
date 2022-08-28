@@ -34,6 +34,7 @@ import com.tomg.fiiok9control.BaseFragment
 import com.tomg.fiiok9control.R
 import com.tomg.fiiok9control.databinding.FragmentSetupBinding
 import com.tomg.fiiok9control.gaia.GaiaGattSideEffect
+import com.tomg.fiiok9control.profile.data.Profile
 import com.tomg.fiiok9control.setup.business.SetupSideEffect
 import com.tomg.fiiok9control.setup.business.SetupState
 import com.tomg.fiiok9control.setup.business.SetupViewModel
@@ -63,7 +64,7 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>(R.layout.fragment_setup
         super.onViewCreated(view, savedInstanceState)
         binding.progress.setVisibilityAfterHide(View.GONE)
         binding.action.setOnClickListener {
-            handleActionClick()
+            maybeConnectToDevice()
         }
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -91,6 +92,11 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>(R.layout.fragment_setup
     override fun onResume() {
         super.onResume()
         setupViewModel.checkIfPermissionsGrantedAndBluetoothEnabled(requiredPermissions)
+    }
+
+    override fun onProfileShortcutSelected(profile: Profile) {
+        setupViewModel.shortcutProfile = profile
+        maybeConnectToDevice()
     }
 
     override fun onBluetoothStateChanged(enabled: Boolean) {
@@ -133,6 +139,9 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>(R.layout.fragment_setup
             SetupSideEffect.Connection.EstablishFailed -> {
                 binding.progress.hide()
             }
+            is SetupSideEffect.NavigateToProfile -> {
+                navigate(SetupFragmentDirections.setupToProfile(sideEffect.profile))
+            }
         }
     }
 
@@ -156,7 +165,7 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>(R.layout.fragment_setup
         }
     }
 
-    private fun handleActionClick() {
+    private fun maybeConnectToDevice() {
         val currentState = setupViewModel.container.stateFlow.value
         if (!currentState.permissionsGranted) {
             openSettings.launch(

@@ -40,6 +40,7 @@ import com.tomg.fiiok9control.eq.business.EqSideEffect
 import com.tomg.fiiok9control.eq.business.EqState
 import com.tomg.fiiok9control.eq.business.EqViewModel
 import com.tomg.fiiok9control.gaia.GaiaGattSideEffect
+import com.tomg.fiiok9control.profile.data.Profile
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -124,6 +125,10 @@ class EqFragment :
     override fun onDestroyView() {
         super.onDestroyView()
         eqViewModel.clearGaiaPacketResponses()
+    }
+
+    override fun onProfileShortcutSelected(profile: Profile) {
+        navigate(EqFragmentDirections.eqToProfile(profile))
     }
 
     override fun onBluetoothStateChanged(enabled: Boolean) {

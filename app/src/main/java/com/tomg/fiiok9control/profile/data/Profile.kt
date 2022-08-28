@@ -21,12 +21,15 @@
 package com.tomg.fiiok9control.profile.data
 
 import android.os.Parcelable
+import android.os.PersistableBundle
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.tomg.fiiok9control.Empty
+import com.tomg.fiiok9control.TOP_LEVEL_PACKAGE_NAME
 import com.tomg.fiiok9control.state.IndicatorState
 import com.tomg.fiiok9control.state.InputSource
+import com.tomg.fiiok9control.state.orDefault
 import kotlinx.parcelize.Parcelize
 
 @Entity
@@ -38,4 +41,36 @@ data class Profile(
     @ColumnInfo(name = "indicator_state")
     val indicatorState: IndicatorState = IndicatorState.EnabledDefault,
     @ColumnInfo(name = "indicator_brightness") val indicatorBrightness: Int = 5
-) : Parcelable
+) : Parcelable {
+
+    companion object {
+
+        private const val KEY_ID = TOP_LEVEL_PACKAGE_NAME + "ID"
+        private const val KEY_NAME = TOP_LEVEL_PACKAGE_NAME + "NAME"
+        private const val KEY_INPUT_SRC = TOP_LEVEL_PACKAGE_NAME + "INPUT_SRC"
+        private const val KEY_INDICATOR_STATE = TOP_LEVEL_PACKAGE_NAME + "INDICATOR_STATE"
+        private const val KEY_INDICATOR_BRIGHTNESS = TOP_LEVEL_PACKAGE_NAME + "INDICATOR_BRIGHTNESS"
+
+        fun createFromPersistableBundle(bundle: PersistableBundle): Profile {
+            return Profile(
+                id = bundle.getLong(KEY_ID),
+                name = bundle.getString(KEY_NAME).orEmpty(),
+                inputSource = InputSource.findById(bundle.getInt(KEY_INPUT_SRC)).orDefault(),
+                indicatorState = IndicatorState
+                    .findById(bundle.getInt(KEY_INDICATOR_STATE))
+                    .orDefault(),
+                indicatorBrightness = bundle.getInt(KEY_INDICATOR_BRIGHTNESS)
+            )
+        }
+    }
+
+    fun toPersistableBundle(): PersistableBundle {
+        return PersistableBundle().apply {
+            putLong(KEY_ID, id)
+            putString(KEY_NAME, name)
+            putInt(KEY_INPUT_SRC, inputSource.id)
+            putInt(KEY_INDICATOR_STATE, indicatorState.id)
+            putInt(KEY_INDICATOR_BRIGHTNESS, indicatorBrightness)
+        }
+    }
+}

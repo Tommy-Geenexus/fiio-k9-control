@@ -21,6 +21,7 @@
 package com.tomg.fiiok9control.setup.business
 
 import android.os.Parcelable
+import com.tomg.fiiok9control.profile.data.Profile
 import kotlinx.parcelize.Parcelize
 
 sealed class SetupSideEffect : Parcelable {
@@ -45,4 +46,9 @@ sealed class SetupSideEffect : Parcelable {
         @Parcelize
         object EstablishFailed : Connection()
     }
+
+    @Parcelize
+    data class NavigateToProfile(
+        val profile: Profile
+    ) : SetupSideEffect()
 }

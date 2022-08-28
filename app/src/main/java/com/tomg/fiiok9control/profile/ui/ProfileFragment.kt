@@ -34,6 +34,8 @@ import com.tomg.fiiok9control.gaia.GaiaGattSideEffect
 import com.tomg.fiiok9control.profile.business.ProfileSideEffect
 import com.tomg.fiiok9control.profile.business.ProfileState
 import com.tomg.fiiok9control.profile.business.ProfileViewModel
+import com.tomg.fiiok9control.profile.data.Profile
+import com.tomg.fiiok9control.showSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -83,6 +85,14 @@ class ProfileFragment :
         profileViewModel.clearGaiaPacketResponses()
     }
 
+    override fun onProfileShortcutSelected(profile: Profile) {
+        profileViewModel.sendGaiaPacketsForProfile(
+            lifecycleScope,
+            gaiaGattService(),
+            profile
+        )
+    }
+
     override fun onBluetoothStateChanged(enabled: Boolean) {
         if (!enabled) {
             navigateToStartDestination()
@@ -94,6 +104,20 @@ class ProfileFragment :
     }
 
     override fun bindLayout(view: View) = FragmentProfileBinding.bind(view)
+
+    override fun onProfileShortcutAdd(position: Int) {
+        val profile = (binding.profile.adapter as? ProfileAdapter)?.currentList?.getOrNull(position)
+        if (profile != null) {
+            profileViewModel.addProfileShortcut(profile)
+        }
+    }
+
+    override fun onProfileShortcutRemove(position: Int) {
+        val profile = (binding.profile.adapter as? ProfileAdapter)?.currentList?.getOrNull(position)
+        if (profile != null) {
+            profileViewModel.removeProfileShortcut(profile)
+        }
+    }
 
     override fun onProfileApply(position: Int) {
         val profile = (binding.profile.adapter as? ProfileAdapter)?.currentList?.getOrNull(position)
@@ -145,6 +169,21 @@ class ProfileFragment :
                 if (sideEffect.disconnected) {
                     onBluetoothStateChanged(false)
                 }
+            }
+            ProfileSideEffect.Shortcut.Added -> {
+                requireView().showSnackbar(
+                    anchor = requireActivity().findViewById(R.id.nav),
+                    msgRes = R.string.shortcut_profile_added
+                )
+            }
+            ProfileSideEffect.Shortcut.Removed -> {
+                requireView().showSnackbar(
+                    anchor = requireActivity().findViewById(R.id.nav),
+                    msgRes = R.string.shortcut_profile_removed
+                )
+            }
+            is ProfileSideEffect.Shortcut.Selected -> {
+                onProfileShortcutSelected(sideEffect.profile)
             }
         }
     }

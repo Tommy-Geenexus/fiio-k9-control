@@ -29,6 +29,7 @@ import com.tomg.fiiok9control.gaia.fiio.K9PacketFactory
 import com.tomg.fiiok9control.gaia.isFiioPacket
 import com.tomg.fiiok9control.profile.data.Profile
 import com.tomg.fiiok9control.profile.data.ProfileRepository
+import com.tomg.fiiok9control.profile.ui.ProfileFragmentArgs
 import com.tomg.fiiok9control.setup.data.SetupRepository
 import com.tomg.fiiok9control.state.InputSource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -45,7 +46,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+    private val savedStateHandle: SavedStateHandle,
     private val profileRepository: ProfileRepository,
     private val setupRepository: SetupRepository
 ) : ViewModel(),
@@ -55,7 +56,7 @@ class ProfileViewModel @Inject constructor(
         savedStateHandle = savedStateHandle,
         initialState = ProfileState(),
         onCreate = {
-            loadProfiles()
+            loadProfiles(ProfileFragmentArgs.fromSavedStateHandle(savedStateHandle).profile)
         }
     )
 
@@ -98,7 +99,7 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    private fun loadProfiles() = intent {
+    private fun loadProfiles(profile: Profile?) = intent {
         reduce {
             state.copy(areProfilesLoading = true)
         }
@@ -108,6 +109,9 @@ class ProfileViewModel @Inject constructor(
                 profiles = profiles ?: emptyList(),
                 areProfilesLoading = false
             )
+        }
+        if (profile != null) {
+            postSideEffect(ProfileSideEffect.Shortcut.Selected(profile))
         }
     }
 
@@ -168,6 +172,20 @@ class ProfileViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    fun addProfileShortcut(profile: Profile) = intent {
+        val success = profileRepository.addProfileShortcut(profile)
+        if (success) {
+            postSideEffect(ProfileSideEffect.Shortcut.Added)
+        }
+    }
+
+    fun removeProfileShortcut(profile: Profile) = intent {
+        val success = profileRepository.removeProfileShortcut(profile)
+        if (success) {
+            postSideEffect(ProfileSideEffect.Shortcut.Removed)
         }
     }
 }
