@@ -34,6 +34,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tomg.fiiok9control.BaseFragment
 import com.tomg.fiiok9control.Empty
+import com.tomg.fiiok9control.KEY_PROFILE_NAME
+import com.tomg.fiiok9control.KEY_PROFILE_VOLUME_EXPORT
 import com.tomg.fiiok9control.R
 import com.tomg.fiiok9control.databinding.FragmentStateBinding
 import com.tomg.fiiok9control.gaia.GaiaGattSideEffect
@@ -83,6 +85,11 @@ class StateFragment :
                         R.drawable.ic_volume_mute
                     }
                 )
+                if (stateViewModel.container.stateFlow.value.isVolumeModeSimultaneously) {
+                    menu.findItem(R.id.volume_mode_simultaneously).isChecked = true
+                } else {
+                    menu.findItem(R.id.volume_mode_analogue_only).isChecked = true
+                }
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -123,6 +130,36 @@ class StateFragment :
                         )
                         true
                     }
+                    R.id.volume_up -> {
+                        stateViewModel.sendGaiaPacketVolume(
+                            lifecycleScope,
+                            gaiaGattService(),
+                            volumeUp = true
+                        )
+                        true
+                    }
+                    R.id.volume_down -> {
+                        stateViewModel.sendGaiaPacketVolume(
+                            lifecycleScope,
+                            gaiaGattService(),
+                            volumeUp = false
+                        )
+                        true
+                    }
+                    R.id.volume_mode_analogue_only -> {
+                        stateViewModel.sendGaiaPacketVolumeMode(
+                            lifecycleScope,
+                            gaiaGattService()
+                        )
+                        true
+                    }
+                    R.id.volume_mode_simultaneously -> {
+                        stateViewModel.sendGaiaPacketVolumeMode(
+                            lifecycleScope,
+                            gaiaGattService()
+                        )
+                        true
+                    }
                     else -> false
                 }
             }
@@ -135,9 +172,10 @@ class StateFragment :
             adapter = StateAdapter(listener = this@StateFragment)
             itemAnimator = null
         }
-        setFragmentResultListener(ExportProfileFragment.KEY_PROFILE_NAME) { _, args ->
-            val profileName = args.getString(ExportProfileFragment.KEY_PROFILE_NAME, String.Empty)
-            stateViewModel.exportStateProfile(profileName)
+        setFragmentResultListener(KEY_PROFILE_NAME) { _, args ->
+            val profileName = args.getString(KEY_PROFILE_NAME, String.Empty)
+            val exportVolume = args.getBoolean(KEY_PROFILE_VOLUME_EXPORT, false)
+            stateViewModel.exportStateProfile(profileName, exportVolume)
         }
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -226,7 +264,7 @@ class StateFragment :
         }
         (binding.state.adapter as? StateAdapter)?.submitList(
             listOf(
-                Triple(state.fwVersion, state.audioFmt, state.volume),
+                Triple(state.fwVersion, state.audioFmt, state.volumePercent),
                 state.inputSource,
                 state.indicatorState to state.indicatorBrightness
             )

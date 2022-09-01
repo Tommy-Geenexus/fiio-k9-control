@@ -61,6 +61,9 @@ sealed class K9Command(val commandId: Int) : Parcelable {
         object MuteEnabled : Get(commandId = 0x044a)
 
         @Parcelize
+        object Simultaneously : Get(commandId = 0x044D)
+
+        @Parcelize
         object Version : Get(commandId = 0x0418)
 
         @Parcelize
@@ -103,6 +106,12 @@ sealed class K9Command(val commandId: Int) : Parcelable {
         object Restore : Set(commandId = 0x0404)
 
         @Parcelize
+        object Simultaneously : Set(commandId = 0x044E)
+
+        @Parcelize
         object Standby : Set(commandId = 0x0425)
+
+        @Parcelize
+        object Volume : Set(commandId = 0x0402)
     }
 }

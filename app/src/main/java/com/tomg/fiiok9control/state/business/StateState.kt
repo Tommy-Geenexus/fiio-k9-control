@@ -29,11 +29,13 @@ import kotlinx.parcelize.Parcelize
 data class StateState(
     val fwVersion: String = "1.0",
     val audioFmt: String = "44.1kHz",
-    val volume: String = "0%",
+    val volume: Int = 0,
+    val volumePercent: String = "0%",
     val inputSource: InputSource = InputSource.Usb,
     val indicatorState: IndicatorState = IndicatorState.EnabledDefault,
     val indicatorBrightness: Int = 5,
     val isMuted: Boolean = false,
     val isMqaEnabled: Boolean = true,
-    val isProfileExporting: Boolean = false
+    val isProfileExporting: Boolean = false,
+    val isVolumeModeSimultaneously: Boolean = false
 ) : Parcelable

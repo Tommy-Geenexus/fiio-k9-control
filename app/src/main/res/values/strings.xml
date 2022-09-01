@@ -22,6 +22,8 @@
 
     <string name="aac">AAC</string>
 
+    <string name="analogue_only">Analogue only</string>
+
     <string name="app_name">FiioK9Control</string>
 
     <string name="apply">Apply</string>
@@ -127,6 +129,8 @@
     <string name="shortcut_profile_added">Added profile shorcut</string>
     <string name="shortcut_profile_removed">Removed profile shorcut</string>
 
+    <string name="simultaneously">Remote and analogue</string>
+
     <string name="slow_roll_off">Slow roll-off</string>
 
     <string name="standby_mode">Standby mode</string>
@@ -140,4 +144,6 @@
     <string name="usb">USB</string>
 
     <string name="volume">Volume level: %s</string>
+    <string name="volume_mode">Volume mode</string>
+    <string name="volume_export">Export volume level</string>
 </resources>

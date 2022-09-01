@@ -23,6 +23,7 @@ package com.tomg.fiiok9control.eq.business
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.qualcomm.qti.libraries.gaia.packets.GaiaPacketBLE
+import com.tomg.fiiok9control.GAIA_CMD_DELAY_MS
 import com.tomg.fiiok9control.eq.EqPreSet
 import com.tomg.fiiok9control.eq.EqValue
 import com.tomg.fiiok9control.gaia.GaiaGattService
@@ -209,12 +210,12 @@ class EqViewModel @Inject constructor(
                     val packet = GaiaPacketFactory.createGaiaPacket(commandId = commandId)
                     val success = service.sendGaiaPacket(packet)
                     if (success == null || !success) {
-                        gaiaPacketResponses.removeAll(commandIds)
+                        gaiaPacketResponses.removeAll(commandIds.toSet())
                         postSideEffect(EqSideEffect.Request.Failure(disconnected = success == null))
                         return@launch
                     }
                     if (index < commandIds.lastIndex) {
-                        delay(200)
+                        delay(GAIA_CMD_DELAY_MS)
                     }
                 }
             }

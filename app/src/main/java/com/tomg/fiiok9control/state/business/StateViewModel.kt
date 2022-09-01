@@ -23,6 +23,10 @@ package com.tomg.fiiok9control.state.business
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.qualcomm.qti.libraries.gaia.packets.GaiaPacketBLE
+import com.tomg.fiiok9control.GAIA_CMD_DELAY_MS
+import com.tomg.fiiok9control.VOLUME_MAX
+import com.tomg.fiiok9control.VOLUME_MIN
+import com.tomg.fiiok9control.VOLUME_STEP_SIZE
 import com.tomg.fiiok9control.gaia.GaiaGattService
 import com.tomg.fiiok9control.gaia.GaiaPacketFactory
 import com.tomg.fiiok9control.gaia.fiio.K9Command
@@ -73,7 +77,10 @@ class StateViewModel @Inject constructor(
         }
     }
 
-    fun exportStateProfile(profileName: String?) = intent {
+    fun exportStateProfile(
+        profileName: String?,
+        exportVolume: Boolean
+    ) = intent {
         if (profileName.isNullOrEmpty()) {
             postSideEffect(StateSideEffect.ExportProfile.Failure)
             return@intent
@@ -86,7 +93,8 @@ class StateViewModel @Inject constructor(
                 name = profileName,
                 inputSource = state.inputSource,
                 indicatorState = state.indicatorState,
-                indicatorBrightness = state.indicatorBrightness
+                indicatorBrightness = state.indicatorBrightness,
+                volume = if (exportVolume) state.volume else Int.MIN_VALUE
             )
         )
         reduce {
@@ -125,7 +133,10 @@ class StateViewModel @Inject constructor(
                 K9Command.Get.Volume.commandId -> {
                     val volume = K9PacketDecoder.decodePayloadGetVolume(packet.payload)
                     reduce {
-                        state.copy(volume = volume)
+                        state.copy(
+                            volume = volume.first,
+                            volumePercent = volume.second
+                        )
                     }
                 }
                 K9Command.Get.MuteEnabled.commandId -> {
@@ -160,6 +171,13 @@ class StateViewModel @Inject constructor(
                         }
                     }
                 }
+                K9Command.Get.Simultaneously.commandId -> {
+                    val isVolumeModeSimultaneously =
+                        K9PacketDecoder.decodePayloadGetVolumeMode(packet.payload)
+                    reduce {
+                        state.copy(isVolumeModeSimultaneously = isVolumeModeSimultaneously)
+                    }
+                }
             }
             if (gaiaPacketResponses.isEmpty()) {
                 postSideEffect(StateSideEffect.Characteristic.Changed)
@@ -187,6 +205,54 @@ class StateViewModel @Inject constructor(
             )
         } else {
             postSideEffect(StateSideEffect.Reconnect.Failure)
+        }
+    }
+
+    fun sendGaiaPacketVolumeMode(
+        scope: CoroutineScope,
+        service: GaiaGattService?
+    ) = intent {
+        if (service != null) {
+            gaiaPacketResponses.add(K9Command.Set.Simultaneously.commandId)
+            postSideEffect(StateSideEffect.Characteristic.Write)
+            scope.launch(context = Dispatchers.IO) {
+                val success = service.sendGaiaPacket(
+                    K9PacketFactory.createGaiaPacketSetVolumeMode(!state.isVolumeModeSimultaneously)
+                )
+                if (success == true) {
+                    reduce {
+                        state.copy(isVolumeModeSimultaneously = !state.isVolumeModeSimultaneously)
+                    }
+                } else {
+                    gaiaPacketResponses.remove(K9Command.Set.Simultaneously.commandId)
+                    postSideEffect(StateSideEffect.Request.Failure(disconnected = success == null))
+                }
+            }
+        }
+    }
+
+    fun sendGaiaPacketVolume(
+        scope: CoroutineScope,
+        service: GaiaGattService?,
+        volumeUp: Boolean
+    ) = intent {
+        if (service != null) {
+            gaiaPacketResponses.add(K9Command.Set.Volume.commandId)
+            postSideEffect(StateSideEffect.Characteristic.Write)
+            scope.launch(context = Dispatchers.IO) {
+                var volume = if (volumeUp) {
+                    state.volume + VOLUME_STEP_SIZE
+                } else {
+                    state.volume - VOLUME_STEP_SIZE
+                }
+                volume = maxOf(minOf(volume, VOLUME_MAX), VOLUME_MIN)
+                val packet = K9PacketFactory.createGaiaPacketSetVolume(volume)
+                val success = service.sendGaiaPacket(packet)
+                if (success == null || !success) {
+                    gaiaPacketResponses.remove(K9Command.Set.Volume.commandId)
+                    postSideEffect(StateSideEffect.Request.Failure(disconnected = success == null))
+                }
+            }
         }
     }
 
@@ -337,6 +403,7 @@ class StateViewModel @Inject constructor(
                 K9Command.Get.Version.commandId,
                 K9Command.Get.AudioFormat.commandId,
                 K9Command.Get.Volume.commandId,
+                K9Command.Get.Simultaneously.commandId,
                 K9Command.Get.InputSource.commandId,
                 K9Command.Get.IndicatorRgbLighting.commandId
             )
@@ -354,7 +421,7 @@ class StateViewModel @Inject constructor(
                         return@launch
                     }
                     if (index < commandIds.lastIndex) {
-                        delay(200)
+                        delay(GAIA_CMD_DELAY_MS)
                     }
                 }
             }

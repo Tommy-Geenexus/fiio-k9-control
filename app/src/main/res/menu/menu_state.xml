@@ -3,9 +3,41 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/volume_up"
+        android:icon="@drawable/ic_volume_up"
+        android:title="@string/toggle_mute"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/volume_down"
+        android:icon="@drawable/ic_volume_down"
+        android:title="@string/toggle_mute"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/mute"
         android:title="@string/toggle_mute"
         app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/volume_mode"
+        android:title="@string/volume_mode"
+        app:showAsAction="never">
+
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/volume_mode_analogue_only"
+                    android:title="@string/analogue_only"
+                    app:showAsAction="never" />
+
+                <item
+                    android:id="@+id/volume_mode_simultaneously"
+                    android:title="@string/simultaneously"
+                    app:showAsAction="never" />
+            </group>
+        </menu>
+    </item>
 
     <item
         android:id="@+id/disconnect"

@@ -23,6 +23,7 @@ package com.tomg.fiiok9control.audio.business
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.qualcomm.qti.libraries.gaia.packets.GaiaPacketBLE
+import com.tomg.fiiok9control.GAIA_CMD_DELAY_MS
 import com.tomg.fiiok9control.audio.BluetoothCodec
 import com.tomg.fiiok9control.audio.LowPassFilter
 import com.tomg.fiiok9control.gaia.GaiaGattService
@@ -225,7 +226,7 @@ class AudioViewModel @Inject constructor(
                         return@launch
                     }
                     if (index < commandIds.lastIndex) {
-                        delay(200)
+                        delay(GAIA_CMD_DELAY_MS)
                     }
                 }
             }

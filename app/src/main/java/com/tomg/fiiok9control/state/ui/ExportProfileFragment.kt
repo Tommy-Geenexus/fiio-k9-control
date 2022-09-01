@@ -26,15 +26,11 @@ import android.os.Bundle
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.tomg.fiiok9control.TOP_LEVEL_PACKAGE_NAME
+import com.tomg.fiiok9control.KEY_PROFILE_NAME
+import com.tomg.fiiok9control.KEY_PROFILE_VOLUME_EXPORT
 import com.tomg.fiiok9control.databinding.FragmentExportProfileBinding
 
 class ExportProfileFragment : DialogFragment() {
-
-    internal companion object {
-
-        const val KEY_PROFILE_NAME = TOP_LEVEL_PACKAGE_NAME + "PROFILE_NAME"
-    }
 
     private var _binding: FragmentExportProfileBinding? = null
     internal val binding: FragmentExportProfileBinding get() = _binding!!
@@ -46,7 +42,10 @@ class ExportProfileFragment : DialogFragment() {
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 parentFragmentManager.setFragmentResult(
                     KEY_PROFILE_NAME,
-                    bundleOf(KEY_PROFILE_NAME to binding.profileName.text?.trim().toString())
+                    bundleOf(
+                        KEY_PROFILE_NAME to binding.profileName.text?.trim().toString(),
+                        KEY_PROFILE_VOLUME_EXPORT to binding.exportVolume.isChecked
+                    )
                 )
             }
             .setNegativeButton(android.R.string.cancel, null)

@@ -64,9 +64,9 @@ object K9PacketDecoder {
         }
     }
 
-    fun decodePayloadGetVolume(payload: ByteArray): String {
+    fun decodePayloadGetVolume(payload: ByteArray): Pair<Int, String> {
         val volume = payload.toHexString().toIntOrNull(radix = 16) ?: 0
-        return "${round((volume * 100 / 120).toDouble())}%"
+        return volume to "${round((volume * 100 / 120).toDouble())}%"
     }
 
     fun decodePayloadGetMuteEnabled(payload: ByteArray): Boolean {
@@ -141,5 +141,9 @@ object K9PacketDecoder {
     fun decodePayloadGetEqPreSet(payload: ByteArray): EqPreSet? {
         val id = payload.toHexString().toIntOrNull(radix = 16) ?: -1
         return EqPreSet.findById(id)
+    }
+
+    fun decodePayloadGetVolumeMode(payload: ByteArray): Boolean {
+        return payload.toHexString().toIntOrNull(radix = 16) == 1
     }
 }

@@ -22,6 +22,8 @@ package com.tomg.fiiok9control.gaia.fiio
 
 import androidx.annotation.IntRange
 import com.qualcomm.qti.libraries.gaia.packets.GaiaPacket
+import com.tomg.fiiok9control.VOLUME_MAX
+import com.tomg.fiiok9control.VOLUME_MIN
 import com.tomg.fiiok9control.audio.BluetoothCodec
 import com.tomg.fiiok9control.audio.LowPassFilter
 import com.tomg.fiiok9control.eq.EqPreSet
@@ -112,10 +114,24 @@ object K9PacketFactory {
         )
     }
 
+    fun createGaiaPacketSetVolume(
+        @IntRange(from = VOLUME_MIN.toLong(), to = VOLUME_MAX.toLong()) volume: Int
+    ) = GaiaPacketFactory.createGaiaPacket(
+        commandId = K9Command.Set.Volume.commandId,
+        payload = byteArrayOf(volume.toByte())
+    )
+
     fun createGaiaPacketGetVolume() =
         GaiaPacketFactory.createGaiaPacket(commandId = K9Command.Get.Volume.commandId)
 
     fun createGaiaPacketGetCodecBit() = GaiaPacketFactory.createGaiaPacket(
         commandId = K9Command.Get.CodecBit.commandId
+    )
+
+    fun createGaiaPacketSetVolumeMode(
+        isSimultaneously: Boolean
+    ) = GaiaPacketFactory.createGaiaPacket(
+        commandId = K9Command.Set.Simultaneously.commandId,
+        payload = byteArrayOf(if (isSimultaneously) 1 else 0)
     )
 }

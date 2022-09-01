@@ -68,30 +68,29 @@ class FiioK9ControlActivity : AppCompatActivity() {
     private val connection = GaiaGattServiceConnection(
         onServiceConnected = { gaiaGattService ->
             this.gaiaGattService = gaiaGattService
-        },
-        onServiceDisconnected = {
-            gaiaGattService = null
-        }
-    )
-
-    var gaiaGattService: GaiaGattService? = null
-        set(value) {
-            field = value
-            if (value != null) {
-                lifecycleScope.launch {
-                    _gaiaGattSideEffectFlow.emitAll(
-                        value.gaiaGattSideEffectChannel.consumeAsFlow()
-                    )
-                }
+            lifecycleScope.launch {
+                _gaiaGattSideEffectFlow.emitAll(
+                    gaiaGattService.gaiaGattSideEffectChannel.consumeAsFlow()
+                )
             }
             supportFragmentManager.setFragmentResult(
                 KEY_SERVICE_CONNECTED,
-                bundleOf(KEY_SERVICE_CONNECTED to (value != null))
+                bundleOf(KEY_SERVICE_CONNECTED to true)
             )
             consumeProfileShortcutIntent()
+        },
+        onServiceDisconnected = {
+            gaiaGattService = null
+            supportFragmentManager.setFragmentResult(
+                KEY_SERVICE_CONNECTED,
+                bundleOf(KEY_SERVICE_CONNECTED to false)
+            )
         }
+    )
+
     private val _gaiaGattSideEffectFlow: MutableSharedFlow<GaiaGattSideEffect> = MutableSharedFlow()
     val gaiaGattSideEffectFlow: Flow<GaiaGattSideEffect> = _gaiaGattSideEffectFlow
+    var gaiaGattService: GaiaGattService? = null
 
     init {
         addOnNewIntentListener { intent ->

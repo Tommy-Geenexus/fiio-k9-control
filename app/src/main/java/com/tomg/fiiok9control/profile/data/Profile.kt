@@ -40,7 +40,8 @@ data class Profile(
     @ColumnInfo(name = "input_source") val inputSource: InputSource = InputSource.Usb,
     @ColumnInfo(name = "indicator_state")
     val indicatorState: IndicatorState = IndicatorState.EnabledDefault,
-    @ColumnInfo(name = "indicator_brightness") val indicatorBrightness: Int = 5
+    @ColumnInfo(name = "indicator_brightness") val indicatorBrightness: Int = 5,
+    val volume: Int = 0
 ) : Parcelable {
 
     companion object {
@@ -50,6 +51,7 @@ data class Profile(
         private const val KEY_INPUT_SRC = TOP_LEVEL_PACKAGE_NAME + "INPUT_SRC"
         private const val KEY_INDICATOR_STATE = TOP_LEVEL_PACKAGE_NAME + "INDICATOR_STATE"
         private const val KEY_INDICATOR_BRIGHTNESS = TOP_LEVEL_PACKAGE_NAME + "INDICATOR_BRIGHTNESS"
+        private const val KEY_VOLUME = TOP_LEVEL_PACKAGE_NAME + "VOLUME"
 
         fun createFromPersistableBundle(bundle: PersistableBundle): Profile {
             return Profile(
@@ -59,7 +61,8 @@ data class Profile(
                 indicatorState = IndicatorState
                     .findById(bundle.getInt(KEY_INDICATOR_STATE))
                     .orDefault(),
-                indicatorBrightness = bundle.getInt(KEY_INDICATOR_BRIGHTNESS)
+                indicatorBrightness = bundle.getInt(KEY_INDICATOR_BRIGHTNESS),
+                volume = bundle.getInt(KEY_VOLUME)
             )
         }
     }
@@ -71,6 +74,7 @@ data class Profile(
             putInt(KEY_INPUT_SRC, inputSource.id)
             putInt(KEY_INDICATOR_STATE, indicatorState.id)
             putInt(KEY_INDICATOR_BRIGHTNESS, indicatorBrightness)
+            putInt(KEY_VOLUME, volume)
         }
     }
 }

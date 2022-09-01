@@ -23,6 +23,9 @@ package com.tomg.fiiok9control.profile.business
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.qualcomm.qti.libraries.gaia.packets.GaiaPacketBLE
+import com.tomg.fiiok9control.GAIA_CMD_DELAY_MS
+import com.tomg.fiiok9control.VOLUME_MAX
+import com.tomg.fiiok9control.VOLUME_MIN
 import com.tomg.fiiok9control.gaia.GaiaGattService
 import com.tomg.fiiok9control.gaia.fiio.K9Command
 import com.tomg.fiiok9control.gaia.fiio.K9PacketFactory
@@ -35,6 +38,7 @@ import com.tomg.fiiok9control.state.InputSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.ContainerHost
@@ -161,7 +165,13 @@ class ProfileViewModel @Inject constructor(
                         indicatorBrightness = profile.indicatorBrightness
                     )
                 )
-                packets.forEach { packet ->
+                if (IntRange(VOLUME_MIN, VOLUME_MAX).contains(profile.volume)) {
+                    packets.add(
+                        K9PacketFactory.createGaiaPacketSetVolumeMode(isSimultaneously = true)
+                    )
+                    packets.add(K9PacketFactory.createGaiaPacketSetVolume(profile.volume))
+                }
+                packets.forEachIndexed { index, packet ->
                     val success = service.sendGaiaPacket(packet)
                     if (success == null || !success) {
                         gaiaPacketResponses.removeAll(commandIds.toSet())
@@ -169,6 +179,9 @@ class ProfileViewModel @Inject constructor(
                             ProfileSideEffect.Request.Failure(disconnected = success == null)
                         )
                         return@launch
+                    }
+                    if (index < packets.lastIndex) {
+                        delay(GAIA_CMD_DELAY_MS)
                     }
                 }
             }

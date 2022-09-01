@@ -15,7 +15,7 @@
     <com.google.android.material.textfield.TextInputLayout xmlns:app="http://schemas.android.com/apk/res-auto"
         style="?attr/textInputOutlinedStyle"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:hint="@string/profile_name"
         android:paddingStart="@dimen/spacing_large"
         android:paddingEnd="@dimen/spacing_large"
@@ -30,4 +30,12 @@
             android:inputType="text"
             android:maxLength="100" />
     </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/export_volume"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_large"
+        android:layout_marginEnd="@dimen/spacing_large"
+        android:text="@string/volume_export" />
 </LinearLayout>
