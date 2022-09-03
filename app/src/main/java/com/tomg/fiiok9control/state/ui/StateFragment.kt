@@ -255,6 +255,14 @@ class StateFragment :
         )
     }
 
+    override fun onVolumeRequested(volume: Int) {
+        stateViewModel.sendGaiaPacketVolume(
+            lifecycleScope,
+            gaiaGattService(),
+            volume
+        )
+    }
+
     private fun renderState(state: StateState) {
         requireActivity().invalidateOptionsMenu()
         if (state.isProfileExporting) {
@@ -264,7 +272,8 @@ class StateFragment :
         }
         (binding.state.adapter as? StateAdapter)?.submitList(
             listOf(
-                Triple(state.fwVersion, state.audioFmt, state.volumePercent),
+                Pair(state.fwVersion, state.audioFmt),
+                Pair(state.volume, state.volumePercent),
                 state.inputSource,
                 state.indicatorState to state.indicatorBrightness
             )

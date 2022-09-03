@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.tomg.fiiok9control.databinding.ItemIndicatorBinding
 import com.tomg.fiiok9control.databinding.ItemInputBinding
 import com.tomg.fiiok9control.databinding.ItemMiscBinding
+import com.tomg.fiiok9control.databinding.ItemVolumeBinding
 import com.tomg.fiiok9control.state.IndicatorState
 import com.tomg.fiiok9control.state.InputSource
 
@@ -53,6 +54,7 @@ class StateAdapter(
         fun onInputSourceRequested(inputSource: InputSource)
         fun onIndicatorStateRequested(indicatorState: IndicatorState)
         fun onIndicatorBrightnessRequested(indicatorBrightness: Int)
+        fun onVolumeRequested(volume: Int)
     }
 
     override fun onCreateViewHolder(
@@ -70,6 +72,16 @@ class StateAdapter(
                 )
             }
             1 -> {
+                ItemVolumeViewHolder(
+                    ItemVolumeBinding.inflate(
+                        LayoutInflater.from(parent.context),
+                        parent,
+                        false
+                    ),
+                    listener
+                )
+            }
+            2 -> {
                 ItemInputViewHolder(
                     ItemInputBinding.inflate(
                         LayoutInflater.from(parent.context),
@@ -99,20 +111,26 @@ class StateAdapter(
         val payload = currentList.getOrNull(position)
         when (position) {
             0 -> {
-                val info = payload as? Triple<*, *, *>
+                val info = payload as? Pair<*, *>
                 if (info != null) {
                     val fwVersion = payload.first as? String
                     val audioFmt = payload.second as? String
-                    val volume = payload.third as? String
-                    if (!fwVersion.isNullOrEmpty() &&
-                        !audioFmt.isNullOrEmpty() &&
-                        !volume.isNullOrEmpty()
-                    ) {
-                        (holder as? ItemMiscViewHolder)?.bindItemMisc(fwVersion, audioFmt, volume)
+                    if (!fwVersion.isNullOrEmpty() && !audioFmt.isNullOrEmpty()) {
+                        (holder as? ItemMiscViewHolder)?.bindItemMisc(fwVersion, audioFmt)
                     }
                 }
             }
             1 -> {
+                val volumes = payload as? Pair<*, *>
+                if (volumes != null) {
+                    val volume = payload.first as? Int
+                    val volumePercent = payload.second as? String
+                    if (volume != null && !volumePercent.isNullOrEmpty()) {
+                        (holder as? ItemVolumeViewHolder)?.bindItemVolume(volume, volumePercent)
+                    }
+                }
+            }
+            2 -> {
                 val inputSource = payload as? InputSource
                 if (inputSource != null) {
                     (holder as? ItemInputViewHolder)?.bindItemInput(inputSource)
@@ -136,5 +154,5 @@ class StateAdapter(
 
     override fun getItemViewType(position: Int) = position
 
-    override fun getItemCount() = 3
+    override fun getItemCount() = 4
 }

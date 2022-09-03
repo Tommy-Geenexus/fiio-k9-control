@@ -22,17 +22,27 @@ package com.tomg.fiiok9control.state.ui
 
 import androidx.recyclerview.widget.RecyclerView
 import com.tomg.fiiok9control.R
-import com.tomg.fiiok9control.databinding.ItemMiscBinding
+import com.tomg.fiiok9control.databinding.ItemVolumeBinding
 
-class ItemMiscViewHolder(
-    private val binding: ItemMiscBinding
+class ItemVolumeViewHolder(
+    private val binding: ItemVolumeBinding,
+    private val listener: StateAdapter.Listener
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bindItemMisc(
-        fwVersion: String,
-        audioFmt: String
+    init {
+        binding.volumeSlider.addOnChangeListener { _, value, fromUser ->
+            if (fromUser) {
+                listener.onVolumeRequested(value.toInt())
+            }
+        }
+    }
+
+    fun bindItemVolume(
+        volume: Int,
+        volumePercent: String
     ) {
-        binding.fwVersion.text = itemView.context.getString(R.string.fw_version, fwVersion)
-        binding.audioFmt.text = itemView.context.getString(R.string.audio_fmt, audioFmt)
+        binding.volumePercent.text =
+            itemView.context.getString(R.string.volume_level, volumePercent)
+        binding.volumeSlider.value = volume.toFloat()
     }
 }

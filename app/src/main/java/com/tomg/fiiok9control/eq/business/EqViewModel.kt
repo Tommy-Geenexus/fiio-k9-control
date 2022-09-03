@@ -246,7 +246,7 @@ class EqViewModel @Inject constructor(
                             )
                         }
                     } else {
-                        gaiaPacketResponses.removeAll(commandIds)
+                        gaiaPacketResponses.removeAll(commandIds.toSet())
                         postSideEffect(EqSideEffect.Request.Failure(disconnected = success == null))
                         return@launch
                     }

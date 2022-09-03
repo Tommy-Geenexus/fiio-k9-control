@@ -234,6 +234,27 @@ class StateViewModel @Inject constructor(
     fun sendGaiaPacketVolume(
         scope: CoroutineScope,
         service: GaiaGattService?,
+        volume: Int
+    ) = intent {
+        if (service != null) {
+            gaiaPacketResponses.add(K9Command.Set.Volume.commandId)
+            postSideEffect(StateSideEffect.Characteristic.Write)
+            scope.launch(context = Dispatchers.IO) {
+                val packet = K9PacketFactory.createGaiaPacketSetVolume(
+                    maxOf(minOf(volume, VOLUME_MAX), VOLUME_MIN)
+                )
+                val success = service.sendGaiaPacket(packet)
+                if (success == null || !success) {
+                    gaiaPacketResponses.remove(K9Command.Set.Volume.commandId)
+                    postSideEffect(StateSideEffect.Request.Failure(disconnected = success == null))
+                }
+            }
+        }
+    }
+
+    fun sendGaiaPacketVolume(
+        scope: CoroutineScope,
+        service: GaiaGattService?,
         volumeUp: Boolean
     ) = intent {
         if (service != null) {

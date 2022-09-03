@@ -143,7 +143,8 @@
 
     <string name="usb">USB</string>
 
-    <string name="volume">Volume level: %s</string>
-    <string name="volume_mode">Volume mode</string>
+    <string name="volume">Volume</string>
     <string name="volume_export">Export volume level</string>
+    <string name="volume_level">Volume level: %s</string>
+    <string name="volume_mode">Volume mode</string>
 </resources>

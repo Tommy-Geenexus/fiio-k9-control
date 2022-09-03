@@ -3,6 +3,7 @@
   <ManuallySuppressedIssues/>
   <CurrentIssues>
     <ID>ComplexMethod:ItemEqViewHolder.kt$ItemEqViewHolder$fun bindItemEq( eqEnabled: Boolean, eqPreSet: EqPreSet, eqValues: List&lt;EqValue> )</ID>
+    <ID>ComplexMethod:StateAdapter.kt$StateAdapter$override fun onBindViewHolder( holder: RecyclerView.ViewHolder, position: Int )</ID>
     <ID>ComplexMethod:StateViewModel.kt$StateViewModel$fun handleGaiaPacket(data: ByteArray)</ID>
     <ID>EmptyFunctionBlock:GaiaGattService.kt$GaiaGattService${ }</ID>
     <ID>EmptyFunctionBlock:SetupFragment.kt$SetupFragment${ }</ID>
