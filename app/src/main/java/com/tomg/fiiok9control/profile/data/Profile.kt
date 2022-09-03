@@ -22,6 +22,7 @@ package com.tomg.fiiok9control.profile.data
 
 import android.os.Parcelable
 import android.os.PersistableBundle
+import androidx.annotation.Keep
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -32,6 +33,7 @@ import com.tomg.fiiok9control.state.InputSource
 import com.tomg.fiiok9control.state.orDefault
 import kotlinx.parcelize.Parcelize
 
+@Keep
 @Entity
 @Parcelize
 data class Profile(
