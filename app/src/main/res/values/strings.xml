@@ -79,7 +79,7 @@
 
     <string name="grant_permissions">Grant permissions</string>
 
-    <string name="hp_pre_simultaneously">HP/Preamp out simult.</string>
+    <string name="hp_pre_simultaneously">HP/Pre out simult.</string>
 
     <string name="indicator">Indicator</string>
     <string name="indicator_brightness">Indicator brightness</string>
@@ -97,8 +97,7 @@
     <string name="low_dispersion_short_delay">Low dispersion short delay</string>
     <string name="low_pass_filter">Low pass filter</string>
 
-    <string name="mqa_disable">Disable MQA</string>
-    <string name="mqa_enable">Enable MQA</string>
+    <string name="mqa">MQA</string>
 
     <string name="off">Off</string>
 

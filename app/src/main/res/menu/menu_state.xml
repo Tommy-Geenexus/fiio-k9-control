@@ -35,6 +35,26 @@
     </item>
 
     <item
+        android:id="@+id/mqa"
+        android:title="@string/mqa"
+        app:showAsAction="never">
+
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/mqa_on"
+                    android:title="@string/on"
+                    app:showAsAction="never" />
+
+                <item
+                    android:id="@+id/mqa_off"
+                    android:title="@string/off"
+                    app:showAsAction="never" />
+            </group>
+        </menu>
+    </item>
+
+    <item
         android:id="@+id/hp_pre_simultaneously"
         android:title="@string/hp_pre_simultaneously"
         app:showAsAction="never">
@@ -59,10 +79,6 @@
         android:title="@string/disconnect"
         app:showAsAction="never" />
 
-    <item
-        android:id="@+id/mqa"
-        android:title="@string/mqa_disable"
-        app:showAsAction="never" />
 
     <item
         android:id="@+id/standby"

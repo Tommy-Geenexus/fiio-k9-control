@@ -71,13 +71,11 @@ class StateFragment :
             }
 
             override fun onPrepareMenu(menu: Menu) {
-                menu.findItem(R.id.mqa).setTitle(
-                    if (stateViewModel.container.stateFlow.value.isMqaEnabled) {
-                        R.string.mqa_disable
-                    } else {
-                        R.string.mqa_enable
-                    }
-                )
+                if (stateViewModel.container.stateFlow.value.isMqaEnabled) {
+                    menu.findItem(R.id.mqa_on).isChecked = true
+                } else {
+                    menu.findItem(R.id.mqa_off).isChecked = true
+                }
                 if (stateViewModel.container.stateFlow.value.isMuted) {
                     menu.findItem(R.id.mute_on).isChecked = true
                 } else {
@@ -108,7 +106,8 @@ class StateFragment :
                         )
                         true
                     }
-                    R.id.mqa -> {
+                    R.id.mqa_on,
+                    R.id.mqa_off -> {
                         stateViewModel.sendGaiaPacketMqa(
                             lifecycleScope,
                             gaiaGattService()
