@@ -35,6 +35,12 @@ class ItemVolumeViewHolder(
                 listener.onVolumeRequested(value.toInt())
             }
         }
+        binding.volumeMinus.setOnClickListener {
+            listener.onVolumeRequested(binding.volumeSlider.value.toInt() - 1)
+        }
+        binding.volumePlus.setOnClickListener {
+            listener.onVolumeRequested(binding.volumeSlider.value.toInt() + 1)
+        }
     }
 
     fun bindItemVolume(
