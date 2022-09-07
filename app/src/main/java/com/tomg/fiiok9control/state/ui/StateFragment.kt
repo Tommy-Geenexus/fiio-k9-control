@@ -78,13 +78,11 @@ class StateFragment :
                         R.string.mqa_enable
                     }
                 )
-                menu.findItem(R.id.mute).setIcon(
-                    if (stateViewModel.container.stateFlow.value.isMuted) {
-                        R.drawable.ic_volume_mute_off
-                    } else {
-                        R.drawable.ic_volume_mute
-                    }
-                )
+                if (stateViewModel.container.stateFlow.value.isMuted) {
+                    menu.findItem(R.id.mute_on).isChecked = true
+                } else {
+                    menu.findItem(R.id.mute_off).isChecked = true
+                }
                 if (stateViewModel.container.stateFlow.value.isHpPreSimultaneously) {
                     menu.findItem(R.id.hp_pre_simultaneously_on).isChecked = true
                 } else {
@@ -102,7 +100,8 @@ class StateFragment :
                         navigate(StateFragmentDirections.stateToExportProfile())
                         true
                     }
-                    R.id.mute -> {
+                    R.id.mute_on,
+                    R.id.mute_off -> {
                         stateViewModel.sendGaiaPacketMuteEnabled(
                             lifecycleScope,
                             gaiaGattService()

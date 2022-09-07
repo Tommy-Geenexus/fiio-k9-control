@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <resources>
+    <string name="Mute">Mute</string>
+
     <string name="_125hz">125Hz: %.1fdB</string>
 
     <string name="_16khz">16kHz: %.1fdB</string>
@@ -21,10 +23,6 @@
     <string name="_8khz">8kHz: %.1fdB</string>
 
     <string name="aac">AAC</string>
-
-    <string name="on">On</string>
-    <string name="off">Off</string>
-    <string name="hp_pre_simultaneously">HP/Preamp out simultaneously</string>
 
     <string name="app_name">FiioK9Control</string>
 
@@ -81,6 +79,8 @@
 
     <string name="grant_permissions">Grant permissions</string>
 
+    <string name="hp_pre_simultaneously">HP/Preamp out simult.</string>
+
     <string name="indicator">Indicator</string>
     <string name="indicator_brightness">Indicator brightness</string>
 
@@ -99,6 +99,10 @@
 
     <string name="mqa_disable">Disable MQA</string>
     <string name="mqa_enable">Enable MQA</string>
+
+    <string name="off">Off</string>
+
+    <string name="on">On</string>
 
     <string name="optical">Optical</string>
 
@@ -140,8 +144,6 @@
     <string name="state">State</string>
 
     <string name="super_slow">Super slow</string>
-
-    <string name="toggle_mute">Toggle mute</string>
 
     <string name="usb">USB</string>
 
