@@ -22,7 +22,9 @@
 
     <string name="aac">AAC</string>
 
-    <string name="analogue_only">Analogue only</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+    <string name="hp_pre_simultaneously">HP/Preamp out simultaneously</string>
 
     <string name="app_name">FiioK9Control</string>
 

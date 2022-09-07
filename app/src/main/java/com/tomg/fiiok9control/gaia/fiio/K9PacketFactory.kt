@@ -128,7 +128,7 @@ object K9PacketFactory {
         commandId = K9Command.Get.CodecBit.commandId
     )
 
-    fun createGaiaPacketSetVolumeMode(
+    fun createGaiaPacketSetHpPreSimultaneously(
         isSimultaneously: Boolean
     ) = GaiaPacketFactory.createGaiaPacket(
         commandId = K9Command.Set.Simultaneously.commandId,

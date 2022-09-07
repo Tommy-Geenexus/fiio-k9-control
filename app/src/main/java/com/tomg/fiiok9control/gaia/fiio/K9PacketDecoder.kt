@@ -143,7 +143,7 @@ object K9PacketDecoder {
         return EqPreSet.findById(id)
     }
 
-    fun decodePayloadGetVolumeMode(payload: ByteArray): Boolean {
+    fun decodePayloadGetHpPreSimultaneously(payload: ByteArray): Boolean {
         return payload.toHexString().toIntOrNull(radix = 16) == 1
     }
 }

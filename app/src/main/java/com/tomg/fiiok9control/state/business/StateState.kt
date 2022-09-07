@@ -37,5 +37,5 @@ data class StateState(
     val isMuted: Boolean = false,
     val isMqaEnabled: Boolean = true,
     val isProfileExporting: Boolean = false,
-    val isVolumeModeSimultaneously: Boolean = false
+    val isHpPreSimultaneously: Boolean = false
 ) : Parcelable

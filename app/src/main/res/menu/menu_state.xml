@@ -20,20 +20,20 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/volume_mode"
-        android:title="@string/volume_mode"
+        android:id="@+id/hp_pre_simultaneously"
+        android:title="@string/hp_pre_simultaneously"
         app:showAsAction="never">
 
         <menu>
             <group android:checkableBehavior="single">
                 <item
-                    android:id="@+id/volume_mode_analogue_only"
-                    android:title="@string/analogue_only"
+                    android:id="@+id/hp_pre_simultaneously_off"
+                    android:title="@string/off"
                     app:showAsAction="never" />
 
                 <item
-                    android:id="@+id/volume_mode_simultaneously"
-                    android:title="@string/simultaneously"
+                    android:id="@+id/hp_pre_simultaneously_on"
+                    android:title="@string/on"
                     app:showAsAction="never" />
             </group>
         </menu>

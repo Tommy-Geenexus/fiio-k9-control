@@ -172,10 +172,10 @@ class StateViewModel @Inject constructor(
                     }
                 }
                 K9Command.Get.Simultaneously.commandId -> {
-                    val isVolumeModeSimultaneously =
-                        K9PacketDecoder.decodePayloadGetVolumeMode(packet.payload)
+                    val isHpPreSimultaneously =
+                        K9PacketDecoder.decodePayloadGetHpPreSimultaneously(packet.payload)
                     reduce {
-                        state.copy(isVolumeModeSimultaneously = isVolumeModeSimultaneously)
+                        state.copy(isHpPreSimultaneously = isHpPreSimultaneously)
                     }
                 }
             }
@@ -208,7 +208,7 @@ class StateViewModel @Inject constructor(
         }
     }
 
-    fun sendGaiaPacketVolumeMode(
+    fun sendGaiaPacketHpPreSimultaneously(
         scope: CoroutineScope,
         service: GaiaGattService?
     ) = intent {
@@ -217,11 +217,13 @@ class StateViewModel @Inject constructor(
             postSideEffect(StateSideEffect.Characteristic.Write)
             scope.launch(context = Dispatchers.IO) {
                 val success = service.sendGaiaPacket(
-                    K9PacketFactory.createGaiaPacketSetVolumeMode(!state.isVolumeModeSimultaneously)
+                    K9PacketFactory.createGaiaPacketSetHpPreSimultaneously(
+                        !state.isHpPreSimultaneously
+                    )
                 )
                 if (success == true) {
                     reduce {
-                        state.copy(isVolumeModeSimultaneously = !state.isVolumeModeSimultaneously)
+                        state.copy(isHpPreSimultaneously = !state.isHpPreSimultaneously)
                     }
                 } else {
                     gaiaPacketResponses.remove(K9Command.Set.Simultaneously.commandId)

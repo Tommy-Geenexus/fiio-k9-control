@@ -85,10 +85,10 @@ class StateFragment :
                         R.drawable.ic_volume_mute
                     }
                 )
-                if (stateViewModel.container.stateFlow.value.isVolumeModeSimultaneously) {
-                    menu.findItem(R.id.volume_mode_simultaneously).isChecked = true
+                if (stateViewModel.container.stateFlow.value.isHpPreSimultaneously) {
+                    menu.findItem(R.id.hp_pre_simultaneously_on).isChecked = true
                 } else {
-                    menu.findItem(R.id.volume_mode_analogue_only).isChecked = true
+                    menu.findItem(R.id.hp_pre_simultaneously_off).isChecked = true
                 }
             }
 
@@ -146,15 +146,9 @@ class StateFragment :
                         )
                         true
                     }
-                    R.id.volume_mode_analogue_only -> {
-                        stateViewModel.sendGaiaPacketVolumeMode(
-                            lifecycleScope,
-                            gaiaGattService()
-                        )
-                        true
-                    }
-                    R.id.volume_mode_simultaneously -> {
-                        stateViewModel.sendGaiaPacketVolumeMode(
+                    R.id.hp_pre_simultaneously_on,
+                    R.id.hp_pre_simultaneously_off -> {
+                        stateViewModel.sendGaiaPacketHpPreSimultaneously(
                             lifecycleScope,
                             gaiaGattService()
                         )

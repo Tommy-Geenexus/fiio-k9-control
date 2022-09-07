@@ -166,9 +166,6 @@ class ProfileViewModel @Inject constructor(
                     )
                 )
                 if (IntRange(VOLUME_MIN, VOLUME_MAX).contains(profile.volume)) {
-                    packets.add(
-                        K9PacketFactory.createGaiaPacketSetVolumeMode(isSimultaneously = true)
-                    )
                     packets.add(K9PacketFactory.createGaiaPacketSetVolume(profile.volume))
                 }
                 packets.forEachIndexed { index, packet ->
