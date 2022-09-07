@@ -299,6 +299,9 @@ class StateFragment :
             StateSideEffect.Reconnect.Initiated -> {
                 binding.progress.show()
             }
+            StateSideEffect.Disconnect -> {
+                binding.progress.show()
+            }
             StateSideEffect.Reconnect.Success -> {
                 binding.progress.hide()
                 stateViewModel.sendGaiaPacketsDelayed(

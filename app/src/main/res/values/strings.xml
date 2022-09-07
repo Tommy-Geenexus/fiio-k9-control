@@ -39,6 +39,8 @@
     <string name="bluetooth">Bluetooth</string>
     <string name="bluetooth_codecs">Bluetooth codecs</string>
 
+    <string name="cancel_conn_attempt">Cancel connection attempt</string>
+
     <string name="channel_balance">Channel balance</string>
     <string name="channel_balance_offset">Offset: %.1f dB %s</string>
 

@@ -24,8 +24,12 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -62,6 +66,30 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>(R.layout.fragment_setup
         savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
+        val menuProvider = object : MenuProvider {
+
+            override fun onCreateMenu(
+                menu: Menu,
+                menuInflater: MenuInflater
+            ) {
+                menuInflater.inflate(R.menu.menu_setup, menu)
+            }
+
+            override fun onPrepareMenu(menu: Menu) {
+                menu.findItem(R.id.cancel).isVisible = !binding.action.isEnabled
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.cancel -> {
+                        setupViewModel.disconnect(gaiaGattService())
+                        true
+                    }
+                    else -> false
+                }
+            }
+        }
+        requireActivity().addMenuProvider(menuProvider, viewLifecycleOwner)
         binding.progress.setVisibilityAfterHide(View.GONE)
         binding.action.setOnClickListener {
             maybeConnectToDevice()
@@ -134,10 +162,13 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>(R.layout.fragment_setup
             }
             SetupSideEffect.Connection.Establishing -> {
                 binding.progress.show()
-                binding.action.isEnabled = !binding.action.isEnabled
+                binding.action.isEnabled = false
+                requireActivity().invalidateOptionsMenu()
             }
             SetupSideEffect.Connection.EstablishFailed -> {
                 binding.progress.hide()
+                binding.action.isEnabled = true
+                requireActivity().invalidateOptionsMenu()
             }
             is SetupSideEffect.NavigateToProfile -> {
                 navigate(SetupFragmentDirections.setupToProfile(sideEffect.profile))
@@ -152,13 +183,25 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>(R.layout.fragment_setup
             }
             GaiaGattSideEffect.Gatt.Error -> {
                 binding.progress.hide()
-                binding.action.isEnabled = !binding.action.isEnabled
+                binding.action.isEnabled = true
+                requireActivity().invalidateOptionsMenu()
             }
             GaiaGattSideEffect.Gatt.Ready -> {
+                binding.progress.show()
+                binding.action.isEnabled = false
+                requireActivity().invalidateOptionsMenu()
                 requireView().showSnackbar(msgRes = R.string.gaia_discover)
             }
             GaiaGattSideEffect.Gatt.ServiceDiscovery -> {
+                binding.progress.show()
+                binding.action.isEnabled = false
+                requireActivity().invalidateOptionsMenu()
                 requireView().showSnackbar(msgRes = R.string.gatt_discover)
+            }
+            GaiaGattSideEffect.Gatt.Disconnected -> {
+                binding.progress.hide()
+                binding.action.isEnabled = true
+                requireActivity().invalidateOptionsMenu()
             }
             else -> {
             }

@@ -97,6 +97,10 @@ class SetupViewModel @Inject constructor(
         }
     }
 
+    fun disconnect(service: GaiaGattService?) = intent {
+        service?.disconnectAndReset()
+    }
+
     fun handleBluetoothStateChange(enabled: Boolean) = intent {
         reduce {
             state.copy(

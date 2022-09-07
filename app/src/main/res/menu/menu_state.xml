@@ -75,14 +75,13 @@
     </item>
 
     <item
-        android:id="@+id/disconnect"
-        android:title="@string/disconnect"
-        app:showAsAction="never" />
-
-
-    <item
         android:id="@+id/standby"
         android:title="@string/standby_mode"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/disconnect"
+        android:title="@string/disconnect"
         app:showAsAction="never" />
 
     <item

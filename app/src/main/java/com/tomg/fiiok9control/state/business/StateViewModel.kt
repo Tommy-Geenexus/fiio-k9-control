@@ -71,9 +71,8 @@ class StateViewModel @Inject constructor(
 
     fun disconnect(service: GaiaGattService?) = intent {
         if (service != null) {
-            postSideEffect(StateSideEffect.Reconnect.Initiated)
+            postSideEffect(StateSideEffect.Disconnect)
             service.disconnectAndReset()
-            postSideEffect(StateSideEffect.Reconnect.Failure)
         }
     }
 

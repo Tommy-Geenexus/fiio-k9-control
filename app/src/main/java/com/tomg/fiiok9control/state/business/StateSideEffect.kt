@@ -43,7 +43,7 @@ sealed class StateSideEffect : Parcelable {
         object Failure : ExportProfile()
     }
 
-    sealed class Reconnect : Characteristic() {
+    sealed class Reconnect : StateSideEffect() {
 
         @Parcelize
         object Initiated : Reconnect()
@@ -54,6 +54,9 @@ sealed class StateSideEffect : Parcelable {
         @Parcelize
         object Failure : Reconnect()
     }
+
+    @Parcelize
+    object Disconnect : StateSideEffect()
 
     sealed class Request : StateSideEffect() {
 
