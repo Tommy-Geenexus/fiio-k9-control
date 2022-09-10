@@ -37,6 +37,5 @@ const val GAIA_CMD_DELAY_MS = 200L
 
 const val VOLUME_MIN = 0
 const val VOLUME_MAX = 120
-const val VOLUME_STEP_SIZE = 4
 
 val String.Companion.Empty: String get() = ""

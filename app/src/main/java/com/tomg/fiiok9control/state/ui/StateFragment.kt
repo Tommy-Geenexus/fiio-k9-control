@@ -71,15 +71,21 @@ class StateFragment :
             }
 
             override fun onPrepareMenu(menu: Menu) {
-                if (stateViewModel.container.stateFlow.value.isMqaEnabled) {
-                    menu.findItem(R.id.mqa_on).isChecked = true
-                } else {
-                    menu.findItem(R.id.mqa_off).isChecked = true
-                }
                 if (stateViewModel.container.stateFlow.value.isMuted) {
                     menu.findItem(R.id.mute_on).isChecked = true
                 } else {
                     menu.findItem(R.id.mute_off).isChecked = true
+                }
+                when (stateViewModel.container.stateFlow.value.volumeStepSize) {
+                    1 -> menu.findItem(R.id.volume_step_size_1).isChecked = true
+                    2 -> menu.findItem(R.id.volume_step_size_2).isChecked = true
+                    3 -> menu.findItem(R.id.volume_step_size_3).isChecked = true
+                    else -> menu.findItem(R.id.volume_step_size_4).isChecked = true
+                }
+                if (stateViewModel.container.stateFlow.value.isMqaEnabled) {
+                    menu.findItem(R.id.mqa_on).isChecked = true
+                } else {
+                    menu.findItem(R.id.mqa_off).isChecked = true
                 }
                 if (stateViewModel.container.stateFlow.value.isHpPreSimultaneously) {
                     menu.findItem(R.id.hp_pre_simultaneously_on).isChecked = true
@@ -142,6 +148,22 @@ class StateFragment :
                             gaiaGattService(),
                             volumeUp = false
                         )
+                        true
+                    }
+                    R.id.volume_step_size_1 -> {
+                        stateViewModel.handleVolumeStepSize(volumeStepSize = 1)
+                        true
+                    }
+                    R.id.volume_step_size_2 -> {
+                        stateViewModel.handleVolumeStepSize(volumeStepSize = 2)
+                        true
+                    }
+                    R.id.volume_step_size_3 -> {
+                        stateViewModel.handleVolumeStepSize(volumeStepSize = 3)
+                        true
+                    }
+                    R.id.volume_step_size_4 -> {
+                        stateViewModel.handleVolumeStepSize(volumeStepSize = 4)
                         true
                     }
                     R.id.hp_pre_simultaneously_on,

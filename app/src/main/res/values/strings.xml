@@ -155,4 +155,9 @@
     <string name="volume_export">Export volume level</string>
     <string name="volume_level">Volume level: %s</string>
     <string name="volume_mode">Volume mode</string>
+    <string name="volume_step_size">Volume step size</string>
+    <string name="volume_step_size_1">1</string>
+    <string name="volume_step_size_2">2</string>
+    <string name="volume_step_size_3">3</string>
+    <string name="volume_step_size_4">4</string>
 </resources>

@@ -26,7 +26,6 @@ import com.qualcomm.qti.libraries.gaia.packets.GaiaPacketBLE
 import com.tomg.fiiok9control.GAIA_CMD_DELAY_MS
 import com.tomg.fiiok9control.VOLUME_MAX
 import com.tomg.fiiok9control.VOLUME_MIN
-import com.tomg.fiiok9control.VOLUME_STEP_SIZE
 import com.tomg.fiiok9control.gaia.GaiaGattService
 import com.tomg.fiiok9control.gaia.GaiaPacketFactory
 import com.tomg.fiiok9control.gaia.fiio.K9Command
@@ -191,6 +190,12 @@ class StateViewModel @Inject constructor(
         }
     }
 
+    fun handleVolumeStepSize(volumeStepSize: Int) = intent {
+        reduce {
+            state.copy(volumeStepSize = volumeStepSize)
+        }
+    }
+
     fun reconnectToDevice(service: GaiaGattService?) = intent {
         postSideEffect(StateSideEffect.Reconnect.Initiated)
         val device = service?.device
@@ -268,9 +273,9 @@ class StateViewModel @Inject constructor(
             postSideEffect(StateSideEffect.Characteristic.Write)
             scope.launch(context = Dispatchers.IO) {
                 var volume = if (volumeUp) {
-                    state.volume + VOLUME_STEP_SIZE
+                    state.volume + state.volumeStepSize
                 } else {
-                    state.volume - VOLUME_STEP_SIZE
+                    state.volume - state.volumeStepSize
                 }
                 volume = maxOf(minOf(volume, VOLUME_MAX), VOLUME_MIN)
                 val packet = K9PacketFactory.createGaiaPacketSetVolume(volume)

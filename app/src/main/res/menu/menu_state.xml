@@ -35,6 +35,36 @@
     </item>
 
     <item
+        android:id="@+id/volume_step_size"
+        android:title="@string/volume_step_size"
+        app:showAsAction="never">
+
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/volume_step_size_1"
+                    android:title="@string/volume_step_size_1"
+                    app:showAsAction="never" />
+
+                <item
+                    android:id="@+id/volume_step_size_2"
+                    android:title="@string/volume_step_size_2"
+                    app:showAsAction="never" />
+
+                <item
+                    android:id="@+id/volume_step_size_3"
+                    android:title="@string/volume_step_size_3"
+                    app:showAsAction="never" />
+
+                <item
+                    android:id="@+id/volume_step_size_4"
+                    android:title="@string/volume_step_size_4"
+                    app:showAsAction="never" />
+            </group>
+        </menu>
+    </item>
+
+    <item
         android:id="@+id/mqa"
         android:title="@string/mqa"
         app:showAsAction="never">
