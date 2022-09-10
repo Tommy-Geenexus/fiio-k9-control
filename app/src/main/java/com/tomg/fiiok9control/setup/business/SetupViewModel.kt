@@ -22,18 +22,19 @@ package com.tomg.fiiok9control.setup.business
 
 import android.app.Application
 import android.content.Context
-import android.content.pm.PackageManager
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
+import com.tomg.fiiok9control.Empty
 import com.tomg.fiiok9control.KEY_PROFILE
 import com.tomg.fiiok9control.gaia.GaiaGattService
 import com.tomg.fiiok9control.profile.data.Profile
+import com.tomg.fiiok9control.setup.data.BleScanResult
 import com.tomg.fiiok9control.setup.data.SetupRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
@@ -54,9 +55,11 @@ class SetupViewModel @Inject constructor(
         initialState = SetupState(),
         savedStateHandle = savedStateHandle,
         onCreate = {
-            verifyHasBleSupport()
+            requestPermissionsOrStartBleScan()
         }
     )
+
+    val scannedDeviceFlow = setupRepository.scannedDeviceChannel.receiveAsFlow()
 
     var shortcutProfile: Profile? = null
         get() {
@@ -66,34 +69,22 @@ class SetupViewModel @Inject constructor(
         }
         set(value) = savedStateHandle.set(KEY_PROFILE, value)
 
-    fun checkIfPermissionsGrantedAndBluetoothEnabled(requiredPermissions: Array<String>) = intent {
-        val permissionsGranted = requiredPermissions.none { permission ->
-            ContextCompat.checkSelfPermission(
-                getApplication<Application>(),
-                permission
-            ) != PackageManager.PERMISSION_GRANTED
-        }
-        reduce {
-            state.copy(
-                permissionsGranted = permissionsGranted,
-                bluetoothEnabled = setupRepository.isBluetoothEnabled(),
-                deviceAddress = setupRepository.getBondedDeviceAddressOrEmpty()
-            )
-        }
-    }
-
     fun connectToDevice(
         scope: CoroutineScope,
-        service: GaiaGattService?,
-        deviceAddress: String
+        service: GaiaGattService?
     ) = intent {
         if (service != null) {
-            postSideEffect(SetupSideEffect.Connection.Establishing)
+            reduce {
+                state.copy(isLoading = true)
+            }
             scope.launch(context = Dispatchers.IO) {
-                service.connect(deviceAddress)
+                val success = service.connect(state.deviceAddress)
+                if (!success) {
+                    handleConnectionEstablishFailed()
+                }
             }
         } else {
-            postSideEffect(SetupSideEffect.Connection.EstablishFailed)
+            handleConnectionEstablishFailed()
         }
     }
 
@@ -105,14 +96,18 @@ class SetupViewModel @Inject constructor(
         reduce {
             state.copy(
                 bluetoothEnabled = enabled,
-                deviceAddress = setupRepository.getBondedDeviceAddressOrEmpty()
+                deviceAddress = String.Empty,
+                bonded = false
             )
+        }
+        if (enabled && setupRepository.arePermissionsGranted()) {
+            postSideEffect(SetupSideEffect.Ble.StartScan)
         }
     }
 
-    fun handlePermissionsGrantResult(result: Map<String, Boolean>) = intent {
+    fun handleConnectionEstablishInProgress() = intent {
         reduce {
-            state.copy(permissionsGranted = !result.containsValue(false))
+            state.copy(isLoading = true)
         }
     }
 
@@ -122,18 +117,97 @@ class SetupViewModel @Inject constructor(
             if (profile != null) {
                 SetupSideEffect.NavigateToProfile(profile)
             } else {
-                SetupSideEffect.Connection.Established
+                SetupSideEffect.NavigateToState
             }
         )
     }
 
-    private fun verifyHasBleSupport() = intent {
-        postSideEffect(
-            if (setupRepository.isBleSupported()) {
-                SetupSideEffect.Ble.Supported
+    fun handleConnectionEstablishFailed() = intent {
+        reduce {
+            state.copy(
+                deviceAddress = String.Empty,
+                bonded = false,
+                isLoading = false
+            )
+        }
+    }
+
+    fun handleDeviceScanned(bleScanResult: BleScanResult) = intent {
+        val deviceAddress = if (!bleScanResult.matchLost) {
+            bleScanResult.deviceAddress
+        } else {
+            String.Empty
+        }
+        reduce {
+            state.copy(
+                deviceAddress = deviceAddress,
+                bonded = bleScanResult.bonded,
+                isLoading = false
+            )
+        }
+    }
+
+    fun handlePermissionsGrantResult(result: Map<String, Boolean>) = intent {
+        val permissionsGranted = !result.containsValue(false)
+        reduce {
+            state.copy(permissionsGranted = permissionsGranted)
+        }
+        if (permissionsGranted) {
+            postSideEffect(SetupSideEffect.Ble.StartScan)
+        }
+    }
+
+    private fun requestPermissionsOrStartBleScan() = intent {
+        if (setupRepository.isBleSupported()) {
+            if (setupRepository.arePermissionsGranted()) {
+                reduce {
+                    state.copy(
+                        permissionsGranted = setupRepository.arePermissionsGranted(),
+                        bluetoothEnabled = setupRepository.isBluetoothEnabled()
+                    )
+                }
+                postSideEffect(SetupSideEffect.Ble.StartScan)
             } else {
-                SetupSideEffect.Ble.Unsupported
+                postSideEffect(
+                    SetupSideEffect.GrantPermissions(setupRepository.requiredPermissions)
+                )
             }
-        )
+        } else {
+            postSideEffect(SetupSideEffect.Ble.Unsupported)
+        }
+    }
+
+    fun startBleScan() = intent {
+        val success = setupRepository.startBleScan()
+        if (success) {
+            reduce {
+                state.copy(isLoading = true)
+            }
+        }
+    }
+
+    fun stopBleScan() = intent {
+        setupRepository.stopBleScan()
+        reduce {
+            state.copy(isLoading = false)
+        }
+    }
+
+    fun synchronizeState() = intent {
+        if (!state.isLoading) {
+            reduce {
+                state.copy(isLoading = true)
+            }
+            val bonded = setupRepository.isDeviceBonded(state.deviceAddress)
+            reduce {
+                state.copy(
+                    permissionsGranted = setupRepository.arePermissionsGranted(),
+                    bluetoothEnabled = setupRepository.isBluetoothEnabled(),
+                    deviceAddress = if (bonded) state.deviceAddress else String.Empty,
+                    bonded = bonded,
+                    isLoading = false
+                )
+            }
+        }
     }
 }

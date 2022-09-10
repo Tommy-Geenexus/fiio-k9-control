@@ -21,6 +21,7 @@
 package com.tomg.fiiok9control.gaia
 
 import android.Manifest
+import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattDescriptor
@@ -50,7 +51,6 @@ import java.util.UUID
 
 class GaiaGattService : BLEService() {
 
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
     private val notificationCharacteristics: MutableList<UUID> = mutableListOf()
     val gaiaGattSideEffectChannel = Channel<GaiaGattSideEffect>(Channel.UNLIMITED)
 
@@ -64,8 +64,11 @@ class GaiaGattService : BLEService() {
     private var isGattReady = false
     private var isGaiaReady = false
 
+    private lateinit var coroutineScope: CoroutineScope
     private lateinit var thread: HandlerThread
     private lateinit var handler: Handler
+
+    public override fun getDevice(): BluetoothDevice? = super.getDevice()
 
     override fun onBind(intent: Intent?): IBinder? {
         if (binder == null) {
@@ -77,6 +80,7 @@ class GaiaGattService : BLEService() {
     override fun onCreate() {
         super.onCreate()
         bm = applicationContext.getSystemService(BluetoothManager::class.java)
+        coroutineScope = CoroutineScope(Dispatchers.IO)
         thread = HandlerThread("GaiaGattService", Process.THREAD_PRIORITY_BACKGROUND)
         thread.start()
         handler = Handler(thread.looper)
@@ -134,8 +138,10 @@ class GaiaGattService : BLEService() {
         status: Int,
         newState: Int
     ) {
-        if (gatt != null && status == BluetoothGatt.GATT_SUCCESS) {
-            if (newState == BluetoothProfile.STATE_CONNECTED) {
+        if (gatt != null) {
+            if (newState == BluetoothProfile.STATE_CONNECTED &&
+                status == BluetoothGatt.GATT_SUCCESS
+            ) {
                 coroutineScope.launch {
                     gaiaGattSideEffectChannel.send(GaiaGattSideEffect.Gatt.ServiceDiscovery)
                 }

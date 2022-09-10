@@ -18,33 +18,15 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.fiiok9control.setup.business
+package com.tomg.fiiok9control.setup.data
 
 import android.os.Parcelable
-import com.tomg.fiiok9control.profile.data.Profile
+import com.tomg.fiiok9control.Empty
 import kotlinx.parcelize.Parcelize
 
-sealed class SetupSideEffect : Parcelable {
-
-    sealed class Ble : SetupSideEffect() {
-
-        @Parcelize
-        object StartScan : Ble()
-
-        @Parcelize
-        object Unsupported : Ble()
-    }
-
-    @Parcelize
-    data class GrantPermissions(
-        val requiredPermissions: List<String>
-    ) : SetupSideEffect()
-
-    @Parcelize
-    data class NavigateToProfile(
-        val profile: Profile
-    ) : SetupSideEffect()
-
-    @Parcelize
-    object NavigateToState : SetupSideEffect()
-}
+@Parcelize
+data class BleScanResult(
+    val deviceAddress: String = String.Empty,
+    val bonded: Boolean = false,
+    val matchLost: Boolean = false
+) : Parcelable

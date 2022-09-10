@@ -39,8 +39,6 @@
     <string name="bluetooth">Bluetooth</string>
     <string name="bluetooth_codecs">Bluetooth codecs</string>
 
-    <string name="cancel_conn_attempt">Cancel connection attempt</string>
-
     <string name="channel_balance">Channel balance</string>
     <string name="channel_balance_offset">Offset: %.1f dB %s</string>
 
@@ -50,7 +48,9 @@
 
     <string name="coaxial">Coaxial</string>
 
-    <string name="connect_device">Connect device</string>
+    <string name="connect_to_device">Connect to device\n%s</string>
+
+    <string name="connection_abort">Abort connection</string>
 
     <string name="custom">Custom</string>
     <string name="custom_equalizer_preset">Custom equalizer preset</string>
@@ -58,6 +58,9 @@
     <string name="dance">Dance</string>
 
     <string name="delete">Delete</string>
+
+    <string name="device_scan_abort">Abort device scan</string>
+    <string name="device_scan_start">Start device scan</string>
 
     <string name="disabled">Disabled</string>
 

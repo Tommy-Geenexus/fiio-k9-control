@@ -28,5 +28,7 @@ import kotlinx.parcelize.Parcelize
 data class SetupState(
     val permissionsGranted: Boolean = false,
     val bluetoothEnabled: Boolean = false,
-    val deviceAddress: String = String.Empty
+    val deviceAddress: String = String.Empty,
+    val bonded: Boolean = false,
+    val isLoading: Boolean = false
 ) : Parcelable

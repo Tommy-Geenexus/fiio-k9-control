@@ -121,8 +121,13 @@ class ProfileViewModel @Inject constructor(
 
     fun reconnectToDevice(service: GaiaGattService?) = intent {
         postSideEffect(ProfileSideEffect.Reconnect.Initiated)
-        if (service != null) {
-            val success = service.connect(setupRepository.getBondedDeviceAddressOrEmpty())
+        val device = service?.device
+        if (service != null && device != null) {
+            val success = if (setupRepository.isDeviceBonded(device.address)) {
+                service.connect(device.address)
+            } else {
+                false
+            }
             postSideEffect(
                 if (success) {
                     ProfileSideEffect.Reconnect.Success

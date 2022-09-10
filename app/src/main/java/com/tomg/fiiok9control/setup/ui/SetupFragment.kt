@@ -24,12 +24,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -42,6 +38,7 @@ import com.tomg.fiiok9control.profile.data.Profile
 import com.tomg.fiiok9control.setup.business.SetupSideEffect
 import com.tomg.fiiok9control.setup.business.SetupState
 import com.tomg.fiiok9control.setup.business.SetupViewModel
+import com.tomg.fiiok9control.setup.data.BleScanResult
 import com.tomg.fiiok9control.showSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -58,7 +55,6 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>(R.layout.fragment_setup
         ActivityResultContracts.StartActivityForResult()
     ) {
     }
-    private val requiredPermissions = arrayOf(android.Manifest.permission.BLUETOOTH_CONNECT)
     private val setupViewModel: SetupViewModel by viewModels()
 
     override fun onViewCreated(
@@ -66,33 +62,9 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>(R.layout.fragment_setup
         savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
-        val menuProvider = object : MenuProvider {
-
-            override fun onCreateMenu(
-                menu: Menu,
-                menuInflater: MenuInflater
-            ) {
-                menuInflater.inflate(R.menu.menu_setup, menu)
-            }
-
-            override fun onPrepareMenu(menu: Menu) {
-                menu.findItem(R.id.cancel).isVisible = !binding.action.isEnabled
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.cancel -> {
-                        setupViewModel.disconnect(gaiaGattService())
-                        true
-                    }
-                    else -> false
-                }
-            }
-        }
-        requireActivity().addMenuProvider(menuProvider, viewLifecycleOwner)
         binding.progress.setVisibilityAfterHide(View.GONE)
         binding.action.setOnClickListener {
-            maybeConnectToDevice()
+            handleActionClick()
         }
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -115,16 +87,28 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>(R.layout.fragment_setup
                 }
             }
         }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                setupViewModel.scannedDeviceFlow.collect { scanResult ->
+                    handleScanResult(scanResult)
+                }
+            }
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        setupViewModel.checkIfPermissionsGrantedAndBluetoothEnabled(requiredPermissions)
+        setupViewModel.synchronizeState()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        setupViewModel.stopBleScan()
     }
 
     override fun onProfileShortcutSelected(profile: Profile) {
         setupViewModel.shortcutProfile = profile
-        maybeConnectToDevice()
+        handleActionClick()
     }
 
     override fun onBluetoothStateChanged(enabled: Boolean) {
@@ -142,36 +126,45 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>(R.layout.fragment_setup
         } else if (!state.bluetoothEnabled) {
             binding.action.setText(R.string.enable_bluetooth)
         } else if (state.deviceAddress.isEmpty()) {
+            if (state.isLoading) {
+                binding.action.setText(R.string.device_scan_abort)
+            } else {
+                binding.action.setText(R.string.device_scan_start)
+            }
+        } else if (!state.bonded) {
             binding.action.setText(R.string.pair_device)
+        } else if (state.isLoading) {
+            binding.action.setText(R.string.connection_abort)
         } else {
-            binding.action.setText(R.string.connect_device)
+            binding.action.text = getString(R.string.connect_to_device, state.deviceAddress)
+        }
+        if (state.isLoading) {
+            binding.progress.show()
+            binding.action.isEnabled =
+                binding.action.text == getString(R.string.connection_abort) ||
+                binding.action.text == getString(R.string.device_scan_abort)
+        } else {
+            binding.progress.hide()
+            binding.action.isEnabled = true
         }
     }
 
     private fun handleSideEffect(sideEffect: SetupSideEffect) {
         when (sideEffect) {
-            is SetupSideEffect.Ble.Supported -> {
-                requestPermissions.launch(requiredPermissions)
+            SetupSideEffect.Ble.StartScan -> {
+                setupViewModel.startBleScan()
             }
             SetupSideEffect.Ble.Unsupported -> {
                 requireActivity().finish()
             }
-            SetupSideEffect.Connection.Established -> {
-                binding.progress.hide()
-                navigate(SetupFragmentDirections.setupToState())
-            }
-            SetupSideEffect.Connection.Establishing -> {
-                binding.progress.show()
-                binding.action.isEnabled = false
-                requireActivity().invalidateOptionsMenu()
-            }
-            SetupSideEffect.Connection.EstablishFailed -> {
-                binding.progress.hide()
-                binding.action.isEnabled = true
-                requireActivity().invalidateOptionsMenu()
+            is SetupSideEffect.GrantPermissions -> {
+                requestPermissions.launch(sideEffect.requiredPermissions.toTypedArray())
             }
             is SetupSideEffect.NavigateToProfile -> {
                 navigate(SetupFragmentDirections.setupToProfile(sideEffect.profile))
+            }
+            SetupSideEffect.NavigateToState -> {
+                navigate(SetupFragmentDirections.setupToState())
             }
         }
     }
@@ -182,48 +175,59 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>(R.layout.fragment_setup
                 setupViewModel.handleConnectionEstablished()
             }
             GaiaGattSideEffect.Gatt.Error -> {
-                binding.progress.hide()
-                binding.action.isEnabled = true
-                requireActivity().invalidateOptionsMenu()
+                setupViewModel.handleConnectionEstablishFailed()
             }
             GaiaGattSideEffect.Gatt.Ready -> {
-                binding.progress.show()
-                binding.action.isEnabled = false
-                requireActivity().invalidateOptionsMenu()
+                setupViewModel.handleConnectionEstablishInProgress()
                 requireView().showSnackbar(msgRes = R.string.gaia_discover)
             }
             GaiaGattSideEffect.Gatt.ServiceDiscovery -> {
-                binding.progress.show()
-                binding.action.isEnabled = false
-                requireActivity().invalidateOptionsMenu()
+                setupViewModel.handleConnectionEstablishInProgress()
                 requireView().showSnackbar(msgRes = R.string.gatt_discover)
             }
             GaiaGattSideEffect.Gatt.Disconnected -> {
-                binding.progress.hide()
-                binding.action.isEnabled = true
-                requireActivity().invalidateOptionsMenu()
+                setupViewModel.handleConnectionEstablishFailed()
             }
             else -> {
             }
         }
     }
 
-    private fun maybeConnectToDevice() {
-        val currentState = setupViewModel.container.stateFlow.value
-        if (!currentState.permissionsGranted) {
-            openSettings.launch(
-                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                    data = Uri.fromParts("package", requireContext().packageName, null)
-                }
-            )
-        } else if (!currentState.bluetoothEnabled || currentState.deviceAddress.isEmpty()) {
-            openSettings.launch(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
-        } else {
-            setupViewModel.connectToDevice(
-                lifecycleScope,
-                gaiaGattService(),
-                currentState.deviceAddress
-            )
+    private fun handleScanResult(scanResult: Result<BleScanResult>) {
+        setupViewModel.stopBleScan()
+        if (scanResult.isSuccess) {
+            setupViewModel.handleDeviceScanned(scanResult.getOrDefault(BleScanResult()))
+        }
+    }
+
+    private fun handleActionClick() {
+        when (binding.action.text) {
+            getString(R.string.grant_permissions) -> {
+                openSettings.launch(
+                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = Uri.fromParts("package", requireContext().packageName, null)
+                    }
+                )
+            }
+            getString(R.string.enable_bluetooth),
+            getString(R.string.pair_device) -> {
+                openSettings.launch(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
+            }
+            getString(R.string.device_scan_start) -> {
+                setupViewModel.startBleScan()
+            }
+            getString(R.string.device_scan_abort) -> {
+                setupViewModel.stopBleScan()
+            }
+            getString(R.string.connection_abort) -> {
+                setupViewModel.disconnect(gaiaGattService())
+            }
+            else -> {
+                setupViewModel.connectToDevice(
+                    lifecycleScope,
+                    gaiaGattService()
+                )
+            }
         }
     }
 }

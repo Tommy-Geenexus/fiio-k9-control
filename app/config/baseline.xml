@@ -35,6 +35,8 @@
     <ID>TooManyFunctions:K9PacketDecoder.kt$K9PacketDecoder$K9PacketDecoder</ID>
     <ID>TooManyFunctions:K9PacketFactory.kt$K9PacketFactory$K9PacketFactory</ID>
     <ID>TooManyFunctions:ProfileFragment.kt$ProfileFragment : BaseFragmentListener</ID>
+    <ID>TooManyFunctions:SetupFragment.kt$SetupFragment : BaseFragment</ID>
+    <ID>TooManyFunctions:SetupViewModel.kt$SetupViewModel : AndroidViewModelContainerHost</ID>
     <ID>TooManyFunctions:StateFragment.kt$StateFragment : BaseFragmentListener</ID>
     <ID>TooManyFunctions:StateViewModel.kt$StateViewModel : ViewModelContainerHost</ID>
   </CurrentIssues>
