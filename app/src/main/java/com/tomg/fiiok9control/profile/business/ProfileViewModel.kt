@@ -78,6 +78,9 @@ class ProfileViewModel @Inject constructor(
         val profiles = state.profiles.toMutableList().apply {
             remove(profile)
         }
+        if (success) {
+            profileRepository.removeProfileShortcut(profile)
+        }
         reduce {
             state.copy(
                 profiles = if (success) profiles else state.profiles,
