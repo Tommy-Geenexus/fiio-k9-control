@@ -24,6 +24,7 @@ import android.app.Application
 import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import com.tomg.fiiok9control.Empty
 import com.tomg.fiiok9control.KEY_PROFILE
 import com.tomg.fiiok9control.gaia.GaiaGattService
@@ -34,6 +35,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.ContainerHost
@@ -59,7 +61,8 @@ class SetupViewModel @Inject constructor(
         }
     )
 
-    val scannedDeviceFlow = setupRepository.scannedDeviceChannel.receiveAsFlow()
+    private val scannedDeviceChannel = Channel<Result<BleScanResult>>(capacity = Channel.UNLIMITED)
+    val scannedDeviceFlow = scannedDeviceChannel.receiveAsFlow()
 
     var shortcutProfile: Profile? = null
         get() {
@@ -178,7 +181,13 @@ class SetupViewModel @Inject constructor(
     }
 
     fun startBleScan() = intent {
-        val success = setupRepository.startBleScan()
+        val success = setupRepository.startBleScan(
+            onScanResult = { result ->
+                viewModelScope.launch {
+                    scannedDeviceChannel.send(result)
+                }
+            }
+        )
         if (success) {
             reduce {
                 state.copy(isLoading = true)

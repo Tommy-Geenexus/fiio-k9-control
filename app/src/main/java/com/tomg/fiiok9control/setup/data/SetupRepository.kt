@@ -22,11 +22,8 @@ package com.tomg.fiiok9control.setup.data
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
-import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanFilter
-import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
 import android.content.Context
 import android.content.pm.PackageManager
@@ -34,9 +31,9 @@ import androidx.core.content.ContextCompat
 import com.tomg.fiiok9control.DEVICE_K9_PRO_NAME
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.lang.ref.WeakReference
 import javax.inject.Inject
 
 class SetupRepository @Inject constructor(
@@ -48,37 +45,8 @@ class SetupRepository @Inject constructor(
         Manifest.permission.BLUETOOTH_SCAN
     )
 
-    val scannedDeviceChannel = Channel<Result<BleScanResult>>(capacity = Channel.UNLIMITED)
-
-    private val scanCallback = object : ScanCallback() {
-
-        override fun onScanFailed(errorCode: Int) {
-            scannedDeviceChannel.trySend(
-                Result.failure(Exception("Scan failed with error $errorCode"))
-            )
-        }
-
-        @SuppressLint("MissingPermission")
-        override fun onScanResult(
-            callbackType: Int,
-            result: ScanResult?
-        ) {
-            val bonded = if (arePermissionsGranted()) {
-                result?.device?.bondState == BluetoothDevice.BOND_BONDED
-            } else {
-                false
-            }
-            scannedDeviceChannel.trySend(
-                Result.success(
-                    BleScanResult(
-                        deviceAddress = result?.device?.address.orEmpty(),
-                        bonded = bonded,
-                        matchLost = callbackType == ScanSettings.CALLBACK_TYPE_MATCH_LOST
-                    )
-                )
-            )
-        }
-    }
+    @Volatile
+    private var callback: BleScanCallback? = null
 
     fun isBleSupported(): Boolean {
         return context.packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)
@@ -115,7 +83,7 @@ class SetupRepository @Inject constructor(
     }
 
     @SuppressLint("MissingPermission")
-    suspend fun startBleScan(): Boolean {
+    suspend fun startBleScan(onScanResult: (Result<BleScanResult>) -> Unit): Boolean {
         if (!arePermissionsGranted()) {
             return false
         }
@@ -139,7 +107,7 @@ class SetupRepository @Inject constructor(
                 scanner.startScan(
                     listOf(filter),
                     settings,
-                    scanCallback
+                    getBleScanCallback(onScanResult)
                 )
                 true
             } else {
@@ -158,7 +126,26 @@ class SetupRepository @Inject constructor(
                 .getSystemService(BluetoothManager::class.java)
                 ?.adapter
                 ?.bluetoothLeScanner
-                ?.stopScan(scanCallback)
+                ?.stopScan(getBleScanCallback())
+            synchronized(this) {
+                callback = null
+            }
+        }
+    }
+
+    private fun getBleScanCallback(
+        onScanResult: (Result<BleScanResult>) -> Unit = {}
+    ): BleScanCallback {
+        val v = callback
+        return v ?: synchronized(this) {
+            val v2 = BleScanCallback(
+                permissionsGranted = ::arePermissionsGranted,
+                callback = WeakReference { result ->
+                    onScanResult(result)
+                }
+            )
+            callback = v2
+            v2
         }
     }
 }
