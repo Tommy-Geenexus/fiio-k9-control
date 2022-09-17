@@ -26,7 +26,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.tomg.fiiok9control.Empty
-import com.tomg.fiiok9control.KEY_PROFILE
 import com.tomg.fiiok9control.gaia.GaiaGattService
 import com.tomg.fiiok9control.profile.data.Profile
 import com.tomg.fiiok9control.setup.data.BleScanResult
@@ -47,7 +46,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SetupViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
+    savedStateHandle: SavedStateHandle,
     @ApplicationContext context: Context,
     private val setupRepository: SetupRepository
 ) : AndroidViewModel(context as Application),
@@ -63,14 +62,6 @@ class SetupViewModel @Inject constructor(
 
     private val scannedDeviceChannel = Channel<Result<BleScanResult>>(capacity = Channel.UNLIMITED)
     val scannedDeviceFlow = scannedDeviceChannel.receiveAsFlow()
-
-    var shortcutProfile: Profile? = null
-        get() {
-            val p = savedStateHandle.get<Profile>(KEY_PROFILE)
-            field = null
-            return p
-        }
-        set(value) = savedStateHandle.set(KEY_PROFILE, value)
 
     fun connectToDevice(
         scope: CoroutineScope,
@@ -108,14 +99,21 @@ class SetupViewModel @Inject constructor(
         }
     }
 
-    fun handleConnectionEstablishInProgress() = intent {
+    fun handleConnectionEstablishInProgress(deviceAddress: String) = intent {
         reduce {
             state.copy(isLoading = true)
+        }
+        val bonded = setupRepository.isDeviceBonded(deviceAddress)
+        reduce {
+            state.copy(
+                deviceAddress = deviceAddress,
+                bonded = bonded
+            )
         }
     }
 
     fun handleConnectionEstablished() = intent {
-        val profile = shortcutProfile
+        val profile = state.shortcutProfile
         postSideEffect(
             if (profile != null) {
                 SetupSideEffect.NavigateToProfile(profile)
@@ -157,6 +155,12 @@ class SetupViewModel @Inject constructor(
         }
         if (permissionsGranted) {
             postSideEffect(SetupSideEffect.Ble.StartScan)
+        }
+    }
+
+    fun handleShortcutProfileSelected(profile: Profile) = intent {
+        reduce {
+            state.copy(shortcutProfile = profile)
         }
     }
 

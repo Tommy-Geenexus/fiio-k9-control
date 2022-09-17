@@ -58,10 +58,14 @@ sealed class GaiaGattSideEffect : Parcelable {
         object Error : Gatt()
 
         @Parcelize
-        object Ready : Gatt()
+        data class Ready(
+            val deviceAddress: String
+        ) : Gatt()
 
         @Parcelize
-        object ServiceDiscovery : Gatt()
+        data class ServiceDiscovery(
+            val deviceAddress: String
+        ) : Gatt()
 
         sealed class WriteCharacteristic : Gatt() {
 

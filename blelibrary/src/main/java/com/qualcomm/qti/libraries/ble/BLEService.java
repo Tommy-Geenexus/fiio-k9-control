@@ -26,6 +26,7 @@ import android.util.ArrayMap;
 import android.util.Log;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
 import java.lang.annotation.Retention;
@@ -160,12 +161,22 @@ public abstract class BLEService extends Service {
 
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-            receiveCharacteristicRead(gatt, characteristic, status);
+            receiveCharacteristicRead(gatt, characteristic, characteristic.getValue(), status);
+        }
+
+        @Override
+        public void onCharacteristicRead(@NonNull BluetoothGatt gatt, @NonNull BluetoothGattCharacteristic characteristic, @NonNull byte[] value, int status) {
+            receiveCharacteristicRead(gatt, characteristic, value, status);
         }
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-            onReceivedCharacteristicChanged(gatt, characteristic);
+            onReceivedCharacteristicChanged(gatt, characteristic, characteristic.getValue());
+        }
+
+        @Override
+        public void onCharacteristicChanged(@NonNull BluetoothGatt gatt, @NonNull BluetoothGattCharacteristic characteristic, @NonNull byte[] value) {
+            onReceivedCharacteristicChanged(gatt, characteristic, value);
         }
 
         @Override
@@ -1159,11 +1170,13 @@ public abstract class BLEService extends Service {
      *              The Bluetooth gatt which received the information.
      * @param characteristic
      *              The Bluetooth Characteristic for which there is a received information.
+     * @param value
+     *              The Bluetooth Characteristic value
      * @param status
      *              The status of this characteristic reading: {@link BluetoothGatt#GATT_SUCCESS} if the operation succeeds.
      */
     @SuppressWarnings({"EmptyMethod", "UnusedParameters"})
-    protected abstract void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status);
+    protected abstract void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, byte[] value, int status);
 
     /**
      * <p>This method is called when the characteristic notification status changes.</p>
@@ -1172,9 +1185,11 @@ public abstract class BLEService extends Service {
      *              The Bluetooth gatt which received the information.
      * @param characteristic
      *              The Bluetooth Characteristic for which there is a change.
+     * @param value
+     *              The Bluetooth Characteristic value
      */
     @SuppressWarnings({"EmptyMethod", "UnusedParameters"})
-    protected abstract void onReceivedCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic);
+    protected abstract void onReceivedCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, byte[] value);
 
     /**
      * <p>This method is called when a descriptor write operation has been requested.</p>
@@ -1337,10 +1352,12 @@ public abstract class BLEService extends Service {
      *              The Bluetooth gatt which received the information.
      * @param characteristic
      *              The Bluetooth Characteristic for which there is a received information.
+     * @param value
+     *              The Bluetooth Characteristic value
      * @param status
      *              The status of this characteristic reading: {@link BluetoothGatt#GATT_SUCCESS} if the operation succeeds.
      */
-    private void receiveCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+    private void receiveCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, byte[] value, int status) {
         if (mShowDebugLogs) {
             Log.d(TAG, "GattCallback - onCharacteristicRead, characteristic=" + characteristic.getUuid() + "status="
                     + status);
@@ -1366,7 +1383,7 @@ public abstract class BLEService extends Service {
             processNextRequest();
         }
 
-        onCharacteristicRead(gatt, characteristic, status);
+        onCharacteristicRead(gatt, characteristic, value, status);
     }
 
     /**

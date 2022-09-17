@@ -22,6 +22,7 @@ package com.tomg.fiiok9control.setup.business
 
 import android.os.Parcelable
 import com.tomg.fiiok9control.Empty
+import com.tomg.fiiok9control.profile.data.Profile
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -30,5 +31,6 @@ data class SetupState(
     val bluetoothEnabled: Boolean = false,
     val deviceAddress: String = String.Empty,
     val bonded: Boolean = false,
+    val shortcutProfile: Profile? = null,
     val isLoading: Boolean = false
 ) : Parcelable

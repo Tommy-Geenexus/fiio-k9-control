@@ -107,8 +107,7 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>(R.layout.fragment_setup
     }
 
     override fun onProfileShortcutSelected(profile: Profile) {
-        setupViewModel.shortcutProfile = profile
-        handleActionClick()
+        setupViewModel.handleShortcutProfileSelected(profile)
     }
 
     override fun onBluetoothStateChanged(enabled: Boolean) {
@@ -126,11 +125,9 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>(R.layout.fragment_setup
         } else if (!state.bluetoothEnabled) {
             binding.action.setText(R.string.enable_bluetooth)
         } else if (state.deviceAddress.isEmpty()) {
-            if (state.isLoading) {
-                binding.action.setText(R.string.device_scan_abort)
-            } else {
-                binding.action.setText(R.string.device_scan_start)
-            }
+            binding.action.setText(
+                if (state.isLoading) R.string.device_scan_abort else R.string.device_scan_start
+            )
         } else if (!state.bonded) {
             binding.action.setText(R.string.pair_device)
         } else if (state.isLoading) {
@@ -177,12 +174,12 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>(R.layout.fragment_setup
             GaiaGattSideEffect.Gatt.Error -> {
                 setupViewModel.handleConnectionEstablishFailed()
             }
-            GaiaGattSideEffect.Gatt.Ready -> {
-                setupViewModel.handleConnectionEstablishInProgress()
+            is GaiaGattSideEffect.Gatt.Ready -> {
+                setupViewModel.handleConnectionEstablishInProgress(sideEffect.deviceAddress)
                 requireView().showSnackbar(msgRes = R.string.gaia_discover)
             }
-            GaiaGattSideEffect.Gatt.ServiceDiscovery -> {
-                setupViewModel.handleConnectionEstablishInProgress()
+            is GaiaGattSideEffect.Gatt.ServiceDiscovery -> {
+                setupViewModel.handleConnectionEstablishInProgress(sideEffect.deviceAddress)
                 requireView().showSnackbar(msgRes = R.string.gatt_discover)
             }
             GaiaGattSideEffect.Gatt.Disconnected -> {
