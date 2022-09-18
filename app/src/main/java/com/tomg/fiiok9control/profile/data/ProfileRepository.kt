@@ -24,6 +24,7 @@ import android.content.Context
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
+import com.tomg.fiiok9control.Empty
 import com.tomg.fiiok9control.INTENT_ACTION_SHORTCUT_PROFILE
 import com.tomg.fiiok9control.R
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -98,11 +99,10 @@ class ProfileRepository @Inject constructor(
 
     suspend fun removeProfileShortcut(profile: Profile): Boolean {
         return withContext(Dispatchers.IO) {
+            val shortcut = listOf(profile.id.toString())
             runCatching {
-                ShortcutManagerCompat.removeDynamicShortcuts(
-                    context,
-                    listOf(profile.id.toString())
-                )
+                ShortcutManagerCompat.removeDynamicShortcuts(context, shortcut)
+                ShortcutManagerCompat.disableShortcuts(context, shortcut, String.Empty)
                 true
             }.getOrElse { exception ->
                 Timber.e(exception)
