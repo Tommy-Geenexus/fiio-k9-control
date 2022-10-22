@@ -79,7 +79,7 @@ fun View.showSnackbar(
 }
 
 fun ByteArray.toHexString(): String {
-    if (size == 0) return String.Empty
+    if (isEmpty()) return String.Empty
     val sb = StringBuffer()
     for (b in this) {
         val s = (b and GaiaPacketBREDR.SOF).toString(radix = 16)

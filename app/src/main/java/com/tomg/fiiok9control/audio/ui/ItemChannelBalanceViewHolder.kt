@@ -39,6 +39,7 @@ class ItemChannelBalanceViewHolder(
         }
     }
 
+    @Suppress("KotlinConstantConditions")
     fun bindItemChannelBalance(channelBalance: Int) {
         binding.channelBalanceDb.text = when {
             channelBalance < 0 -> {
