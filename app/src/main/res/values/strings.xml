@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <resources>
-    <string name="Mute">Mute</string>
-
     <string name="_125hz">125Hz: %.1fdB</string>
 
     <string name="_16khz">16kHz: %.1fdB</string>
@@ -139,8 +137,6 @@
     <string name="shortcut_profile_added">Added profile shorcut</string>
     <string name="shortcut_profile_removed">Removed profile shorcut</string>
 
-    <string name="simultaneously">Remote and analogue</string>
-
     <string name="slow_roll_off">Slow roll-off</string>
 
     <string name="standby_mode">Standby mode</string>
@@ -152,12 +148,15 @@
     <string name="usb">USB</string>
 
     <string name="volume">Volume</string>
+    <string name="volume_down">Volume down</string>
     <string name="volume_export">Export volume level</string>
     <string name="volume_level">Volume level: %s</string>
-    <string name="volume_mode">Volume mode</string>
+    <string name="volume_mute">Mute</string>
     <string name="volume_step_size">Volume step size</string>
     <string name="volume_step_size_1">1</string>
     <string name="volume_step_size_2">2</string>
     <string name="volume_step_size_3">3</string>
     <string name="volume_step_size_4">4</string>
+    <string name="volume_unmute">Unmute</string>
+    <string name="volume_up">Volume Up</string>
 </resources>

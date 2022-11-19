@@ -27,6 +27,7 @@ import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanSettings
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.core.content.ContextCompat
 import com.tomg.fiiok9control.DEVICE_K9_PRO_NAME
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -40,10 +41,18 @@ class SetupRepository @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
 
-    val requiredPermissions = listOf(
-        Manifest.permission.BLUETOOTH_CONNECT,
-        Manifest.permission.BLUETOOTH_SCAN
-    )
+    val requiredPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        listOf(
+            Manifest.permission.BLUETOOTH_CONNECT,
+            Manifest.permission.BLUETOOTH_SCAN,
+            Manifest.permission.POST_NOTIFICATIONS
+        )
+    } else {
+        listOf(
+            Manifest.permission.BLUETOOTH_CONNECT,
+            Manifest.permission.BLUETOOTH_SCAN
+        )
+    }
 
     @Volatile
     private var callback: BleScanCallback? = null

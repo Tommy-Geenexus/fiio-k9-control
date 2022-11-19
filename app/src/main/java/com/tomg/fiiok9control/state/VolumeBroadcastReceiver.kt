@@ -18,57 +18,35 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.fiiok9control.state.business
+package com.tomg.fiiok9control.state
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import com.tomg.fiiok9control.INTENT_ACTION_VOLUME_DOWN
+import com.tomg.fiiok9control.INTENT_ACTION_VOLUME_MUTE
+import com.tomg.fiiok9control.INTENT_ACTION_VOLUME_UP
 
-sealed class StateSideEffect : Parcelable {
+class VolumeBroadcastReceiver(
+    private val onVolumeUp: () -> Unit,
+    private val onVolumeDown: () -> Unit,
+    private val onVolumeMute: () -> Unit
+) : BroadcastReceiver() {
 
-    sealed class Characteristic : StateSideEffect() {
-
-        @Parcelize
-        object Write : Characteristic()
-
-        @Parcelize
-        object Changed : Characteristic()
+    override fun onReceive(
+        context: Context?,
+        intent: Intent?
+    ) {
+        when (intent?.action) {
+            INTENT_ACTION_VOLUME_UP -> {
+                onVolumeUp()
+            }
+            INTENT_ACTION_VOLUME_DOWN -> {
+                onVolumeDown()
+            }
+            INTENT_ACTION_VOLUME_MUTE -> {
+                onVolumeMute()
+            }
+        }
     }
-
-    sealed class ExportProfile : StateSideEffect() {
-
-        @Parcelize
-        object Success : ExportProfile()
-
-        @Parcelize
-        object Failure : ExportProfile()
-    }
-
-    sealed class Reconnect : StateSideEffect() {
-
-        @Parcelize
-        object Initiated : Reconnect()
-
-        @Parcelize
-        object Success : Reconnect()
-
-        @Parcelize
-        object Failure : Reconnect()
-    }
-
-    @Parcelize
-    object Disconnect : StateSideEffect()
-
-    sealed class Request : StateSideEffect() {
-
-        @Parcelize
-        data class Failure(
-            val disconnected: Boolean = false
-        ) : Request()
-    }
-
-    @Parcelize
-    data class NotifyVolume(
-        val volumePercent: String,
-        val isMuted: Boolean
-    ) : StateSideEffect()
 }

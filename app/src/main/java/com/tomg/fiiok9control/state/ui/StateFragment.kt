@@ -20,6 +20,13 @@
 
 package com.tomg.fiiok9control.state.ui
 
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -34,6 +41,11 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tomg.fiiok9control.BaseFragment
 import com.tomg.fiiok9control.Empty
+import com.tomg.fiiok9control.ID_NOTIFICATION
+import com.tomg.fiiok9control.ID_NOTIFICATION_CHANNEL
+import com.tomg.fiiok9control.INTENT_ACTION_VOLUME_DOWN
+import com.tomg.fiiok9control.INTENT_ACTION_VOLUME_MUTE
+import com.tomg.fiiok9control.INTENT_ACTION_VOLUME_UP
 import com.tomg.fiiok9control.KEY_PROFILE_NAME
 import com.tomg.fiiok9control.KEY_PROFILE_VOLUME_EXPORT
 import com.tomg.fiiok9control.R
@@ -43,6 +55,7 @@ import com.tomg.fiiok9control.profile.data.Profile
 import com.tomg.fiiok9control.showSnackbar
 import com.tomg.fiiok9control.state.IndicatorState
 import com.tomg.fiiok9control.state.InputSource
+import com.tomg.fiiok9control.state.VolumeBroadcastReceiver
 import com.tomg.fiiok9control.state.business.StateSideEffect
 import com.tomg.fiiok9control.state.business.StateState
 import com.tomg.fiiok9control.state.business.StateViewModel
@@ -55,6 +68,29 @@ class StateFragment :
     StateAdapter.Listener {
 
     private val stateViewModel: StateViewModel by viewModels()
+
+    private var volumeReceiver: VolumeBroadcastReceiver = VolumeBroadcastReceiver(
+        onVolumeUp = {
+            stateViewModel.sendGaiaPacketVolume(
+                lifecycleScope,
+                gaiaGattService(),
+                volumeUp = true
+            )
+        },
+        onVolumeDown = {
+            stateViewModel.sendGaiaPacketVolume(
+                lifecycleScope,
+                gaiaGattService(),
+                volumeUp = false
+            )
+        },
+        onVolumeMute = {
+            stateViewModel.sendGaiaPacketMuteEnabled(
+                lifecycleScope,
+                gaiaGattService()
+            )
+        }
+    )
 
     override fun onViewCreated(
         view: View,
@@ -199,19 +235,26 @@ class StateFragment :
             }
         }
         lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
                 stateViewModel.container.sideEffectFlow.collect { sideEffect ->
                     handleSideEffect(sideEffect)
                 }
             }
         }
         lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
                 gaiaGattSideEffectFlow.collect { sideEffect ->
                     handleGaiaGattSideEffect(sideEffect)
                 }
             }
         }
+        requireActivity().registerReceiver(
+            volumeReceiver,
+            IntentFilter(INTENT_ACTION_VOLUME_UP).apply {
+                addAction(INTENT_ACTION_VOLUME_DOWN)
+                addAction(INTENT_ACTION_VOLUME_MUTE)
+            }
+        )
     }
 
     override fun onResume() {
@@ -226,7 +269,9 @@ class StateFragment :
 
     override fun onDestroyView() {
         super.onDestroyView()
+        requireActivity().unregisterReceiver(volumeReceiver)
         stateViewModel.clearGaiaPacketResponses()
+        cancelNotification()
     }
 
     override fun onProfileShortcutSelected(profile: Profile) {
@@ -331,6 +376,9 @@ class StateFragment :
                     gaiaGattService()
                 )
             }
+            is StateSideEffect.NotifyVolume -> {
+                updateOrShowNotification(sideEffect.volumePercent, sideEffect.isMuted)
+            }
             is StateSideEffect.Request.Failure -> {
                 binding.progress.hide()
                 if (sideEffect.disconnected) {
@@ -357,5 +405,94 @@ class StateFragment :
             else -> {
             }
         }
+    }
+
+    private fun updateOrShowNotification(
+        volumePercent: String,
+        isMuted: Boolean
+    ) {
+        val nm =
+            requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        nm.createNotificationChannel(
+            NotificationChannel(
+                ID_NOTIFICATION_CHANNEL,
+                requireContext().getString(R.string.app_name),
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                setShowBadge(false)
+            }
+        )
+        nm.notify(ID_NOTIFICATION, createOrUpdateNotification(volumePercent, isMuted))
+    }
+
+    private fun cancelNotification() {
+        val nm =
+            requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        nm.cancel(ID_NOTIFICATION)
+    }
+
+    private fun createOrUpdateNotification(
+        volumePercent: String,
+        isMuted: Boolean
+    ): Notification {
+        val context = requireContext()
+        val mute = if (isMuted) {
+            context.getString(R.string.volume_unmute)
+        } else {
+            context.getString(R.string.volume_mute)
+        }
+        return Notification
+            .Builder(context, ID_NOTIFICATION_CHANNEL)
+            .setSmallIcon(R.drawable.ic_k9)
+            .setContentTitle(context.getString(R.string.app_name))
+            .setContentText(context.getString(R.string.volume_level, volumePercent))
+            .setContentIntent(
+                PendingIntent.getActivity(
+                    context,
+                    0,
+                    context.packageManager.getLaunchIntentForPackage(context.packageName),
+                    PendingIntent.FLAG_IMMUTABLE
+                )
+            )
+            .addAction(
+                Notification.Action.Builder(
+                    null,
+                    context.getString(R.string.volume_up),
+                    PendingIntent.getBroadcast(
+                        context,
+                        0,
+                        Intent(INTENT_ACTION_VOLUME_UP),
+                        PendingIntent.FLAG_IMMUTABLE
+                    )
+                ).build()
+            )
+            .addAction(
+                Notification.Action.Builder(
+                    null,
+                    context.getString(R.string.volume_down),
+                    PendingIntent.getBroadcast(
+                        context,
+                        0,
+                        Intent(INTENT_ACTION_VOLUME_DOWN),
+                        PendingIntent.FLAG_IMMUTABLE
+                    )
+                ).build()
+            )
+            .addAction(
+                Notification.Action.Builder(
+                    null,
+                    mute,
+                    PendingIntent.getBroadcast(
+                        context,
+                        0,
+                        Intent(INTENT_ACTION_VOLUME_MUTE),
+                        PendingIntent.FLAG_IMMUTABLE
+                    )
+                ).build()
+            )
+            .setOngoing(true)
+            .setOnlyAlertOnce(true)
+            .setVisibility(Notification.VISIBILITY_PUBLIC)
+            .build()
     }
 }

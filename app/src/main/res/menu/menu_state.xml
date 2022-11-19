@@ -5,18 +5,18 @@
     <item
         android:id="@+id/volume_up"
         android:icon="@drawable/ic_volume_up"
-        android:title="@string/Mute"
+        android:title="@string/volume_mute"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/volume_down"
         android:icon="@drawable/ic_volume_down"
-        android:title="@string/Mute"
+        android:title="@string/volume_mute"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/mute"
-        android:title="@string/Mute"
+        android:title="@string/volume_mute"
         app:showAsAction="never">
 
         <menu>

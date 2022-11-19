@@ -26,7 +26,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
-import android.os.Parcelable
 import android.os.PersistableBundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
@@ -77,7 +76,7 @@ class FiioK9ControlActivity : AppCompatActivity() {
                 KEY_SERVICE_CONNECTED,
                 bundleOf(KEY_SERVICE_CONNECTED to true)
             )
-            consumeProfileShortcutIntent()
+            handleProfileShortcutIntent()
         },
         onServiceDisconnected = {
             gaiaGattService = null
@@ -95,7 +94,7 @@ class FiioK9ControlActivity : AppCompatActivity() {
     init {
         addOnNewIntentListener { intent ->
             setIntent(intent)
-            consumeProfileShortcutIntent()
+            handleProfileShortcutIntent()
         }
     }
 
@@ -137,14 +136,16 @@ class FiioK9ControlActivity : AppCompatActivity() {
     }
 
     @Suppress("DEPRECATION")
-    private fun consumeProfileShortcutIntent() {
+    private fun handleProfileShortcutIntent() {
+        if (intent.hasExtra(INTENT_EXTRA_CONSUMED)) {
+            return
+        }
         val profile = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent.getParcelableExtra(INTENT_ACTION_SHORTCUT_PROFILE, PersistableBundle::class.java)
         } else {
             intent.getParcelableExtra(INTENT_ACTION_SHORTCUT_PROFILE)
         }
         if (profile != null) {
-            intent.putExtra(INTENT_ACTION_SHORTCUT_PROFILE, (null as Parcelable?))
             supportFragmentManager.setFragmentResult(
                 KEY_SHORTCUT_PROFILE,
                 bundleOf(KEY_SHORTCUT_PROFILE to profile)

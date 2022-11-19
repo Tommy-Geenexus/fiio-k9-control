@@ -72,6 +72,7 @@ abstract class BaseFragment<B : ViewBinding>(
                     args.getParcelable(KEY_SHORTCUT_PROFILE)
                 }
                 if (profile != null) {
+                    requireActivity().intent.putExtra(INTENT_EXTRA_CONSUMED, true)
                     onProfileShortcutSelected(Profile.createFromPersistableBundle(profile))
                 }
             }

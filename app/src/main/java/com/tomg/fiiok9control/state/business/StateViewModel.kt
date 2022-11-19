@@ -136,12 +136,14 @@ class StateViewModel @Inject constructor(
                             volumePercent = volume.second
                         )
                     }
+                    postSideEffect(StateSideEffect.NotifyVolume(volume.second, state.isMuted))
                 }
                 K9Command.Get.MuteEnabled.commandId -> {
                     val isMuted = K9PacketDecoder.decodePayloadGetMuteEnabled(packet.payload)
                     reduce {
                         state.copy(isMuted = isMuted)
                     }
+                    postSideEffect(StateSideEffect.NotifyVolume(state.volumePercent, isMuted))
                 }
                 K9Command.Get.MqaEnabled.commandId -> {
                     val isMqaEnabled = K9PacketDecoder.decodePayloadGetMqaEnabled(packet.payload)
