@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<resources>
+    <string name="apply">Anwenden</string>
+
+    <string name="audio">Audio</string>
+    <string name="audio_fmt">Audio-Format: %s</string>
+
+    <string name="bluetooth_codecs">Bluetooth-Codecs</string>
+
+    <string name="channel_balance">Kanalbalance</string>
+    <string name="channel_balance_offset">Offset: %1$.1f dB %2$s</string>
+
+    <string name="choose_a_profile_name">Wähle einen Profilnamen</string>
+
+    <string name="classical">Klassisch</string>
+
+    <string name="coaxial">Koaxial</string>
+
+    <string name="connect_to_device">Mit Gerät verbinden\n%s</string>
+
+    <string name="connection_abort">Verbindung abbrechen</string>
+
+    <string name="custom">Benutzerdefiniert</string>
+    <string name="custom_equalizer_preset">Benutzerdefinierte Equalizer-Voreinstellung</string>
+
+    <string name="dance">Dance</string>
+
+    <string name="delete">Löschen</string>
+
+    <string name="device_scan_abort">Geräte-Scan abbrechen</string>
+    <string name="device_scan_start">Geräte-Scan starten</string>
+
+    <string name="disabled">Deaktiviert</string>
+
+    <string name="disconnect">Verbindung trennen</string>
+
+    <string name="enable_bluetooth">Bluetooth aktivieren</string>
+
+    <string name="enabled_default_behaviour">Aktiviert, Standardverhalten</string>
+    <string name="enabled_multi_color_gradient_only">Aktiviert, nur mehrfarbiger Farbverlauf</string>
+
+    <string name="equalizer">Equalizer</string>
+    <string name="equalizer_preset">Equalizer-Voreinstellung</string>
+
+    <string name="export_profile">Profil exportieren</string>
+
+    <string name="fw_version">Bluetooth-Firmware-Version: %s</string>
+
+    <string name="gaia_discover">Entdecke GAIA-Dienste</string>
+
+    <string name="gatt_discover">Entdecke GATT-Dienste</string>
+
+    <string name="grant_permissions">Berechtigungen erteilen</string>
+
+    <string name="hp_pre_simultaneously">HP/Pre-Ausgabe glz.</string>
+
+    <string name="indicator">Indikator</string>
+    <string name="indicator_brightness">Indikator-Helligkeit</string>
+
+    <string name="input_source">Eingangsquelle</string>
+
+    <string name="jazz">Jazz</string>
+
+    <string name="left">Links</string>
+
+    <string name="line_in">Audio-Eingang</string>
+
+    <string name="low_dispersion_short_delay">Geringe Dispersion kurze Verzögerung</string>
+    <string name="low_pass_filter">Tiefpassfilter</string>
+
+    <string name="off">Aus</string>
+
+    <string name="on">An</string>
+
+    <string name="optical">Optisch</string>
+
+    <string name="pair_device">Gerät koppeln</string>
+
+    <string name="pop">Pop</string>
+
+    <string name="profile">Profil</string>
+    <string name="profile_export_failure">Profil konnte nicht exportiert werden</string>
+    <string name="profile_export_success">Profil erfolgreich exportiert</string>
+    <string name="profile_name">Profilname</string>
+
+    <string name="r_b">
+        <![CDATA[R&B]]>
+    </string>
+
+    <string name="reset_settings">Einstellungen zurücksetzen</string>
+
+    <string name="restore_default">Standardeinstellungen wiederherstellen</string>
+
+    <string name="right">Rechts</string>
+
+    <string name="rock">Rock</string>
+
+    <string name="sharp_roll_off">Scharfes Abrollen</string>
+
+    <string name="short_delay_sharp_roll_off">Kurze Verzögerung scharfes Abrollen</string>
+    <string name="short_delay_slow_roll_off">Kurze Verzögerung langsames Abrollen</string>
+
+    <string name="shortcut_profile_added">Profil-Shorcut hinzugefügt</string>
+    <string name="shortcut_profile_removed">Profil-Shorcut entfernt</string>
+
+    <string name="slow_roll_off">Langsames Abrollen</string>
+
+    <string name="standby_mode">Bereitschaftsmodus</string>
+
+    <string name="state">Zustand</string>
+
+    <string name="super_slow">Super langsam</string>
+
+    <string name="usb">USB</string>
+
+    <string name="volume">Lautstärke</string>
+    <string name="volume_down">Lautst. senken</string>
+    <string name="volume_export">Lautstärkelevel exportieren</string>
+    <string name="volume_level">Lautstärkelevel: %s</string>
+    <string name="volume_mute">Stummsch.</string>
+    <string name="volume_step_size">Lautstärke-Schrittgröße</string>
+    <string name="volume_step_size_1">1</string>
+    <string name="volume_step_size_2">2</string>
+    <string name="volume_step_size_3">3</string>
+    <string name="volume_step_size_4">4</string>
+    <string name="volume_unmute">Stummsch. aufheben</string>
+    <string name="volume_up">Lautst. erhöhen</string>
+</resources>
