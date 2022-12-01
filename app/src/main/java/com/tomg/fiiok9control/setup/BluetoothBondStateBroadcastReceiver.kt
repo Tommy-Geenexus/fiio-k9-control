@@ -18,30 +18,30 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.fiiok9control.setup.business
+package com.tomg.fiiok9control.setup
 
-import android.os.Parcelable
-import com.tomg.fiiok9control.profile.data.Profile
-import kotlinx.parcelize.Parcelize
+import android.bluetooth.BluetoothDevice
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
 
-sealed class SetupSideEffect : Parcelable {
+class BluetoothBondStateBroadcastReceiver(
+    private val onDeviceBondStateChanged: (Boolean) -> Unit
+) : BroadcastReceiver() {
 
-    sealed class Ble : SetupSideEffect() {
-
-        @Parcelize
-        object Unsupported : Ble()
+    override fun onReceive(
+        context: Context?,
+        intent: Intent?
+    ) {
+        if (intent?.action == BluetoothDevice.ACTION_BOND_STATE_CHANGED) {
+            when (intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.BOND_NONE)) {
+                BluetoothDevice.BOND_BONDED -> {
+                    onDeviceBondStateChanged(true)
+                }
+                BluetoothDevice.BOND_NONE -> {
+                    onDeviceBondStateChanged(false)
+                }
+            }
+        }
     }
-
-    @Parcelize
-    data class GrantPermissions(
-        val requiredPermissions: List<String>
-    ) : SetupSideEffect()
-
-    @Parcelize
-    data class NavigateToProfile(
-        val profile: Profile
-    ) : SetupSideEffect()
-
-    @Parcelize
-    object NavigateToState : SetupSideEffect()
 }

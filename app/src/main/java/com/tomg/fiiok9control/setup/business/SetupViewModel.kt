@@ -94,8 +94,11 @@ class SetupViewModel @Inject constructor(
                 bonded = false
             )
         }
-        if (enabled && setupRepository.arePermissionsGranted()) {
-            postSideEffect(SetupSideEffect.Ble.StartScan)
+    }
+
+    fun handleBluetoothBondStateChange(bonded: Boolean) = intent {
+        reduce {
+            state.copy(bonded = bonded)
         }
     }
 
@@ -153,9 +156,6 @@ class SetupViewModel @Inject constructor(
         reduce {
             state.copy(permissionsGranted = permissionsGranted)
         }
-        if (permissionsGranted) {
-            postSideEffect(SetupSideEffect.Ble.StartScan)
-        }
     }
 
     fun handleShortcutProfileSelected(profile: Profile) = intent {
@@ -173,7 +173,6 @@ class SetupViewModel @Inject constructor(
                         bluetoothEnabled = setupRepository.isBluetoothEnabled()
                     )
                 }
-                postSideEffect(SetupSideEffect.Ble.StartScan)
             } else {
                 postSideEffect(
                     SetupSideEffect.GrantPermissions(setupRepository.requiredPermissions)
@@ -207,20 +206,8 @@ class SetupViewModel @Inject constructor(
     }
 
     fun synchronizeState() = intent {
-        if (!state.isLoading) {
-            reduce {
-                state.copy(isLoading = true)
-            }
-            val bonded = setupRepository.isDeviceBonded(state.deviceAddress)
-            reduce {
-                state.copy(
-                    permissionsGranted = setupRepository.arePermissionsGranted(),
-                    bluetoothEnabled = setupRepository.isBluetoothEnabled(),
-                    deviceAddress = if (bonded) state.deviceAddress else String.Empty,
-                    bonded = bonded,
-                    isLoading = false
-                )
-            }
+        reduce {
+            state.copy(permissionsGranted = setupRepository.arePermissionsGranted())
         }
     }
 }

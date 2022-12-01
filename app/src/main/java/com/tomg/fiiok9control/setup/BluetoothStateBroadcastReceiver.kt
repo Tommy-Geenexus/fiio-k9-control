@@ -18,16 +18,15 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.fiiok9control
+package com.tomg.fiiok9control.setup
 
 import android.bluetooth.BluetoothAdapter
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 
-class BluetoothStateReceiver(
-    private val onBluetoothDisabled: () -> Unit,
-    private val onBluetoothEnabled: () -> Unit
+class BluetoothStateBroadcastReceiver(
+    private val onBluetoothStateChanged: (Boolean) -> Unit
 ) : BroadcastReceiver() {
 
     override fun onReceive(
@@ -36,11 +35,11 @@ class BluetoothStateReceiver(
     ) {
         if (intent?.action == BluetoothAdapter.ACTION_STATE_CHANGED) {
             when (intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR)) {
-                BluetoothAdapter.STATE_TURNING_OFF -> {
-                    onBluetoothDisabled()
+                BluetoothAdapter.STATE_OFF -> {
+                    onBluetoothStateChanged(false)
                 }
                 BluetoothAdapter.STATE_ON -> {
-                    onBluetoothEnabled()
+                    onBluetoothStateChanged(true)
                 }
             }
         }

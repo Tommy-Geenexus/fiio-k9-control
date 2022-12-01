@@ -39,6 +39,7 @@ import com.tomg.fiiok9control.databinding.ActivityFiioK9ControlBinding
 import com.tomg.fiiok9control.gaia.GaiaGattService
 import com.tomg.fiiok9control.gaia.GaiaGattServiceConnection
 import com.tomg.fiiok9control.gaia.GaiaGattSideEffect
+import com.tomg.fiiok9control.setup.BluetoothStateBroadcastReceiver
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -49,17 +50,11 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class FiioK9ControlActivity : AppCompatActivity() {
 
-    private var bluetoothStateReceiver: BluetoothStateReceiver = BluetoothStateReceiver(
-        onBluetoothDisabled = {
+    private val bluetoothStateReceiver = BluetoothStateBroadcastReceiver(
+        onBluetoothStateChanged = { enabled ->
             supportFragmentManager.setFragmentResult(
                 KEY_BLUETOOTH_ENABLED,
-                bundleOf(KEY_BLUETOOTH_ENABLED to false)
-            )
-        },
-        onBluetoothEnabled = {
-            supportFragmentManager.setFragmentResult(
-                KEY_BLUETOOTH_ENABLED,
-                bundleOf(KEY_BLUETOOTH_ENABLED to true)
+                bundleOf(KEY_BLUETOOTH_ENABLED to enabled)
             )
         }
     )

@@ -20,7 +20,10 @@
 
 package com.tomg.fiiok9control.setup.ui
 
+import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
 import android.content.Intent
+import android.content.IntentFilter
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -35,6 +38,8 @@ import com.tomg.fiiok9control.R
 import com.tomg.fiiok9control.databinding.FragmentSetupBinding
 import com.tomg.fiiok9control.gaia.GaiaGattSideEffect
 import com.tomg.fiiok9control.profile.data.Profile
+import com.tomg.fiiok9control.setup.BluetoothBondStateBroadcastReceiver
+import com.tomg.fiiok9control.setup.BluetoothStateBroadcastReceiver
 import com.tomg.fiiok9control.setup.business.SetupSideEffect
 import com.tomg.fiiok9control.setup.business.SetupState
 import com.tomg.fiiok9control.setup.business.SetupViewModel
@@ -56,6 +61,16 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>(R.layout.fragment_setup
     ) {
     }
     private val setupViewModel: SetupViewModel by viewModels()
+    private val bluetoothBondStateReceiver = BluetoothBondStateBroadcastReceiver(
+        onDeviceBondStateChanged = { bonded ->
+            setupViewModel.handleBluetoothBondStateChange(bonded)
+        }
+    )
+    private var bluetoothStateReceiver = BluetoothStateBroadcastReceiver(
+        onBluetoothStateChanged = { enabled ->
+            setupViewModel.handleBluetoothStateChange(enabled)
+        }
+    )
 
     override fun onViewCreated(
         view: View,
@@ -94,6 +109,14 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>(R.layout.fragment_setup
                 }
             }
         }
+        requireActivity().registerReceiver(
+            bluetoothBondStateReceiver,
+            IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED)
+        )
+        requireActivity().registerReceiver(
+            bluetoothStateReceiver,
+            IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
+        )
     }
 
     override fun onResume() {
@@ -103,6 +126,8 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>(R.layout.fragment_setup
 
     override fun onDestroyView() {
         super.onDestroyView()
+        requireActivity().unregisterReceiver(bluetoothBondStateReceiver)
+        requireActivity().unregisterReceiver(bluetoothStateReceiver)
         setupViewModel.stopBleScan()
     }
 
@@ -148,9 +173,6 @@ class SetupFragment : BaseFragment<FragmentSetupBinding>(R.layout.fragment_setup
 
     private fun handleSideEffect(sideEffect: SetupSideEffect) {
         when (sideEffect) {
-            SetupSideEffect.Ble.StartScan -> {
-                setupViewModel.startBleScan()
-            }
             SetupSideEffect.Ble.Unsupported -> {
                 requireActivity().finish()
             }

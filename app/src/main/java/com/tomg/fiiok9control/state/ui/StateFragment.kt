@@ -68,8 +68,7 @@ class StateFragment :
     StateAdapter.Listener {
 
     private val stateViewModel: StateViewModel by viewModels()
-
-    private var volumeReceiver: VolumeBroadcastReceiver = VolumeBroadcastReceiver(
+    private val volumeReceiver: VolumeBroadcastReceiver = VolumeBroadcastReceiver(
         onVolumeUp = {
             stateViewModel.sendGaiaPacketVolume(
                 lifecycleScope,
