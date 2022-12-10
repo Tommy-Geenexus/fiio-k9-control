@@ -270,7 +270,7 @@ class StateFragment :
         super.onDestroyView()
         requireActivity().unregisterReceiver(volumeReceiver)
         stateViewModel.clearGaiaPacketResponses()
-        cancelNotification()
+        requireContext().getSystemService(NotificationManager::class.java).cancel(ID_NOTIFICATION)
     }
 
     override fun onProfileShortcutSelected(profile: Profile) {
@@ -424,12 +424,6 @@ class StateFragment :
         nm.notify(ID_NOTIFICATION, createOrUpdateNotification(volumePercent, isMuted))
     }
 
-    private fun cancelNotification() {
-        val nm =
-            requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        nm.cancel(ID_NOTIFICATION)
-    }
-
     private fun createOrUpdateNotification(
         volumePercent: String,
         isMuted: Boolean
@@ -489,7 +483,6 @@ class StateFragment :
                     )
                 ).build()
             )
-            .setOngoing(true)
             .setOnlyAlertOnce(true)
             .setVisibility(Notification.VISIBILITY_PUBLIC)
             .build()
