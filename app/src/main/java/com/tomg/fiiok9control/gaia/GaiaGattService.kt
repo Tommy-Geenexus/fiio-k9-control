@@ -80,7 +80,7 @@ class GaiaGattService : BLEService() {
     override fun onCreate() {
         super.onCreate()
         bm = applicationContext.getSystemService(BluetoothManager::class.java)
-        coroutineScope = CoroutineScope(Dispatchers.IO)
+        coroutineScope = CoroutineScope(Dispatchers.Main.immediate)
         thread = HandlerThread("GaiaGattService", Process.THREAD_PRIORITY_BACKGROUND)
         thread.start()
         handler = Handler(thread.looper)
@@ -293,14 +293,14 @@ class GaiaGattService : BLEService() {
     }
 
     suspend fun connect(address: String): Boolean {
-        return withContext(coroutineScope.coroutineContext) {
+        return withContext(Dispatchers.IO) {
             disconnectAndReset()
             super.connectToDevice(address)
         }
     }
 
     suspend fun disconnectAndReset() {
-        withContext(coroutineScope.coroutineContext) {
+        withContext(Dispatchers.IO) {
             notificationCharacteristics.forEach { characteristic ->
                 requestCharacteristicNotification(characteristic, false)
             }
@@ -343,7 +343,7 @@ class GaiaGattService : BLEService() {
 
     @SuppressLint("MissingPermission")
     suspend fun sendGaiaPacket(packet: GaiaPacket): Boolean? {
-        return withContext(coroutineScope.coroutineContext) {
+        return withContext(Dispatchers.IO) {
             if (!hasBluetoothConnectPermission()) {
                 return@withContext false
             }
