@@ -86,9 +86,10 @@ ktlint {
 
 spotless {
     kotlin {
+        ratchetFrom("origin/main")
         target("**/*.kt")
-        //noinspection GroovyImplicitNullArgumentCall
-        ktlint()
+        ktlint("0.47.1")
+        trimTrailingWhitespace()
         endWithNewline()
         licenseHeaderFile rootProject.file("spotless/copyright.txt")
     }
