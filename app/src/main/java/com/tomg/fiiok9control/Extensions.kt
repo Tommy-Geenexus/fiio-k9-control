@@ -29,7 +29,16 @@ import androidx.lifecycle.findViewTreeLifecycleOwner
 import com.google.android.material.snackbar.Snackbar
 import com.qualcomm.qti.libraries.gaia.packets.GaiaPacketBREDR
 import dev.chrisbanes.insetter.applyInsetter
+import kotlin.coroutines.CoroutineContext
 import kotlin.experimental.and
+import kotlinx.coroutines.ensureActive
+
+suspend fun <T> CoroutineContext.suspendRunCatching(block: suspend () -> T): Result<T> = try {
+    Result.success(block())
+} catch (exception: Exception) {
+    ensureActive()
+    Result.failure(exception)
+}
 
 fun View.applyInsetMargins() {
     applyInsetter {

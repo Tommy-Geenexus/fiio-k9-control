@@ -40,14 +40,14 @@ import com.qualcomm.qti.libraries.ble.BLEService
 import com.qualcomm.qti.libraries.ble.Characteristics
 import com.qualcomm.qti.libraries.gaia.packets.GaiaPacket
 import com.qualcomm.qti.libraries.gaia.packets.GaiaPacketBLE
+import java.lang.ref.WeakReference
+import java.util.UUID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.lang.ref.WeakReference
-import java.util.UUID
 
 class GaiaGattService : BLEService() {
 

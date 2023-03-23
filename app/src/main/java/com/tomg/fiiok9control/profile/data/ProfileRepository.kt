@@ -27,12 +27,13 @@ import androidx.core.graphics.drawable.IconCompat
 import com.tomg.fiiok9control.Empty
 import com.tomg.fiiok9control.INTENT_ACTION_SHORTCUT_PROFILE
 import com.tomg.fiiok9control.R
+import com.tomg.fiiok9control.suspendRunCatching
 import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 class ProfileRepository @Inject constructor(
@@ -48,12 +49,14 @@ class ProfileRepository @Inject constructor(
     fun getProfiles() = profileDao.getProfiles()
 
     suspend fun insertProfile(profile: Profile): Boolean {
-        return runCatching {
-            if (profileDao.getProfileCount() < PROFILES_MAX) {
-                profileDao.insert(profile)
-                true
-            } else {
-                false
+        return withContext(Dispatchers.IO) {
+            coroutineContext.suspendRunCatching {
+                if (profileDao.getProfileCount() < PROFILES_MAX) {
+                    profileDao.insert(profile)
+                    true
+                } else {
+                    false
+                }
             }
         }.getOrElse { exception ->
             Timber.e(exception)
@@ -62,25 +65,27 @@ class ProfileRepository @Inject constructor(
     }
 
     suspend fun deleteProfile(profile: Profile): Boolean {
-        return runCatching {
-            profileDao.delete(profile)
-            true
-        }.getOrElse { exception ->
-            Timber.e(exception)
-            false
+        return withContext(Dispatchers.IO) {
+            coroutineContext.suspendRunCatching {
+                profileDao.delete(profile)
+                true
+            }.getOrElse { exception ->
+                Timber.e(exception)
+                false
+            }
         }
     }
 
     suspend fun addProfileShortcut(profile: Profile): Boolean {
         return withContext(Dispatchers.IO) {
-            runCatching {
+            coroutineContext.suspendRunCatching {
                 val intent = context
                     .packageManager
                     .getLaunchIntentForPackage(context.packageName)
                     ?.apply {
                         putExtra(INTENT_ACTION_SHORTCUT_PROFILE, profile.toPersistableBundle())
                     }
-                    ?: return@runCatching false
+                    ?: return@suspendRunCatching false
                 val shortcut = ShortcutInfoCompat.Builder(context, profile.id.toString())
                     .setShortLabel(profile.name)
                     .setLongLabel(profile.name)
@@ -100,7 +105,7 @@ class ProfileRepository @Inject constructor(
     suspend fun removeProfileShortcut(profile: Profile): Boolean {
         return withContext(Dispatchers.IO) {
             val shortcut = listOf(profile.id.toString())
-            runCatching {
+            coroutineContext.suspendRunCatching {
                 ShortcutManagerCompat.removeDynamicShortcuts(context, shortcut)
                 ShortcutManagerCompat.disableShortcuts(context, shortcut, String.Empty)
                 true

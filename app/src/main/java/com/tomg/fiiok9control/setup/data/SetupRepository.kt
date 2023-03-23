@@ -30,12 +30,13 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.ContextCompat
 import com.tomg.fiiok9control.DEVICE_K9_PRO_NAME
+import com.tomg.fiiok9control.suspendRunCatching
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.lang.ref.WeakReference
+import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import java.lang.ref.WeakReference
-import javax.inject.Inject
 
 class SetupRepository @Inject constructor(
     @ApplicationContext private val context: Context
@@ -76,7 +77,7 @@ class SetupRepository @Inject constructor(
             return false
         }
         return withContext(Dispatchers.IO) {
-            runCatching {
+            coroutineContext.suspendRunCatching {
                 context
                     .getSystemService(BluetoothManager::class.java)
                     ?.adapter

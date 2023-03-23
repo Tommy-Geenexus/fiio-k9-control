@@ -34,6 +34,7 @@ import com.tomg.fiiok9control.gaia.fiio.K9PacketFactory
 import com.tomg.fiiok9control.gaia.isFiioPacket
 import com.tomg.fiiok9control.setup.data.SetupRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -43,7 +44,6 @@ import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
-import javax.inject.Inject
 
 @HiltViewModel
 class AudioViewModel @Inject constructor(

@@ -32,6 +32,7 @@
     <ID>MagicNumber:K9PacketFactory.kt$K9PacketFactory$60f</ID>
     <ID>MagicNumber:StateFragment.kt$StateFragment.&lt;no name provided&gt;$3</ID>
     <ID>NestedBlockDepth:GaiaGattService.kt$GaiaGattService$private fun checkService(gattService: BluetoothGattService): Boolean</ID>
+    <ID>TooGenericExceptionCaught:Extensions.kt$exception: Exception</ID>
     <ID>TooManyFunctions:AudioFragment.kt$AudioFragment : BaseFragmentListener</ID>
     <ID>TooManyFunctions:BaseFragment.kt$BaseFragment&lt;B : ViewBinding&gt; : Fragment</ID>
     <ID>TooManyFunctions:EqFragment.kt$EqFragment : BaseFragmentListener</ID>
