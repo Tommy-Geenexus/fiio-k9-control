@@ -22,8 +22,8 @@ android {
         applicationId "com.tomg.fiiok9control"
         minSdk 31
         targetSdk 33
-        versionCode 12
-        versionName "1.4.1"
+        versionCode 13
+        versionName "1.4.2"
     }
 
     buildTypes {
