@@ -22,7 +22,8 @@ package com.tomg.fiiok9control
 
 const val TOP_LEVEL_PACKAGE_NAME = "com.tomg.fiiok9control."
 
-const val ID_NOTIFICATION = 0
+const val REQUEST_CODE = 0
+const val ID_NOTIFICATION = 1
 const val ID_NOTIFICATION_CHANNEL = TOP_LEVEL_PACKAGE_NAME + "NOTIFICATION_CHANNEL"
 
 const val KEY_BLUETOOTH_ENABLED = TOP_LEVEL_PACKAGE_NAME + "BLUETOOTH_ENABLED"

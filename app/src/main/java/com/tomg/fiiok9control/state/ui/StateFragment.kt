@@ -24,6 +24,7 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -49,6 +50,7 @@ import com.tomg.fiiok9control.INTENT_ACTION_VOLUME_UP
 import com.tomg.fiiok9control.KEY_PROFILE_NAME
 import com.tomg.fiiok9control.KEY_PROFILE_VOLUME_EXPORT
 import com.tomg.fiiok9control.R
+import com.tomg.fiiok9control.REQUEST_CODE
 import com.tomg.fiiok9control.databinding.FragmentStateBinding
 import com.tomg.fiiok9control.gaia.GaiaGattSideEffect
 import com.tomg.fiiok9control.profile.data.Profile
@@ -270,7 +272,7 @@ class StateFragment :
         super.onDestroyView()
         requireActivity().unregisterReceiver(volumeReceiver)
         stateViewModel.clearGaiaPacketResponses()
-        requireContext().getSystemService(NotificationManager::class.java).cancel(ID_NOTIFICATION)
+        gaiaGattService()?.stopForeground(Service.STOP_FOREGROUND_REMOVE)
     }
 
     override fun onProfileShortcutSelected(profile: Profile) {
@@ -376,7 +378,14 @@ class StateFragment :
                 )
             }
             is StateSideEffect.NotifyVolume -> {
-                updateOrShowNotification(sideEffect.volumePercent, sideEffect.isMuted)
+                startGaiaGattForegroundService(
+                    volumePercent = sideEffect.volumePercent,
+                    mute = if (sideEffect.isMuted) {
+                        getString(R.string.volume_unmute)
+                    } else {
+                        getString(R.string.volume_mute)
+                    }
+                )
             }
             is StateSideEffect.Request.Failure -> {
                 binding.progress.hide()
@@ -406,43 +415,45 @@ class StateFragment :
         }
     }
 
-    private fun updateOrShowNotification(
+    private fun startGaiaGattForegroundService(
         volumePercent: String,
-        isMuted: Boolean
+        mute: String
     ) {
         val nm =
             requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        nm.createNotificationChannel(
-            NotificationChannel(
-                ID_NOTIFICATION_CHANNEL,
-                requireContext().getString(R.string.app_name),
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                setShowBadge(false)
+        kotlin.runCatching {
+            if (nm.getNotificationChannel(ID_NOTIFICATION_CHANNEL) == null) {
+                nm.createNotificationChannel(
+                    NotificationChannel(
+                        ID_NOTIFICATION_CHANNEL,
+                        requireContext().getString(R.string.app_name),
+                        NotificationManager.IMPORTANCE_HIGH
+                    ).apply {
+                        setShowBadge(false)
+                    }
+                )
             }
-        )
-        nm.notify(ID_NOTIFICATION, createOrUpdateNotification(volumePercent, isMuted))
+            gaiaGattService()?.startForeground(
+                ID_NOTIFICATION,
+                buildNotification(volumePercent, mute)
+            )
+        }
     }
 
-    private fun createOrUpdateNotification(
+    private fun buildNotification(
         volumePercent: String,
-        isMuted: Boolean
+        mute: String
     ): Notification {
         val context = requireContext()
-        val mute = if (isMuted) {
-            context.getString(R.string.volume_unmute)
-        } else {
-            context.getString(R.string.volume_mute)
-        }
         return Notification
             .Builder(context, ID_NOTIFICATION_CHANNEL)
             .setSmallIcon(R.drawable.ic_k9)
-            .setContentTitle(context.getString(R.string.app_name))
-            .setContentText(context.getString(R.string.volume_level, volumePercent))
+            .setContentTitle(getString(R.string.app_name))
+            .setContentText(getString(R.string.volume_level, volumePercent))
             .setContentIntent(
                 PendingIntent.getActivity(
                     context,
-                    0,
+                    REQUEST_CODE,
                     context.packageManager.getLaunchIntentForPackage(context.packageName),
                     PendingIntent.FLAG_IMMUTABLE
                 )
@@ -453,7 +464,7 @@ class StateFragment :
                     context.getString(R.string.volume_up),
                     PendingIntent.getBroadcast(
                         context,
-                        0,
+                        REQUEST_CODE,
                         Intent(INTENT_ACTION_VOLUME_UP),
                         PendingIntent.FLAG_IMMUTABLE
                     )
@@ -465,7 +476,7 @@ class StateFragment :
                     context.getString(R.string.volume_down),
                     PendingIntent.getBroadcast(
                         context,
-                        0,
+                        REQUEST_CODE,
                         Intent(INTENT_ACTION_VOLUME_DOWN),
                         PendingIntent.FLAG_IMMUTABLE
                     )
@@ -477,13 +488,14 @@ class StateFragment :
                     mute,
                     PendingIntent.getBroadcast(
                         context,
-                        0,
+                        REQUEST_CODE,
                         Intent(INTENT_ACTION_VOLUME_MUTE),
                         PendingIntent.FLAG_IMMUTABLE
                     )
                 ).build()
             )
             .setOnlyAlertOnce(true)
+            .setOngoing(true)
             .setVisibility(Notification.VISIBILITY_PUBLIC)
             .build()
     }
