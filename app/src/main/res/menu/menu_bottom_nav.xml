@@ -8,12 +8,12 @@
 
     <item
         android:id="@id/fragment_audio"
-        android:icon="@drawable/ic_bluetooth_audio"
+        android:icon="@drawable/ic_media_bluetooth"
         android:title="@string/audio" />
 
     <item
         android:id="@id/fragment_eq"
-        android:icon="@drawable/ic_graphic_eq"
+        android:icon="@drawable/ic_eq"
         android:title="@string/equalizer" />
 
     <item

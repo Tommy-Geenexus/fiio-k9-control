@@ -448,7 +448,7 @@ class StateFragment :
         return Notification
             .Builder(context, ID_NOTIFICATION_CHANNEL)
             .setSmallIcon(R.drawable.ic_k9)
-            .setContentTitle(getString(R.string.app_name))
+            .setContentTitle(getString(R.string.fiio_k9))
             .setContentText(getString(R.string.volume_level, volumePercent))
             .setContentIntent(
                 PendingIntent.getActivity(

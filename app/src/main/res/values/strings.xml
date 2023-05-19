@@ -22,7 +22,7 @@
 
     <string name="aac" translatable="false">AAC</string>
 
-    <string name="app_name" translatable="false">FiioK9Control</string>
+    <string name="app_name" translatable="false">FiiOK9Control</string>
 
     <string name="apply">Apply</string>
 
@@ -74,6 +74,8 @@
 
     <string name="export_profile">Export profile</string>
 
+    <string name="fiio_k9" translatable="false">FiiO K9 Pro</string>
+
     <string name="fw_version">Bluetooth firmware version: %s</string>
 
     <string name="gaia_discover">Discovering GAIA services</string>
@@ -117,9 +119,7 @@
     <string name="profile_export_success">Successfully exported profile</string>
     <string name="profile_name">Profile name</string>
 
-    <string name="r_b">
-        <![CDATA[R&B]]>
-    </string>
+    <string name="r_b"><![CDATA[R&B]]></string>
 
     <string name="reset_settings">Reset settings</string>
 

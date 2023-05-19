@@ -35,7 +35,7 @@
             android:drawableTint="?attr/colorOnSurface"
             android:gravity="center_vertical"
             android:textAppearance="?attr/textAppearanceBodyMedium"
-            app:drawableStartCompat="@drawable/ic_music_note"
+            app:drawableStartCompat="@drawable/ic_audio_file"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/fw_version" />
     </androidx.constraintlayout.widget.ConstraintLayout>
