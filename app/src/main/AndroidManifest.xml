@@ -32,6 +32,7 @@
         </activity>
         <service
             android:name="com.tomg.fiiok9control.gaia.GaiaGattService"
+            android:foregroundServiceType="connectedDevice"
             android:exported="false" />
     </application>
 </manifest>
