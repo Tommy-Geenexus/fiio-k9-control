@@ -3,15 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/volume_up"
-        android:icon="@drawable/ic_volume_up"
-        android:title="@string/volume_mute"
+        android:id="@+id/volume_down"
+        android:icon="@drawable/ic_volume_down"
+        android:title="@string/volume_down"
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/volume_down"
-        android:icon="@drawable/ic_volume_down"
-        android:title="@string/volume_mute"
+        android:id="@+id/volume_up"
+        android:icon="@drawable/ic_volume_up"
+        android:title="@string/volume_up"
         app:showAsAction="ifRoom" />
 
     <item
