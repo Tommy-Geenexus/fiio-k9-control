@@ -38,6 +38,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
+@Suppress("BooleanMethodIsAlwaysInverted", "BooleanMethodIsAlwaysInverted")
 class SetupRepository @Inject constructor(
     @ApplicationContext private val context: Context
 ) {

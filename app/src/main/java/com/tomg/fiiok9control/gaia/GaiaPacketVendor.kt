@@ -30,4 +30,5 @@ sealed class GaiaPacketVendor(val vendorId: Int) : Parcelable {
     object Fiio : GaiaPacketVendor(vendorId = 0x0a)
 }
 
+@Suppress("BooleanMethodIsAlwaysInverted")
 fun GaiaPacketBLE.isFiioPacket() = vendorId == GaiaPacketVendor.Fiio.vendorId

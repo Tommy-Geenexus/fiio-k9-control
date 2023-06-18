@@ -1760,7 +1760,6 @@ public abstract class BLEService extends Service {
      *
      * @param mtu
      *          The size to start the negotiations with.
-     *
      * @return true, if the request operation was initiated successfully.
      */
     @SuppressLint("ObsoleteSdkInt")
@@ -1996,7 +1995,7 @@ public abstract class BLEService extends Service {
         }
 
         // Queue is empty: no request to process
-        if (mRequestsQueue.size() <= 0) {
+        if (mRequestsQueue.size() == 0) {
             isQueueProcessing = false;
             return;
         }

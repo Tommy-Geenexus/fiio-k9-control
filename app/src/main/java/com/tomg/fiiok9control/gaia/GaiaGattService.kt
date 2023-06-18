@@ -49,6 +49,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@Suppress("BooleanMethodIsAlwaysInverted", "BooleanMethodIsAlwaysInverted")
 class GaiaGattService : BLEService() {
 
     private val notificationCharacteristics: MutableList<UUID> = mutableListOf()

@@ -92,7 +92,7 @@ public final class ErrorStatus {
      * thrown through the {@link android.bluetooth.BluetoothGattCallback BluetoothGattCallback callbacks}. From the
      * source code these errors can be found under the C Header file <code>gatt_api.h</code>.</p>
      * <p>This class only includes the values which do not correspond to the ATT or the HCI layer.</p>
-     * @link https://android.googlesource.com/platform/external/bluetooth/bluedroid/+/master/stack/include/gatt_api.h
+     * @link <a href="https://android.googlesource.com/platform/external/bluetooth/bluedroid/+/master/stack/include/gatt_api.h">...</a>
      */
     public static class GattApi {
 
