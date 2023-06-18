@@ -18,16 +18,13 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.fiiok9control.gaia
+package com.tomg.fiiok9control.gaia.data
 
-import com.qualcomm.qti.libraries.gaia.packets.GaiaPacket
-import com.qualcomm.qti.libraries.gaia.packets.GaiaPacketBLE
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
-object GaiaPacketFactory {
+sealed class GaiaPacketVendor(val vendorId: Int) : Parcelable {
 
-    fun createGaiaPacket(
-        vendorId: Int = GaiaPacketVendor.Fiio.vendorId,
-        commandId: Int,
-        payload: ByteArray = byteArrayOf()
-    ): GaiaPacket = GaiaPacketBLE(vendorId, commandId, payload)
+    @Parcelize
+    data object Fiio : GaiaPacketVendor(vendorId = 0x0a)
 }

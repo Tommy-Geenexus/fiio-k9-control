@@ -79,7 +79,9 @@ public abstract class GaiaManager {
     /**
      * <p>The main handler to run tasks.</p>>
      */
-    private final Handler mHandler = new Handler(Looper.myLooper());
+    private final Looper myLooper = Looper.myLooper();
+    private final Handler mHandler =
+            new Handler(myLooper != null ? myLooper : Looper.getMainLooper());
     /**
      * The type of transport this manager should use for the GAIA packet format:
      * {@link com.qualcomm.qti.libraries.gaia.GAIA.Transport#BLE BLE} or

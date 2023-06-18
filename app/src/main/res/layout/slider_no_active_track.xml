@@ -2,11 +2,9 @@
 <com.google.android.material.slider.Slider xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/slider"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    style="@style/Widget.FiioK9Control.Slider"
     android:value="0"
     android:valueFrom="-12"
     android:valueTo="12"
-    app:labelBehavior="gone"
     app:tickColor="?attr/colorPrimary"
     app:trackColor="?attr/colorSurfaceVariant" />

@@ -39,20 +39,20 @@ sealed class LowPassFilter(val id: Int) : Parcelable {
     }
 
     @Parcelize
-    object Sharp : LowPassFilter(id = 1)
+    data object Sharp : LowPassFilter(id = 1)
 
     @Parcelize
-    object Slow : LowPassFilter(id = 2)
+    data object Slow : LowPassFilter(id = 2)
 
     @Parcelize
-    object SharpDelay : LowPassFilter(id = 3)
+    data object SharpDelay : LowPassFilter(id = 3)
 
     @Parcelize
-    object SlowDelay : LowPassFilter(id = 4)
+    data object SlowDelay : LowPassFilter(id = 4)
 
     @Parcelize
-    object SuperSlow : LowPassFilter(id = 5)
+    data object SuperSlow : LowPassFilter(id = 5)
 
     @Parcelize
-    object ShortDispersion : LowPassFilter(id = 6)
+    data object ShortDispersion : LowPassFilter(id = 6)
 }

@@ -18,7 +18,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.fiiok9control.gaia.fiio
+package com.tomg.fiiok9control.gaia.data.fiio
 
 import com.tomg.fiiok9control.audio.BluetoothCodec
 import com.tomg.fiiok9control.audio.LowPassFilter
@@ -26,11 +26,10 @@ import com.tomg.fiiok9control.eq.EqPreSet
 import com.tomg.fiiok9control.state.IndicatorState
 import com.tomg.fiiok9control.state.InputSource
 import com.tomg.fiiok9control.toHexString
-import kotlin.math.round
 
-object K9PacketDecoder {
+object FiioK9PacketDecoder {
 
-    fun decodePayloadGetVersion(payload: ByteArray): String? {
+    fun decodePayloadVersion(payload: ByteArray): String? {
         val version = payload.toHexString()
         if (version.length < 6) {
             return null
@@ -44,7 +43,7 @@ object K9PacketDecoder {
         }
     }
 
-    fun decodePayloadGetAudioFormat(payload: ByteArray): String? {
+    fun decodePayloadAudioFormat(payload: ByteArray): String? {
         val audioFormat = payload.toHexString()
         if (audioFormat.length < 6) {
             return null
@@ -64,25 +63,28 @@ object K9PacketDecoder {
         }
     }
 
-    fun decodePayloadGetVolume(payload: ByteArray): Pair<Int, String> {
-        val volume = payload.toHexString().toIntOrNull(radix = 16) ?: 0
-        return volume to "${round((volume * 100 / 120).toDouble())}%"
+    fun decodePayloadVolume(payload: ByteArray): Int? {
+        return payload.toHexString().toIntOrNull(radix = 16)
     }
 
-    fun decodePayloadGetMuteEnabled(payload: ByteArray): Boolean {
-        return payload.toHexString().toIntOrNull(radix = 16) == 1
+    fun decodePayloadMuteEnabled(payload: ByteArray): Boolean? {
+        return payload.toHexString().toIntOrNull(radix = 16)?.equals(1)
     }
 
-    fun decodePayloadGetMqaEnabled(payload: ByteArray): Boolean {
-        return payload.toHexString().toIntOrNull(radix = 16) == 1
+    fun decodePayloadMqaEnabled(payload: ByteArray): Boolean? {
+        return payload.toHexString().toIntOrNull(radix = 16)?.equals(1)
     }
 
-    fun decodePayloadGetInputSource(payload: ByteArray): InputSource? {
-        val id = payload.toHexString().toIntOrNull(radix = 16) ?: -1
-        return InputSource.findById(id)
+    fun decodePayloadInputSource(payload: ByteArray): InputSource? {
+        val id = payload.toHexString().toIntOrNull(radix = 16)
+        return if (id != null) {
+            InputSource.findById(id)
+        } else {
+            null
+        }
     }
 
-    fun decodePayloadGetIndicatorRgbLighting(payload: ByteArray): Pair<IndicatorState, Int>? {
+    fun decodePayloadIndicatorRgbLighting(payload: ByteArray): Pair<IndicatorState, Int>? {
         val indicatorRgbLighting = payload.toHexString()
         if (indicatorRgbLighting.length < 6) {
             return null
@@ -90,14 +92,17 @@ object K9PacketDecoder {
         val id = indicatorRgbLighting.substring(0, 4).toIntOrNull(radix = 16) ?: -1
         val indicatorState = IndicatorState.findById(id)
         val indicatorBrightness = indicatorRgbLighting.substring(4).toIntOrNull(radix = 16)
-        return if (indicatorState != null && indicatorBrightness != null) {
-            indicatorState to indicatorBrightness
-        } else {
+        return if (indicatorState == null || indicatorBrightness == null ||
+            indicatorBrightness < FiioK9Defaults.INDICATOR_BRIGHTNESS_MIN ||
+            indicatorBrightness > FiioK9Defaults.INDICATOR_BRIGHTNESS_MAX
+        ) {
             null
+        } else {
+            indicatorState to indicatorBrightness
         }
     }
 
-    fun decodePayloadGetCodecEnabled(payload: ByteArray): List<BluetoothCodec>? {
+    fun decodePayloadCodecEnabled(payload: ByteArray): List<BluetoothCodec>? {
         val id = payload.toHexString().toIntOrNull(radix = 16)
         return if (id != null) {
             BluetoothCodec.findById(id)
@@ -106,30 +111,27 @@ object K9PacketDecoder {
         }
     }
 
-    fun decodePayloadGetLowPassFilter(payload: ByteArray): LowPassFilter? {
+    fun decodePayloadLowPassFilter(payload: ByteArray): LowPassFilter? {
         val id = payload.toHexString().toIntOrNull(radix = 16) ?: -1
         return LowPassFilter.findById(id)
     }
 
-    fun decodePayloadGetChannelBalance(payload: ByteArray): Int? {
+    fun decodePayloadChannelBalance(payload: ByteArray): Int? {
         val tmp = payload.toHexString()
         if (tmp.length < 6) {
             return null
         }
         val leftChannel = tmp.startsWith("0001")
+        val rightChannel = tmp.startsWith("0002")
         val channelBalance = tmp.substring(4).toIntOrNull(radix = 16)
-        return if (channelBalance != null) {
-            if (leftChannel) {
-                -channelBalance
-            } else {
-                channelBalance
-            }
+        return if (channelBalance != null && (leftChannel || rightChannel)) {
+            channelBalance
         } else {
             null
         }
     }
 
-    fun decodePayloadGetEqEnabled(payload: ByteArray): Boolean? {
+    fun decodePayloadEqEnabled(payload: ByteArray): Boolean? {
         val eqEnabled = payload.toHexString().toIntOrNull(radix = 16) ?: -1
         return if (eqEnabled >= 0) {
             eqEnabled > 0
@@ -138,12 +140,12 @@ object K9PacketDecoder {
         }
     }
 
-    fun decodePayloadGetEqPreSet(payload: ByteArray): EqPreSet? {
+    fun decodePayloadEqPreSet(payload: ByteArray): EqPreSet? {
         val id = payload.toHexString().toIntOrNull(radix = 16) ?: -1
         return EqPreSet.findById(id)
     }
 
-    fun decodePayloadGetHpPreSimultaneously(payload: ByteArray): Boolean {
-        return payload.toHexString().toIntOrNull(radix = 16) == 1
+    fun decodePayloadHpPreSimultaneously(payload: ByteArray): Boolean? {
+        return payload.toHexString().toIntOrNull(radix = 16)?.equals(1)
     }
 }

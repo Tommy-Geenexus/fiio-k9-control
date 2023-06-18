@@ -25,50 +25,18 @@ import kotlinx.parcelize.Parcelize
 
 sealed class StateSideEffect : Parcelable {
 
-    sealed class Characteristic : StateSideEffect() {
-
-        @Parcelize
-        object Write : Characteristic()
-
-        @Parcelize
-        object Changed : Characteristic()
-    }
-
     sealed class ExportProfile : StateSideEffect() {
 
         @Parcelize
-        object Success : ExportProfile()
+        data object Success : ExportProfile()
 
         @Parcelize
-        object Failure : ExportProfile()
-    }
-
-    sealed class Reconnect : StateSideEffect() {
-
-        @Parcelize
-        object Initiated : Reconnect()
-
-        @Parcelize
-        object Success : Reconnect()
-
-        @Parcelize
-        object Failure : Reconnect()
-    }
-
-    @Parcelize
-    object Disconnect : StateSideEffect()
-
-    sealed class Request : StateSideEffect() {
-
-        @Parcelize
-        data class Failure(
-            val disconnected: Boolean = false
-        ) : Request()
+        data object Failure : ExportProfile()
     }
 
     @Parcelize
     data class NotifyVolume(
-        val volumePercent: String,
-        val isMuted: Boolean
+        val volume: Int,
+        val isMuteEnabled: Boolean
     ) : StateSideEffect()
 }

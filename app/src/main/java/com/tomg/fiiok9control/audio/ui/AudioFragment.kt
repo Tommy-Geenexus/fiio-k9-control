@@ -20,22 +20,29 @@
 
 package com.tomg.fiiok9control.audio.ui
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.tomg.fiiok9control.BaseFragment
 import com.tomg.fiiok9control.R
+import com.tomg.fiiok9control.WINDOW_SIZE_EXPANDED_COLUMNS
+import com.tomg.fiiok9control.WindowSizeClass
 import com.tomg.fiiok9control.audio.BluetoothCodec
 import com.tomg.fiiok9control.audio.LowPassFilter
-import com.tomg.fiiok9control.audio.business.AudioSideEffect
 import com.tomg.fiiok9control.audio.business.AudioState
 import com.tomg.fiiok9control.audio.business.AudioViewModel
 import com.tomg.fiiok9control.databinding.FragmentAudioBinding
-import com.tomg.fiiok9control.gaia.GaiaGattSideEffect
+import com.tomg.fiiok9control.gaia.business.GaiaGattSideEffect
+import com.tomg.fiiok9control.gaia.data.fiio.FiioK9Defaults
 import com.tomg.fiiok9control.profile.data.Profile
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -52,11 +59,39 @@ class AudioFragment :
         savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
+        (requireActivity() as? AppCompatActivity)?.supportActionBar?.title =
+            FiioK9Defaults.DISPLAY_NAME
         binding.progress.setVisibilityAfterHide(View.GONE)
         binding.audio.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = AudioAdapter(listener = this@AudioFragment)
-            itemAnimator = null
+            layoutManager = if (getWindowSizeClass() == WindowSizeClass.Expanded) {
+                StaggeredGridLayoutManager(WINDOW_SIZE_EXPANDED_COLUMNS, RecyclerView.VERTICAL)
+            } else {
+                LinearLayoutManager(context)
+            }
+            adapter = AudioAdapter(
+                listener = this@AudioFragment,
+                currentCodecsEnabled = {
+                    with(audioViewModel.container.stateFlow.value) {
+                        pendingCodecsEnabled ?: codecsEnabled
+                    }
+                },
+                currentLowPassFilter = {
+                    with(audioViewModel.container.stateFlow.value) {
+                        pendingLowPassFilter ?: lowPassFilter
+                    }
+                },
+                currentChannelBalance = {
+                    with(audioViewModel.container.stateFlow.value) {
+                        pendingChannelBalance ?: channelBalance
+                    }
+                },
+                currentIsLoading = {
+                    audioViewModel.container.stateFlow.value.pendingCommands.isNotEmpty()
+                },
+                currentIsServiceConnected = {
+                    audioViewModel.container.stateFlow.value.isServiceConnected
+                }
+            )
         }
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -67,38 +102,14 @@ class AudioFragment :
         }
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                audioViewModel.container.sideEffectFlow.collect { sideEffect ->
-                    handleSideEffect(sideEffect)
-                }
-            }
-        }
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                gaiaGattSideEffectFlow.collect { sideEffect ->
+                gaiaGattSideEffects.collect { sideEffect ->
                     handleGaiaGattSideEffect(sideEffect)
                 }
             }
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (gaiaGattService()?.isConnected() == true) {
-            audioViewModel.sendGaiaPacketsDelayed(
-                lifecycleScope,
-                gaiaGattService()
-            )
-        }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        audioViewModel.clearGaiaPacketResponses()
-    }
-
-    override fun onProfileShortcutSelected(profile: Profile) {
-        navigate(AudioFragmentDirections.audioToProfile(profile))
-    }
+    override fun bindLayout(view: View) = FragmentAudioBinding.bind(view)
 
     override fun onBluetoothStateChanged(enabled: Boolean) {
         if (!enabled) {
@@ -106,90 +117,62 @@ class AudioFragment :
         }
     }
 
-    override fun onReconnectToDevice() {
-        audioViewModel.reconnectToDevice(gaiaGattService())
+    override fun onProfileShortcutSelected(profile: Profile) {
+        navigate(AudioFragmentDirections.audioToProfile(profile))
     }
 
-    override fun bindLayout(view: View) = FragmentAudioBinding.bind(view)
+    override fun onServiceConnectionStateChanged(isConnected: Boolean) {
+        audioViewModel.handleServiceConnectionStateChanged(isConnected)
+        if (isConnected) {
+            if (shouldConsumeIntent(requireActivity().intent)) {
+                consumeIntent(requireActivity().intent)
+            } else {
+                audioViewModel.sendGaiaPacketsDelayed(requireGaiaGattService())
+            }
+        }
+    }
 
     override fun onBluetoothCodecChanged(
         codec: BluetoothCodec,
         enabled: Boolean
     ) {
-        audioViewModel.sendGaiaPacketCodecEnabled(
-            lifecycleScope,
-            gaiaGattService(),
-            codec,
-            enabled
-        )
-    }
-
-    override fun onChannelBalanceRequested(value: Int) {
-        audioViewModel.sendGaiaPacketChannelBalance(
-            lifecycleScope,
-            gaiaGattService(),
-            value
-        )
-    }
-
-    override fun onLowPassFilterRequested(lowPassFilter: LowPassFilter) {
-        audioViewModel.sendGaiaPacketLowPassFilter(
-            lifecycleScope,
-            gaiaGattService(),
-            lowPassFilter
-        )
-    }
-
-    private fun renderState(state: AudioState) {
-        (binding.audio.adapter as? AudioAdapter)?.submitList(
-            listOf(state.codecsEnabled, state.lowPassFilter, state.channelBalance)
-        )
-    }
-
-    private fun handleSideEffect(sideEffect: AudioSideEffect) {
-        when (sideEffect) {
-            AudioSideEffect.Characteristic.Changed -> {
-                binding.progress.hide()
-            }
-            AudioSideEffect.Characteristic.Write -> {
-                binding.progress.show()
-            }
-            AudioSideEffect.Reconnect.Failure -> {
-                binding.progress.hide()
-                onBluetoothStateChanged(false)
-            }
-            AudioSideEffect.Reconnect.Initiated -> {
-                binding.progress.show()
-            }
-            AudioSideEffect.Reconnect.Success -> {
-                binding.progress.hide()
-                audioViewModel.sendGaiaPacketsDelayed(
-                    lifecycleScope,
-                    gaiaGattService()
-                )
-            }
-            is AudioSideEffect.Request.Failure -> {
-                binding.progress.hide()
-                if (sideEffect.disconnected) {
-                    onBluetoothStateChanged(false)
-                }
-            }
+        if (audioViewModel.container.stateFlow.value.isServiceConnected) {
+            audioViewModel.sendGaiaPacketCodecsEnabled(requireGaiaGattService(), codec, enabled)
         }
     }
 
-    private fun handleGaiaGattSideEffect(sideEffect: GaiaGattSideEffect?) {
+    override fun onChannelBalanceRequested(value: Int) {
+        if (audioViewModel.container.stateFlow.value.isServiceConnected) {
+            audioViewModel.sendGaiaPacketChannelBalance(requireGaiaGattService(), value)
+        }
+    }
+
+    override fun onLowPassFilterRequested(lowPassFilter: LowPassFilter) {
+        if (audioViewModel.container.stateFlow.value.isServiceConnected) {
+            audioViewModel.sendGaiaPacketLowPassFilter(requireGaiaGattService(), lowPassFilter)
+        }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun renderState(state: AudioState) {
+        val isLoading = state.pendingCommands.isNotEmpty()
+        binding.progress.isVisible = isLoading
+        binding.audio.adapter?.notifyDataSetChanged()
+    }
+
+    private fun handleGaiaGattSideEffect(sideEffect: GaiaGattSideEffect) {
         when (sideEffect) {
             GaiaGattSideEffect.Gatt.Disconnected -> {
-                onBluetoothStateChanged(false)
+                navigateToStartDestination()
             }
-            is GaiaGattSideEffect.Gatt.WriteCharacteristic.Failure -> {
-                audioViewModel.handleGaiaPacketSendResult(sideEffect.commandId)
+            is GaiaGattSideEffect.Gatt.Characteristic.Write.Failure -> {
+                audioViewModel.handleCharacteristicWriteResult(sideEffect.packet, success = false)
             }
-            is GaiaGattSideEffect.Gatt.WriteCharacteristic.Success -> {
-                audioViewModel.handleGaiaPacketSendResult(sideEffect.commandId)
+            is GaiaGattSideEffect.Gatt.Characteristic.Write.Success -> {
+                audioViewModel.handleCharacteristicWriteResult(sideEffect.packet, success = true)
             }
-            is GaiaGattSideEffect.Gaia.Packet -> {
-                audioViewModel.handleGaiaPacket(sideEffect.data)
+            is GaiaGattSideEffect.Gatt.Characteristic.Changed -> {
+                audioViewModel.handleCharacteristicChanged(sideEffect.packet)
             }
             else -> {
             }

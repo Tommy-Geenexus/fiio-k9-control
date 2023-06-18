@@ -22,29 +22,19 @@ package com.tomg.fiiok9control.eq.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.tomg.fiiok9control.databinding.ItemEqBinding
 import com.tomg.fiiok9control.eq.EqPreSet
 import com.tomg.fiiok9control.eq.EqValue
 
 class EqAdapter(
-    private val listener: Listener
-) : ListAdapter<Any, RecyclerView.ViewHolder>(
-    object : DiffUtil.ItemCallback<Any>() {
-
-        override fun areItemsTheSame(
-            oldItem: Any,
-            newItem: Any
-        ) = oldItem == newItem
-
-        override fun areContentsTheSame(
-            oldItem: Any,
-            newItem: Any
-        ) = false
-    }
-) {
+    private val listener: Listener,
+    private val currentEqEnabled: () -> Boolean,
+    private val currentEqPreSet: () -> EqPreSet,
+    private val currentEqValues: () -> List<EqValue>,
+    private val currentIsLoading: () -> Boolean,
+    private val currentIsServiceConnected: () -> Boolean
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     interface Listener {
 
@@ -53,34 +43,44 @@ class EqAdapter(
         fun onEqValueChanged(value: EqValue)
     }
 
+    private companion object {
+
+        const val ITEM_CNT = 1
+    }
+
+    init {
+        setHasStableIds(true)
+    }
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): RecyclerView.ViewHolder {
         return ItemEqViewHolder(
-            ItemEqBinding.inflate(
+            binding = ItemEqBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
             ),
-            listener
+            listener = listener
         )
     }
 
-    @Suppress("UNCHECKED_CAST")
     override fun onBindViewHolder(
         holder: RecyclerView.ViewHolder,
         position: Int
     ) {
-        val eqEnabled = currentList.getOrNull(0) as? Boolean
-        val eqPreSet = currentList.getOrNull(1) as? EqPreSet
-        val eqValues = currentList.getOrNull(2) as? List<EqValue>
-        if (eqEnabled != null && eqPreSet != null && eqValues != null) {
-            (holder as? ItemEqViewHolder)?.bindItemEq(eqEnabled, eqPreSet, eqValues)
-        }
+        (holder as? ItemEqViewHolder)?.bindItemEq(
+            eqEnabled = currentEqEnabled(),
+            eqPreSet = currentEqPreSet(),
+            eqValues = currentEqValues(),
+            itemEnabled = currentIsServiceConnected() && !currentIsLoading()
+        )
     }
 
     override fun getItemViewType(position: Int) = position
 
-    override fun getItemCount() = 1
+    override fun getItemId(position: Int) = position.toLong()
+
+    override fun getItemCount() = ITEM_CNT
 }

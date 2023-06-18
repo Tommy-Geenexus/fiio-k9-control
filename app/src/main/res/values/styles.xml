@@ -1,6 +1,37 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
-    <style name="Widget.FiioK9Control.BottomNavigationView.ActiveIndicator" parent="@style/Widget.Material3.BottomNavigationView.ActiveIndicator">
-        <item name="android:color">@android:color/system_accent2_100</item>
+
+    <style name="Widget.FiioK9Control.CardView.Elevated.Compact" parent="@style/Widget.Material3.CardView.Elevated">
+        <item name="android:layout_marginStart">@dimen/spacing_normal</item>
+        <item name="android:layout_marginEnd">@dimen/spacing_normal</item>
+        <item name="android:layout_marginTop">@dimen/spacing_small</item>
+        <item name="android:layout_marginBottom">@dimen/spacing_small</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="Widget.FiioK9Control.CardView.Elevated.Medium" parent="Widget.FiioK9Control.CardView.Elevated.Compact">
+        <item name="android:layout_marginStart">@dimen/spacing_large</item>
+        <item name="android:layout_marginEnd">@dimen/spacing_large</item>
+    </style>
+
+    <style name="Widget.FiioK9Control.LinearProgressIndicator.Compact" parent="Widget.Material3.LinearProgressIndicator">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:indeterminate">true</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="Widget.FiioK9Control.LinearProgressIndicator.Medium" parent="Widget.FiioK9Control.LinearProgressIndicator.Compact">
+        <item name="android:layout_marginStart">@dimen/spacing_large</item>
+        <item name="android:layout_marginEnd">@dimen/spacing_large</item>
+    </style>
+
+    <style name="Widget.FiioK9Control.Slider" parent="Widget.Material3.Slider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/spacing_normal</item>
+        <item name="android:stepSize">1</item>
+        <item name="labelBehavior">gone</item>
     </style>
 </resources>

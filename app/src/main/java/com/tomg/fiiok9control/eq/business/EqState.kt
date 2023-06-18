@@ -23,22 +23,17 @@ package com.tomg.fiiok9control.eq.business
 import android.os.Parcelable
 import com.tomg.fiiok9control.eq.EqPreSet
 import com.tomg.fiiok9control.eq.EqValue
+import com.tomg.fiiok9control.gaia.data.fiio.FiioK9Defaults
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class EqState(
     val eqEnabled: Boolean = false,
     val eqPreSet: EqPreSet = EqPreSet.Custom,
-    val eqValues: List<EqValue> = listOf(
-        EqValue(id = 1, value = 0f),
-        EqValue(id = 2, value = 0f),
-        EqValue(id = 3, value = 0f),
-        EqValue(id = 4, value = 0f),
-        EqValue(id = 5, value = 0f),
-        EqValue(id = 6, value = 0f),
-        EqValue(id = 7, value = 0f),
-        EqValue(id = 8, value = 0f),
-        EqValue(id = 9, value = 0f),
-        EqValue(id = 10, value = 0f)
-    )
+    val eqValues: List<EqValue> = FiioK9Defaults.eqValues,
+    val pendingCommands: List<Int> = emptyList(),
+    val pendingEqEnabled: Boolean? = null,
+    val pendingEqPreSet: EqPreSet? = null,
+    val pendingEqValues: List<EqValue>? = null,
+    val isServiceConnected: Boolean = false
 ) : Parcelable

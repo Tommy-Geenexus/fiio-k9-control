@@ -16,12 +16,12 @@ plugins {
 android {
     namespace "com.tomg.fiiok9control"
 
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.tomg.fiiok9control"
         minSdk 31
-        targetSdk 33
+        targetSdk 34
         versionCode 14
         versionName "1.4.3"
     }
@@ -46,12 +46,6 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
-    }
-
-    packagingOptions {
-        resources {
-            excludes += ["META-INF/AL2.0", "META-INF/LGPL2.1"]
-        }
     }
 }
 

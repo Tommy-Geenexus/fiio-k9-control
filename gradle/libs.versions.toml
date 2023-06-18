@@ -9,7 +9,6 @@ dagger-hilt = "2.47"
 dagger-hilt-compiler = "1.0.0"
 detekt = "1.23.0"
 fragment = "1.6.0"
-insetter = "0.6.1"
 kotlin = "1.9.0"
 ktlint = "11.5.0"
 leakcanary = "2.12"
@@ -22,6 +21,7 @@ room = "2.6.0-alpha02"
 spotless = "6.20.0"
 timber = "5.0.1"
 versions = "0.47.0"
+window = "1.1.0"
 
 [libraries]
 activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activity" }
@@ -33,7 +33,6 @@ dagger-hilt-android = { module = "com.google.dagger:hilt-android", version.ref =
 dagger-hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "dagger-hilt" }
 dagger-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "dagger-hilt-compiler" }
 fragment = { module = "androidx.fragment:fragment-ktx", version.ref = "fragment" }
-insetter = { module = "dev.chrisbanes.insetter:insetter", version.ref = "insetter" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
@@ -46,6 +45,7 @@ room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+window = { module = "androidx.window:window", version.ref = "window" }
 
 [bundles]
 implementation = [
@@ -56,7 +56,6 @@ implementation = [
     "coroutines-android",
     "dagger-hilt-android",
     "fragment",
-    "insetter",
     "kotlin-stdlib",
     "lifecycle-runtime-ktx",
     "material",
@@ -66,7 +65,8 @@ implementation = [
     "recyclerview",
     "room-ktx",
     "room-runtime",
-    "timber"
+    "timber",
+    "window"
 ]
 kapt = [
     "dagger-hilt-android-compiler",

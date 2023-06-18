@@ -22,28 +22,15 @@ package com.tomg.fiiok9control.profile.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.tomg.fiiok9control.databinding.ItemProfileBinding
 import com.tomg.fiiok9control.profile.data.Profile
+import com.tomg.fiiok9control.profile.data.ProfileDiffCallback
 
 class ProfileAdapter(
     private val listener: Listener
-) : ListAdapter<Profile, RecyclerView.ViewHolder>(
-    object : DiffUtil.ItemCallback<Profile>() {
-
-        override fun areItemsTheSame(
-            oldItem: Profile,
-            newItem: Profile
-        ) = oldItem.id == newItem.id
-
-        override fun areContentsTheSame(
-            oldItem: Profile,
-            newItem: Profile
-        ) = oldItem == newItem
-    }
-) {
+) : ListAdapter<Profile, RecyclerView.ViewHolder>(ProfileDiffCallback) {
 
     interface Listener {
 
@@ -57,21 +44,20 @@ class ProfileAdapter(
         parent: ViewGroup,
         viewType: Int
     ) = ItemProfileViewHolder(
-        ItemProfileBinding.inflate(
+        binding = ItemProfileBinding.inflate(
             LayoutInflater.from(parent.context),
             parent,
             false
         ),
-        listener
+        listener = listener
     )
 
     override fun onBindViewHolder(
         holder: RecyclerView.ViewHolder,
         position: Int
     ) {
-        val profileName = currentList.getOrNull(position)?.name
-        if (!profileName.isNullOrEmpty()) {
-            (holder as? ItemProfileViewHolder)?.bindItemProfile(profileName)
-        }
+        (holder as? ItemProfileViewHolder)?.bindItemProfile(
+            profileName = currentList.getOrNull(position)?.name.orEmpty()
+        )
     }
 }

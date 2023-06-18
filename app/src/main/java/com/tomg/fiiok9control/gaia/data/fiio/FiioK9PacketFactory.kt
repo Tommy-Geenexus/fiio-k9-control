@@ -18,72 +18,78 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.fiiok9control.gaia.fiio
+package com.tomg.fiiok9control.gaia.data.fiio
 
 import androidx.annotation.IntRange
-import com.qualcomm.qti.libraries.gaia.packets.GaiaPacket
-import com.tomg.fiiok9control.VOLUME_MAX
-import com.tomg.fiiok9control.VOLUME_MIN
+import com.qualcomm.qti.libraries.gaia.packets.GaiaPacketBLE
 import com.tomg.fiiok9control.audio.BluetoothCodec
 import com.tomg.fiiok9control.audio.LowPassFilter
 import com.tomg.fiiok9control.eq.EqPreSet
 import com.tomg.fiiok9control.eq.EqValue
-import com.tomg.fiiok9control.gaia.GaiaPacketFactory
+import com.tomg.fiiok9control.gaia.data.GaiaPacketFactory
 import com.tomg.fiiok9control.state.IndicatorState
 import com.tomg.fiiok9control.state.InputSource
 import com.tomg.fiiok9control.toBytes
 
-object K9PacketFactory {
+object FiioK9PacketFactory {
 
     fun createGaiaPacketSetIndicatorStateAndBrightness(
         indicatorState: IndicatorState,
-        @IntRange(from = 1, to = 5) indicatorBrightness: Int
+        @IntRange(
+            from = FiioK9Defaults.INDICATOR_BRIGHTNESS_MIN.toLong(),
+            to = FiioK9Defaults.INDICATOR_BRIGHTNESS_MAX.toLong()
+        ) indicatorBrightness: Int
     ) = GaiaPacketFactory.createGaiaPacket(
-        commandId = K9Command.Set.IndicatorRgbLighting.commandId,
+        commandId = FiioK9Command.Set.IndicatorRgbLighting.commandId,
         payload = byteArrayOf(
             indicatorState.id.toByte(),
             indicatorBrightness.toByte()
         )
     )
 
-    fun createGaiaPacketSetMqa(isMqaEnabled: Boolean) = GaiaPacketFactory.createGaiaPacket(
-        commandId = K9Command.Set.MqaEnabled.commandId,
-        payload = byteArrayOf(if (isMqaEnabled) 0 else 1)
+    fun createGaiaPacketSetMqaEnabled(isMqaEnabled: Boolean) = GaiaPacketFactory.createGaiaPacket(
+        commandId = FiioK9Command.Set.MqaEnabled.commandId,
+        payload = byteArrayOf(if (isMqaEnabled) 1 else 0)
     )
 
-    fun createGaiaPacketSetMuteEnabled(isMuted: Boolean) = GaiaPacketFactory.createGaiaPacket(
-        commandId = K9Command.Set.MuteEnabled.commandId,
-        payload = byteArrayOf(if (isMuted) 0 else 1)
+    fun createGaiaPacketSetMuteEnabled(isMuteEnabled: Boolean) = GaiaPacketFactory.createGaiaPacket(
+        commandId = FiioK9Command.Set.MuteEnabled.commandId,
+        payload = byteArrayOf(if (isMuteEnabled) 1 else 0)
     )
 
     fun createGaiaPacketSetRestore() =
-        GaiaPacketFactory.createGaiaPacket(commandId = K9Command.Set.Restore.commandId)
+        GaiaPacketFactory.createGaiaPacket(commandId = FiioK9Command.Set.Restore.commandId)
 
     fun createGaiaPacketSetStandby() =
-        GaiaPacketFactory.createGaiaPacket(commandId = K9Command.Set.Standby.commandId)
+        GaiaPacketFactory.createGaiaPacket(commandId = FiioK9Command.Set.Standby.commandId)
 
     fun createGaiaPacketSetInputSource(inputSource: InputSource) =
         GaiaPacketFactory.createGaiaPacket(
-            commandId = K9Command.Set.InputSource.commandId,
+            commandId = FiioK9Command.Set.InputSource.commandId,
             payload = byteArrayOf(inputSource.id.toByte())
         )
 
     fun createGaiaPacketSetCodecEnabled(
         codecsEnabled: List<BluetoothCodec>
     ) = GaiaPacketFactory.createGaiaPacket(
-        commandId = K9Command.Set.CodecEnabled.commandId,
+        commandId = FiioK9Command.Set.CodecEnabled.commandId,
         payload = byteArrayOf(BluetoothCodec.toByte(codecsEnabled))
     )
 
     fun createGaiaPacketSetLowPassFilter(
         lowPassFilter: LowPassFilter
     ) = GaiaPacketFactory.createGaiaPacket(
-        commandId = K9Command.Set.LowPassFilter.commandId,
+        commandId = FiioK9Command.Set.LowPassFilter.commandId,
         payload = byteArrayOf(lowPassFilter.id.toByte())
     )
 
-    fun createGaiaPacketSetChannelBalance(channelBalance: Int) = GaiaPacketFactory.createGaiaPacket(
-        commandId = K9Command.Set.ChannelBalance.commandId,
+    fun createGaiaPacketSetChannelBalance(
+        @IntRange(
+            from = FiioK9Defaults.CHANNEL_BALANCE_MIN.toLong(),
+            to = FiioK9Defaults.CHANNEL_BALANCE_MAX.toLong()
+        ) channelBalance: Int
+    ) = GaiaPacketFactory.createGaiaPacket(
+        commandId = FiioK9Command.Set.ChannelBalance.commandId,
         payload = byteArrayOf(
             if (channelBalance < 0) 1.toByte() else 2.toByte(),
             channelBalance.toByte()
@@ -91,21 +97,21 @@ object K9PacketFactory {
     )
 
     fun createGaiaPacketSetEqEnabled(eqEnabled: Boolean) = GaiaPacketFactory.createGaiaPacket(
-        commandId = K9Command.Set.EqEnabled.commandId,
+        commandId = FiioK9Command.Set.EqEnabled.commandId,
         payload = byteArrayOf(if (eqEnabled) 1 else 0)
     )
 
     fun createGaiaPacketSetEqPreSet(eqPreSet: EqPreSet) = GaiaPacketFactory.createGaiaPacket(
-        commandId = K9Command.Set.EqPreSet.commandId,
+        commandId = FiioK9Command.Set.EqPreSet.commandId,
         payload = byteArrayOf(eqPreSet.id.toByte())
     )
 
     fun createGaiaPacketSetEqValue(
         eqValue: EqValue
-    ): GaiaPacket {
+    ): GaiaPacketBLE {
         val bytes = Integer.toHexString((eqValue.value * 60f).toInt()).toBytes()
         return GaiaPacketFactory.createGaiaPacket(
-            commandId = K9Command.Set.EqValue.commandId,
+            commandId = FiioK9Command.Set.EqValue.commandId,
             payload = byteArrayOf(
                 eqValue.id.toByte(),
                 bytes[0],
@@ -115,23 +121,26 @@ object K9PacketFactory {
     }
 
     fun createGaiaPacketSetVolume(
-        @IntRange(from = VOLUME_MIN.toLong(), to = VOLUME_MAX.toLong()) volume: Int
+        @IntRange(
+            from = FiioK9Defaults.VOLUME_LEVEL_MIN.toLong(),
+            to = FiioK9Defaults.VOLUME_LEVEL_MAX.toLong()
+        ) volume: Int
     ) = GaiaPacketFactory.createGaiaPacket(
-        commandId = K9Command.Set.Volume.commandId,
+        commandId = FiioK9Command.Set.Volume.commandId,
         payload = byteArrayOf(volume.toByte())
     )
 
     fun createGaiaPacketGetVolume() =
-        GaiaPacketFactory.createGaiaPacket(commandId = K9Command.Get.Volume.commandId)
+        GaiaPacketFactory.createGaiaPacket(commandId = FiioK9Command.Get.Volume.commandId)
 
     fun createGaiaPacketGetCodecBit() = GaiaPacketFactory.createGaiaPacket(
-        commandId = K9Command.Get.CodecBit.commandId
+        commandId = FiioK9Command.Get.CodecBit.commandId
     )
 
     fun createGaiaPacketSetHpPreSimultaneously(
         isSimultaneously: Boolean
     ) = GaiaPacketFactory.createGaiaPacket(
-        commandId = K9Command.Set.Simultaneously.commandId,
+        commandId = FiioK9Command.Set.Simultaneously.commandId,
         payload = byteArrayOf(if (isSimultaneously) 1 else 0)
     )
 }

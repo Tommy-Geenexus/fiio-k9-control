@@ -2,10 +2,7 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/profile"
-    style="?materialCardViewOutlinedStyle"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="@dimen/spacing_small">
+    style="@style/Widget.FiioK9Control.CardView.Elevated.Compact">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -51,8 +48,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/delete"
-            android:textColor="?attr/colorOnError"
-            app:backgroundTint="?attr/colorError"
+            android:textColor="?attr/colorOnErrorContainer"
+            app:backgroundTint="?attr/colorErrorContainer"
             app:layout_constraintBottom_toTopOf="@id/profile_apply"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

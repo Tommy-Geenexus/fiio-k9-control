@@ -29,7 +29,7 @@ sealed class SetupSideEffect : Parcelable {
     sealed class Ble : SetupSideEffect() {
 
         @Parcelize
-        object Unsupported : Ble()
+        data object Unsupported : Ble()
     }
 
     @Parcelize
@@ -43,5 +43,5 @@ sealed class SetupSideEffect : Parcelable {
     ) : SetupSideEffect()
 
     @Parcelize
-    object NavigateToState : SetupSideEffect()
+    data object NavigateToState : SetupSideEffect()
 }

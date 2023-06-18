@@ -22,8 +22,6 @@ package com.tomg.fiiok9control.audio.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.tomg.fiiok9control.audio.BluetoothCodec
 import com.tomg.fiiok9control.audio.LowPassFilter
@@ -32,30 +30,30 @@ import com.tomg.fiiok9control.databinding.ItemCodecsEnabledBinding
 import com.tomg.fiiok9control.databinding.ItemLowPassFilterBinding
 
 class AudioAdapter(
-    private val listener: Listener
-) : ListAdapter<Any, RecyclerView.ViewHolder>(
-    object : DiffUtil.ItemCallback<Any>() {
-
-        override fun areItemsTheSame(
-            oldItem: Any,
-            newItem: Any
-        ) = oldItem == newItem
-
-        override fun areContentsTheSame(
-            oldItem: Any,
-            newItem: Any
-        ) = false
-    }
-) {
+    private val listener: Listener,
+    private val currentCodecsEnabled: () -> List<BluetoothCodec>,
+    private val currentLowPassFilter: () -> LowPassFilter,
+    private val currentChannelBalance: () -> Int,
+    private val currentIsLoading: () -> Boolean,
+    private val currentIsServiceConnected: () -> Boolean
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     interface Listener {
 
-        fun onBluetoothCodecChanged(
-            codec: BluetoothCodec,
-            enabled: Boolean
-        )
+        fun onBluetoothCodecChanged(codec: BluetoothCodec, enabled: Boolean)
         fun onChannelBalanceRequested(value: Int)
         fun onLowPassFilterRequested(lowPassFilter: LowPassFilter)
+    }
+
+    private companion object {
+
+        const val ITEM_VIEW_TYPE_CODECS_ENABLED = 0
+        const val ITEM_VIEW_TYPE_FILTER = 1
+        const val ITEM_CNT = 3
+    }
+
+    init {
+        setHasStableIds(true)
     }
 
     override fun onCreateViewHolder(
@@ -63,70 +61,68 @@ class AudioAdapter(
         viewType: Int
     ): RecyclerView.ViewHolder {
         return when (viewType) {
-            0 -> {
+            ITEM_VIEW_TYPE_CODECS_ENABLED -> {
                 ItemCodecsEnabledViewHolder(
-                    ItemCodecsEnabledBinding.inflate(
+                    binding = ItemCodecsEnabledBinding.inflate(
                         LayoutInflater.from(parent.context),
                         parent,
                         false
                     ),
-                    listener
+                    listener = listener
                 )
             }
-            1 -> {
+            ITEM_VIEW_TYPE_FILTER -> {
                 ItemLowPassFilterViewHolder(
-                    ItemLowPassFilterBinding.inflate(
+                    binding = ItemLowPassFilterBinding.inflate(
                         LayoutInflater.from(parent.context),
                         parent,
                         false
                     ),
-                    listener
+                    listener = listener
                 )
             }
             else -> {
                 ItemChannelBalanceViewHolder(
-                    ItemChannelBalanceBinding.inflate(
+                    binding = ItemChannelBalanceBinding.inflate(
                         LayoutInflater.from(parent.context),
                         parent,
                         false
                     ),
-                    listener
+                    listener = listener
                 )
             }
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     override fun onBindViewHolder(
         holder: RecyclerView.ViewHolder,
         position: Int
     ) {
-        val payload = currentList.getOrNull(position)
         when (position) {
-            0 -> {
-                val codecsEnabled = payload as? List<BluetoothCodec>
-                if (codecsEnabled != null) {
-                    (holder as? ItemCodecsEnabledViewHolder)?.bindItemCodecsEnabled(codecsEnabled)
-                }
+            ITEM_VIEW_TYPE_CODECS_ENABLED -> {
+                (holder as? ItemCodecsEnabledViewHolder)?.bindItemCodecsEnabled(
+                    codecsEnabled = currentCodecsEnabled(),
+                    itemEnabled = currentIsServiceConnected() && !currentIsLoading()
+                )
             }
-            1 -> {
-                val lowPassFilter = payload as? LowPassFilter
-                if (lowPassFilter != null) {
-                    (holder as? ItemLowPassFilterViewHolder)?.bindItemLowPassFilter(lowPassFilter)
-                }
+            ITEM_VIEW_TYPE_FILTER -> {
+                (holder as? ItemLowPassFilterViewHolder)?.bindItemLowPassFilter(
+                    lowPassFilter = currentLowPassFilter(),
+                    itemEnabled = currentIsServiceConnected() && !currentIsLoading()
+                )
             }
             else -> {
-                val channelBalance = payload as? Int
-                if (channelBalance != null) {
-                    (holder as? ItemChannelBalanceViewHolder)?.bindItemChannelBalance(
-                        channelBalance
-                    )
-                }
+                (holder as? ItemChannelBalanceViewHolder)?.bindItemChannelBalance(
+                    channelBalance = currentChannelBalance(),
+                    itemEnabled = currentIsServiceConnected() && !currentIsLoading()
+                )
             }
         }
     }
 
     override fun getItemViewType(position: Int) = position
 
-    override fun getItemCount() = 3
+    override fun getItemId(position: Int) = position.toLong()
+
+    override fun getItemCount() = ITEM_CNT
 }

@@ -22,8 +22,6 @@ package com.tomg.fiiok9control.state.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.tomg.fiiok9control.databinding.ItemIndicatorBinding
 import com.tomg.fiiok9control.databinding.ItemInputBinding
@@ -31,23 +29,19 @@ import com.tomg.fiiok9control.databinding.ItemMiscBinding
 import com.tomg.fiiok9control.databinding.ItemVolumeBinding
 import com.tomg.fiiok9control.state.IndicatorState
 import com.tomg.fiiok9control.state.InputSource
+import com.tomg.fiiok9control.toVolumePercent
 
 class StateAdapter(
-    private val listener: Listener
-) : ListAdapter<Any, RecyclerView.ViewHolder>(
-    object : DiffUtil.ItemCallback<Any>() {
-
-        override fun areItemsTheSame(
-            oldItem: Any,
-            newItem: Any
-        ) = oldItem == newItem
-
-        override fun areContentsTheSame(
-            oldItem: Any,
-            newItem: Any
-        ) = false
-    }
-) {
+    private val listener: Listener,
+    private val currentAudioFormat: () -> String,
+    private val currentFirmwareVersion: () -> String,
+    private val currentIndicatorBrightness: () -> Int,
+    private val currentIndicatorState: () -> IndicatorState,
+    private val currentInputSource: () -> InputSource,
+    private val currentVolume: () -> Int,
+    private val currentIsLoading: () -> Boolean,
+    private val currentIsServiceConnected: () -> Boolean
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     interface Listener {
 
@@ -57,48 +51,60 @@ class StateAdapter(
         fun onVolumeRequested(volume: Int)
     }
 
+    private companion object {
+
+        const val ITEM_VIEW_TYPE_MISC = 0
+        const val ITEM_VIEW_TYPE_VOLUME = 1
+        const val ITEM_VIEW_TYPE_INPUT = 2
+        const val ITEM_CNT = 4
+    }
+
+    init {
+        setHasStableIds(true)
+    }
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): RecyclerView.ViewHolder {
         return when (viewType) {
-            0 -> {
+            ITEM_VIEW_TYPE_MISC -> {
                 ItemMiscViewHolder(
-                    ItemMiscBinding.inflate(
+                    binding = ItemMiscBinding.inflate(
                         LayoutInflater.from(parent.context),
                         parent,
                         false
                     )
                 )
             }
-            1 -> {
+            ITEM_VIEW_TYPE_VOLUME -> {
                 ItemVolumeViewHolder(
-                    ItemVolumeBinding.inflate(
+                    binding = ItemVolumeBinding.inflate(
                         LayoutInflater.from(parent.context),
                         parent,
                         false
                     ),
-                    listener
+                    listener = listener
                 )
             }
-            2 -> {
+            ITEM_VIEW_TYPE_INPUT -> {
                 ItemInputViewHolder(
-                    ItemInputBinding.inflate(
+                    binding = ItemInputBinding.inflate(
                         LayoutInflater.from(parent.context),
                         parent,
                         false
                     ),
-                    listener
+                    listener = listener
                 )
             }
             else -> {
                 ItemIndicatorViewHolder(
-                    ItemIndicatorBinding.inflate(
+                    binding = ItemIndicatorBinding.inflate(
                         LayoutInflater.from(parent.context),
                         parent,
                         false
                     ),
-                    listener
+                    listener = listener
                 )
             }
         }
@@ -108,51 +114,39 @@ class StateAdapter(
         holder: RecyclerView.ViewHolder,
         position: Int
     ) {
-        val payload = currentList.getOrNull(position)
         when (position) {
-            0 -> {
-                val info = payload as? Pair<*, *>
-                if (info != null) {
-                    val fwVersion = payload.first as? String
-                    val audioFmt = payload.second as? String
-                    if (!fwVersion.isNullOrEmpty() && !audioFmt.isNullOrEmpty()) {
-                        (holder as? ItemMiscViewHolder)?.bindItemMisc(fwVersion, audioFmt)
-                    }
-                }
+            ITEM_VIEW_TYPE_MISC -> {
+                (holder as? ItemMiscViewHolder)?.bindItemMisc(
+                    fwVersion = currentFirmwareVersion(),
+                    audioFmt = currentAudioFormat()
+                )
             }
-            1 -> {
-                val volumes = payload as? Pair<*, *>
-                if (volumes != null) {
-                    val volume = payload.first as? Int
-                    val volumePercent = payload.second as? String
-                    if (volume != null && !volumePercent.isNullOrEmpty()) {
-                        (holder as? ItemVolumeViewHolder)?.bindItemVolume(volume, volumePercent)
-                    }
-                }
+            ITEM_VIEW_TYPE_VOLUME -> {
+                (holder as? ItemVolumeViewHolder)?.bindItemVolume(
+                    volume = currentVolume(),
+                    volumePercent = currentVolume().toVolumePercent(),
+                    itemEnabled = currentIsServiceConnected() && !currentIsLoading()
+                )
             }
-            2 -> {
-                val inputSource = payload as? InputSource
-                if (inputSource != null) {
-                    (holder as? ItemInputViewHolder)?.bindItemInput(inputSource)
-                }
+            ITEM_VIEW_TYPE_INPUT -> {
+                (holder as? ItemInputViewHolder)?.bindItemInput(
+                    inputSource = currentInputSource(),
+                    itemEnabled = currentIsServiceConnected() && !currentIsLoading()
+                )
             }
             else -> {
-                val indicator = payload as? Pair<*, *>
-                if (indicator != null) {
-                    val indicatorState = payload.first as? IndicatorState
-                    val indicatorBrightness = payload.second as? Int
-                    if (indicatorState != null && indicatorBrightness != null) {
-                        (holder as? ItemIndicatorViewHolder)?.bindItemIndicator(
-                            indicatorState,
-                            indicatorBrightness
-                        )
-                    }
-                }
+                (holder as? ItemIndicatorViewHolder)?.bindItemIndicator(
+                    indicatorState = currentIndicatorState(),
+                    indicatorBrightness = currentIndicatorBrightness(),
+                    itemEnabled = currentIsServiceConnected() && !currentIsLoading()
+                )
             }
         }
     }
 
     override fun getItemViewType(position: Int) = position
 
-    override fun getItemCount() = 4
+    override fun getItemId(position: Int) = position.toLong()
+
+    override fun getItemCount() = ITEM_CNT
 }

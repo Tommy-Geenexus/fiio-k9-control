@@ -23,18 +23,18 @@ package com.tomg.fiiok9control.audio.business
 import android.os.Parcelable
 import com.tomg.fiiok9control.audio.BluetoothCodec
 import com.tomg.fiiok9control.audio.LowPassFilter
+import com.tomg.fiiok9control.gaia.data.fiio.FiioK9Defaults
+import com.tomg.fiiok9control.gaia.data.fiio.FiioK9Defaults.CHANNEL_BALANCE
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class AudioState(
-    val codecsEnabled: List<BluetoothCodec> = listOf(
-        BluetoothCodec.AptX.Adaptive,
-        BluetoothCodec.Aac,
-        BluetoothCodec.Ldac,
-        BluetoothCodec.AptX.Default,
-        BluetoothCodec.AptX.Ll,
-        BluetoothCodec.AptX.Hd
-    ),
+    val channelBalance: Int = CHANNEL_BALANCE,
+    val codecsEnabled: List<BluetoothCodec> = FiioK9Defaults.codecsEnabled,
     val lowPassFilter: LowPassFilter = LowPassFilter.Sharp,
-    val channelBalance: Int = 0
+    val pendingChannelBalance: Int? = null,
+    val pendingCodecsEnabled: List<BluetoothCodec>? = null,
+    val pendingCommands: List<Int> = emptyList(),
+    val pendingLowPassFilter: LowPassFilter? = null,
+    val isServiceConnected: Boolean = false
 ) : Parcelable

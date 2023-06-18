@@ -23,32 +23,25 @@ package com.tomg.fiiok9control.eq.business
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.qualcomm.qti.libraries.gaia.packets.GaiaPacketBLE
-import com.tomg.fiiok9control.GAIA_CMD_DELAY_MS
 import com.tomg.fiiok9control.eq.EqPreSet
 import com.tomg.fiiok9control.eq.EqValue
-import com.tomg.fiiok9control.gaia.GaiaGattService
-import com.tomg.fiiok9control.gaia.GaiaPacketFactory
-import com.tomg.fiiok9control.gaia.fiio.K9Command
-import com.tomg.fiiok9control.gaia.fiio.K9PacketDecoder
-import com.tomg.fiiok9control.gaia.fiio.K9PacketFactory
-import com.tomg.fiiok9control.gaia.isFiioPacket
-import com.tomg.fiiok9control.setup.data.SetupRepository
+import com.tomg.fiiok9control.gaia.data.GaiaGattRepository
+import com.tomg.fiiok9control.gaia.data.GaiaPacketFactory
+import com.tomg.fiiok9control.gaia.data.fiio.FiioK9Command
+import com.tomg.fiiok9control.gaia.data.fiio.FiioK9PacketDecoder
+import com.tomg.fiiok9control.gaia.data.fiio.FiioK9PacketFactory
+import com.tomg.fiiok9control.gaia.ui.GaiaGattService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
-import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.syntax.simple.reduce
 import org.orbitmvi.orbit.viewmodel.container
 
 @HiltViewModel
 class EqViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val setupRepository: SetupRepository
+    private val gaiaGattRepository: GaiaGattRepository
 ) : ViewModel(),
     ContainerHost<EqState, EqSideEffect> {
 
@@ -57,206 +50,181 @@ class EqViewModel @Inject constructor(
         initialState = EqState()
     )
 
-    private val gaiaPacketResponses: MutableList<Int> = mutableListOf()
-
-    fun clearGaiaPacketResponses() {
-        gaiaPacketResponses.clear()
-    }
-
-    fun handleGaiaPacket(data: ByteArray) = intent {
-        val packet = GaiaPacketBLE(data)
-        if (packet.isFiioPacket()) {
-            gaiaPacketResponses.remove(packet.command)
-            when (packet.command) {
-                K9Command.Get.EqEnabled.commandId -> {
-                    val eqEnabled = K9PacketDecoder.decodePayloadGetEqEnabled(packet.payload)
-                    if (eqEnabled != null) {
-                        reduce {
-                            state.copy(eqEnabled = eqEnabled)
-                        }
-                    }
-                }
-                K9Command.Get.EqPreSet.commandId -> {
-                    val eqPreSet = K9PacketDecoder.decodePayloadGetEqPreSet(packet.payload)
-                    if (eqPreSet != null) {
-                        reduce {
-                            state.copy(eqPreSet = eqPreSet)
-                        }
-                    }
+    fun handleCharacteristicChanged(packet: GaiaPacketBLE) = intent {
+        when (packet.command) {
+            FiioK9Command.Get.EqEnabled.commandId -> {
+                val eqEnabled = FiioK9PacketDecoder.decodePayloadEqEnabled(packet.payload)
+                reduce {
+                    state.copy(
+                        eqEnabled = eqEnabled ?: state.eqEnabled,
+                        pendingCommands = state.pendingCommands.minus(packet.command)
+                    )
                 }
             }
-            if (gaiaPacketResponses.isEmpty()) {
-                postSideEffect(EqSideEffect.Characteristic.Changed)
+            FiioK9Command.Get.EqPreSet.commandId -> {
+                val eqPreSet = FiioK9PacketDecoder.decodePayloadEqPreSet(packet.payload)
+                reduce {
+                    state.copy(
+                        eqPreSet = eqPreSet ?: state.eqPreSet,
+                        pendingCommands = state.pendingCommands.minus(packet.command)
+                    )
+                }
             }
         }
     }
 
-    fun handleGaiaPacketSendResult(commandId: Int) = intent {
-        gaiaPacketResponses.remove(commandId)
-        if (gaiaPacketResponses.isEmpty()) {
-            postSideEffect(EqSideEffect.Characteristic.Changed)
+    fun handleCharacteristicWriteResult(
+        packet: GaiaPacketBLE,
+        success: Boolean
+    ) = intent {
+        when (packet.command) {
+            FiioK9Command.Set.EqEnabled.commandId -> {
+                reduce {
+                    state.copy(
+                        eqEnabled = if (success) {
+                            state.pendingEqEnabled ?: state.eqEnabled
+                        } else {
+                            state.eqEnabled
+                        },
+                        pendingCommands = state.pendingCommands.minus(packet.command),
+                        pendingEqEnabled = null
+                    )
+                }
+            }
+            FiioK9Command.Set.EqPreSet.commandId -> {
+                reduce {
+                    state.copy(
+                        eqPreSet = if (success) {
+                            state.pendingEqPreSet ?: state.eqPreSet
+                        } else {
+                            state.eqPreSet
+                        },
+                        pendingCommands = state.pendingCommands.minus(packet.command),
+                        pendingEqPreSet = null
+                    )
+                }
+            }
         }
     }
 
-    fun hasCustomEqValues(): Boolean {
-        return container.stateFlow.value.eqValues.any { eqValue -> eqValue.value != 0f }
-    }
-
-    fun reconnectToDevice(service: GaiaGattService?) = intent {
-        postSideEffect(EqSideEffect.Reconnect.Initiated)
-        val device = service?.device
-        if (service != null && device != null) {
-            val success = if (setupRepository.isDeviceBonded(device.address)) {
-                service.connect(device.address)
-            } else {
-                false
-            }
-            postSideEffect(
-                if (success) {
-                    EqSideEffect.Reconnect.Success
-                } else {
-                    EqSideEffect.Reconnect.Failure
-                }
-            )
-        } else {
-            postSideEffect(EqSideEffect.Reconnect.Failure)
+    fun handleServiceConnectionStateChanged(connected: Boolean) = intent {
+        reduce {
+            state.copy(isServiceConnected = connected)
         }
     }
 
     fun sendGaiaPacketEqEnabled(
-        scope: CoroutineScope,
-        service: GaiaGattService?,
+        service: GaiaGattService,
         eqEnabled: Boolean
     ) = intent {
-        if (service != null) {
-            gaiaPacketResponses.add(K9Command.Set.EqEnabled.commandId)
-            postSideEffect(EqSideEffect.Characteristic.Write)
-            scope.launch(context = Dispatchers.IO) {
-                val success = service.sendGaiaPacket(
-                    K9PacketFactory.createGaiaPacketSetEqEnabled(eqEnabled)
+        val packet = FiioK9PacketFactory.createGaiaPacketSetEqEnabled(eqEnabled)
+        reduce {
+            state.copy(
+                pendingCommands = state.pendingCommands.plus(packet.command),
+                pendingEqEnabled = eqEnabled
+            )
+        }
+        val success = gaiaGattRepository.sendGaiaPacket(service, packet)
+        if (!success) {
+            reduce {
+                state.copy(
+                    pendingCommands = state.pendingCommands.minus(packet.command),
+                    pendingEqEnabled = null
                 )
-                if (success == true) {
-                    reduce {
-                        state.copy(eqEnabled = eqEnabled)
-                    }
-                } else {
-                    gaiaPacketResponses.remove(K9Command.Set.EqEnabled.commandId)
-                    postSideEffect(EqSideEffect.Request.Failure(disconnected = success == null))
-                }
             }
         }
     }
 
     fun sendGaiaPacketEqPreSet(
-        scope: CoroutineScope,
-        service: GaiaGattService?,
+        service: GaiaGattService,
         eqPreSet: EqPreSet
     ) = intent {
-        if (service != null) {
-            gaiaPacketResponses.add(K9Command.Set.EqPreSet.commandId)
-            postSideEffect(EqSideEffect.Characteristic.Write)
-            scope.launch(context = Dispatchers.IO) {
-                val success = service.sendGaiaPacket(
-                    K9PacketFactory.createGaiaPacketSetEqPreSet(eqPreSet)
+        val packet = FiioK9PacketFactory.createGaiaPacketSetEqPreSet(eqPreSet)
+        reduce {
+            state.copy(
+                pendingCommands = state.pendingCommands.plus(packet.command),
+                pendingEqPreSet = eqPreSet
+            )
+        }
+        val success = gaiaGattRepository.sendGaiaPacket(service, packet)
+        if (!success) {
+            reduce {
+                state.copy(
+                    pendingCommands = state.pendingCommands.minus(packet.command),
+                    pendingEqPreSet = null
                 )
-                if (success == true) {
-                    reduce {
-                        state.copy(eqPreSet = eqPreSet)
-                    }
-                } else {
-                    gaiaPacketResponses.remove(K9Command.Set.EqEnabled.commandId)
-                    postSideEffect(EqSideEffect.Request.Failure(disconnected = success == null))
-                }
             }
         }
     }
 
     fun sendGaiaPacketEqValue(
-        scope: CoroutineScope,
-        service: GaiaGattService?,
+        service: GaiaGattService,
         eqValue: EqValue
     ) = intent {
-        if (service != null) {
-            gaiaPacketResponses.add(K9Command.Set.EqValue.commandId)
-            postSideEffect(EqSideEffect.Characteristic.Write)
-            scope.launch(context = Dispatchers.IO) {
-                val success = service.sendGaiaPacket(
-                    K9PacketFactory.createGaiaPacketSetEqValue(eqValue)
-                )
-                if (success == true) {
-                    reduce {
-                        state.copy(
-                            eqValues = state.eqValues.map { v ->
-                                if (v.id == eqValue.id) eqValue else v
-                            }
-                        )
-                    }
-                } else {
-                    gaiaPacketResponses.remove(K9Command.Set.EqEnabled.commandId)
-                    postSideEffect(EqSideEffect.Request.Failure(disconnected = success == null))
-                }
-            }
-        }
-    }
-
-    fun sendGaiaPacketsDelayed(
-        scope: CoroutineScope,
-        service: GaiaGattService?
-    ) = intent {
-        if (service != null) {
-            val commandIds = listOf(
-                K9Command.Get.EqEnabled.commandId,
-                K9Command.Get.EqPreSet.commandId
+        val eqValues = state.eqValues.map { v -> if (v.id == eqValue.id) eqValue else v }
+        val packet = FiioK9PacketFactory.createGaiaPacketSetEqValue(eqValue)
+        reduce {
+            state.copy(
+                pendingCommands = state.pendingCommands.plus(packet.command),
+                pendingEqValues = eqValues
             )
-            gaiaPacketResponses.addAll(commandIds)
-            postSideEffect(EqSideEffect.Characteristic.Write)
-            scope.launch(context = Dispatchers.IO) {
-                commandIds.forEachIndexed { index, commandId ->
-                    val packet = GaiaPacketFactory.createGaiaPacket(commandId = commandId)
-                    val success = service.sendGaiaPacket(packet)
-                    if (success == null || !success) {
-                        gaiaPacketResponses.removeAll(commandIds.toSet())
-                        postSideEffect(EqSideEffect.Request.Failure(disconnected = success == null))
-                        return@launch
-                    }
-                    if (index < commandIds.lastIndex) {
-                        delay(GAIA_CMD_DELAY_MS)
-                    }
-                }
+        }
+        val success = gaiaGattRepository.sendGaiaPacket(service, packet)
+        reduce {
+            state.copy(
+                eqValues = if (success) {
+                    state.pendingEqValues ?: state.eqValues
+                } else {
+                    state.eqValues
+                },
+                pendingCommands = state.pendingCommands.minus(packet.command),
+                pendingEqValues = null
+            )
+        }
+    }
+
+    fun sendGaiaPacketsDelayed(service: GaiaGattService) = intent {
+        val commandIds = listOf(
+            FiioK9Command.Get.EqEnabled.commandId,
+            FiioK9Command.Get.EqPreSet.commandId
+        )
+        val packets = commandIds.map { commandId ->
+            GaiaPacketFactory.createGaiaPacket(commandId = commandId)
+        }
+        reduce {
+            state.copy(pendingCommands = state.pendingCommands.plus(commandIds))
+        }
+        val success = gaiaGattRepository.sendGaiaPackets(service, packets)
+        if (!success) {
+            reduce {
+                state.copy(pendingCommands = state.pendingCommands.minus(commandIds.toSet()))
             }
         }
     }
 
-    fun sendGaiaPacketsEqValue(
-        scope: CoroutineScope,
-        service: GaiaGattService?
-    ) = intent {
-        if (service != null) {
-            val eqValues = state.eqValues.map { eqValue -> eqValue.copy(value = 0f) }
-            val commandId = K9Command.Set.EqValue.commandId
-            val commandIds = List(eqValues.size) { commandId }
-            gaiaPacketResponses.addAll(commandIds)
-            postSideEffect(EqSideEffect.Characteristic.Write)
-            scope.launch(context = Dispatchers.IO) {
-                eqValues.forEach { eqValue ->
-                    val success = service.sendGaiaPacket(
-                        K9PacketFactory.createGaiaPacketSetEqValue(eqValue)
-                    )
-                    if (success == true) {
-                        reduce {
-                            state.copy(
-                                eqValues = state.eqValues.map { v ->
-                                    if (v.id == eqValue.id) eqValue.copy(value = 0f) else v
-                                }
-                            )
-                        }
-                    } else {
-                        gaiaPacketResponses.removeAll(commandIds.toSet())
-                        postSideEffect(EqSideEffect.Request.Failure(disconnected = success == null))
-                        return@launch
-                    }
-                }
-            }
+    fun sendGaiaPacketsEqValue(service: GaiaGattService) = intent {
+        val eqValues = state.eqValues.map { eqValue -> eqValue.copy(value = 0f) }
+        val commandIds = List(eqValues.size) { FiioK9Command.Set.EqValue.commandId }
+        val packets = eqValues.map { eqValue ->
+            FiioK9PacketFactory.createGaiaPacketSetEqValue(eqValue)
+        }
+        reduce {
+            state.copy(
+                pendingCommands = state.pendingCommands.plus(commandIds),
+                pendingEqValues = eqValues
+            )
+        }
+        val success = gaiaGattRepository.sendGaiaPackets(service, packets)
+        reduce {
+            state.copy(
+                eqValues = if (success) {
+                    state.pendingEqValues ?: state.eqValues
+                } else {
+                    state.eqValues
+                },
+                pendingCommands = state.pendingCommands.minus(commandIds.toSet()),
+                pendingEqValues = null
+            )
         }
     }
 }

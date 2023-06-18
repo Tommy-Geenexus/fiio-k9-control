@@ -21,36 +21,5 @@
 package com.tomg.fiiok9control.eq.business
 
 import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
 
-sealed class EqSideEffect : Parcelable {
-
-    sealed class Characteristic {
-
-        @Parcelize
-        object Write : EqSideEffect()
-
-        @Parcelize
-        object Changed : EqSideEffect()
-    }
-
-    sealed class Reconnect : EqSideEffect() {
-
-        @Parcelize
-        object Initiated : EqSideEffect()
-
-        @Parcelize
-        object Success : EqSideEffect()
-
-        @Parcelize
-        object Failure : EqSideEffect()
-    }
-
-    sealed class Request : EqSideEffect() {
-
-        @Parcelize
-        data class Failure(
-            val disconnected: Boolean = false
-        ) : Request()
-    }
-}
+sealed class EqSideEffect : Parcelable

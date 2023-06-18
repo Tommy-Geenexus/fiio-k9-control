@@ -22,22 +22,20 @@ package com.tomg.fiiok9control.profile.data
 
 import androidx.room.Dao
 import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import kotlinx.coroutines.flow.Flow
+import androidx.room.Upsert
 
 @Dao
 interface ProfileDao {
 
-    @Query("SELECT * FROM Profile")
-    fun getProfiles(): Flow<List<Profile>>
+    @Query("SELECT * FROM Profile ORDER BY name ASC")
+    suspend fun getProfiles(): List<Profile>
 
     @Query("SELECT COUNT(*) FROM Profile")
     suspend fun getProfileCount(): Int
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(vararg profiles: Profile)
+    @Upsert
+    suspend fun upsert(vararg profiles: Profile)
 
     @Delete
     suspend fun delete(profile: Profile)

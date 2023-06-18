@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.FiioK9Control.CardView.Elevated.Medium"
+    android:animateLayoutChanges="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/spacing_normal">
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/eq_enabled"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/equalizer"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/eq_pre_set"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_normal"
+            android:text="@string/equalizer_preset"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/eq_enabled" />
+
+        <RadioGroup
+            android:id="@+id/group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_normal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/eq_pre_set">
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/jazz"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/jazz" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/pop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/pop" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/rock"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/rock" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/dance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/dance" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/custom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/custom" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/rb"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/r_b" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/classical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/classical" />
+        </RadioGroup>
+
+        <LinearLayout
+            android:id="@+id/eq_custom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/group">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/eq_pre_set_custom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_normal"
+                android:layout_marginBottom="@dimen/spacing_normal"
+                android:text="@string/custom_equalizer_preset"
+                android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/band_31"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_normal"
+                android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+            <include
+                android:id="@+id/band_31_slider"
+                layout="@layout/slider_no_active_track"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_small" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/band_62"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_small"
+                android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+            <include
+                android:id="@+id/band_62_slider"
+                layout="@layout/slider_no_active_track"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_small" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/band_125"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_small"
+                android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+            <include
+                android:id="@+id/band_125_slider"
+                layout="@layout/slider_no_active_track"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_small" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/band_250"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_small"
+                android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+            <include
+                android:id="@+id/band_250_slider"
+                layout="@layout/slider_no_active_track"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_small" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/band_500"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_small"
+                android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+            <include
+                android:id="@+id/band_500_slider"
+                layout="@layout/slider_no_active_track"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_small" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/band_1k"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_small"
+                android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+            <include
+                android:id="@+id/band_1k_slider"
+                layout="@layout/slider_no_active_track"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_small" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/band_2k"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_small"
+                android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+            <include
+                android:id="@+id/band_2k_slider"
+                layout="@layout/slider_no_active_track"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_small" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/band_4k"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_small"
+                android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+            <include
+                android:id="@+id/band_4k_slider"
+                layout="@layout/slider_no_active_track"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_small" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/band_8k"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_small"
+                android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+            <include
+                android:id="@+id/band_8k_slider"
+                layout="@layout/slider_no_active_track"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_small" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/band_16k"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_small"
+                android:textAppearance="?attr/textAppearanceBodyMedium" />
+
+            <include
+                android:id="@+id/band_16k_slider"
+                layout="@layout/slider_no_active_track"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_small" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

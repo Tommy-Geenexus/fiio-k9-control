@@ -24,20 +24,16 @@ import android.app.Application
 import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
 import com.tomg.fiiok9control.Empty
-import com.tomg.fiiok9control.gaia.GaiaGattService
+import com.tomg.fiiok9control.gaia.data.GaiaGattRepository
+import com.tomg.fiiok9control.gaia.ui.GaiaGattService
 import com.tomg.fiiok9control.profile.data.Profile
 import com.tomg.fiiok9control.setup.data.BleScanResult
 import com.tomg.fiiok9control.setup.data.SetupRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.asSharedFlow
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
@@ -48,6 +44,7 @@ import org.orbitmvi.orbit.viewmodel.container
 class SetupViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     @ApplicationContext context: Context,
+    private val gaiaGattRepository: GaiaGattRepository,
     private val setupRepository: SetupRepository
 ) : AndroidViewModel(context as Application),
     ContainerHost<SetupState, SetupSideEffect> {
@@ -55,62 +52,56 @@ class SetupViewModel @Inject constructor(
     override val container = container<SetupState, SetupSideEffect>(
         initialState = SetupState(),
         savedStateHandle = savedStateHandle,
-        onCreate = {
-            requestPermissionsOrStartBleScan()
-        }
+        onCreate = { verifyBleSupportedAndPermissionsGranted() }
     )
 
-    private val scannedDeviceChannel = Channel<Result<BleScanResult>>(capacity = Channel.UNLIMITED)
-    val scannedDeviceFlow = scannedDeviceChannel.receiveAsFlow()
+    val bleScanResults = setupRepository.bleScanResults.asSharedFlow()
 
-    fun connectToDevice(
-        scope: CoroutineScope,
-        service: GaiaGattService?
-    ) = intent {
-        if (service != null) {
-            reduce {
-                state.copy(isLoading = true)
-            }
-            scope.launch(context = Dispatchers.IO) {
-                val success = service.connect(state.deviceAddress)
-                if (!success) {
-                    handleConnectionEstablishFailed()
-                }
-            }
-        } else {
-            handleConnectionEstablishFailed()
+    fun connect(service: GaiaGattService) = intent {
+        reduce {
+            state.copy(isConnecting = true)
+        }
+        val success = gaiaGattRepository.connect(service, state.deviceAddress)
+        reduce {
+            state.copy(isConnecting = success)
         }
     }
 
-    fun disconnect(service: GaiaGattService?) = intent {
-        service?.disconnectAndReset()
+    fun disconnect(service: GaiaGattService) = intent {
+        reduce {
+            state.copy(isDisconnecting = true)
+        }
+        service.disconnectAndReset()
+        reduce {
+            state.copy(isDisconnecting = false)
+        }
     }
 
     fun handleBluetoothStateChange(enabled: Boolean) = intent {
         reduce {
             state.copy(
-                bluetoothEnabled = enabled,
                 deviceAddress = String.Empty,
-                bonded = false
+                isBluetoothEnabled = enabled,
+                isDeviceBonded = false
             )
         }
     }
 
     fun handleBluetoothBondStateChange(bonded: Boolean) = intent {
         reduce {
-            state.copy(bonded = bonded)
+            state.copy(isDeviceBonded = bonded)
         }
     }
 
     fun handleConnectionEstablishInProgress(deviceAddress: String) = intent {
         reduce {
-            state.copy(isLoading = true)
+            state.copy(isConnecting = true)
         }
         val bonded = setupRepository.isDeviceBonded(deviceAddress)
         reduce {
             state.copy(
                 deviceAddress = deviceAddress,
-                bonded = bonded
+                isDeviceBonded = bonded
             )
         }
     }
@@ -130,13 +121,13 @@ class SetupViewModel @Inject constructor(
         reduce {
             state.copy(
                 deviceAddress = String.Empty,
-                bonded = false,
-                isLoading = false
+                isDeviceBonded = false,
+                isConnecting = false
             )
         }
     }
 
-    fun handleDeviceScanned(bleScanResult: BleScanResult) = intent {
+    fun handleScanResult(bleScanResult: BleScanResult) = intent {
         val deviceAddress = if (!bleScanResult.matchLost) {
             bleScanResult.deviceAddress
         } else {
@@ -145,8 +136,7 @@ class SetupViewModel @Inject constructor(
         reduce {
             state.copy(
                 deviceAddress = deviceAddress,
-                bonded = bleScanResult.bonded,
-                isLoading = false
+                isDeviceBonded = bleScanResult.bonded
             )
         }
     }
@@ -154,7 +144,18 @@ class SetupViewModel @Inject constructor(
     fun handlePermissionsGrantResult(result: Map<String, Boolean>) = intent {
         val permissionsGranted = !result.containsValue(false)
         reduce {
-            state.copy(permissionsGranted = permissionsGranted)
+            state.copy(isPermissionsGranted = permissionsGranted)
+        }
+    }
+
+    fun handleServiceConnectionStateChanged(connected: Boolean) = intent {
+        val isBluetoothEnabled = setupRepository.isBluetoothEnabled()
+        reduce {
+            state.copy(
+                isBluetoothEnabled = isBluetoothEnabled,
+                isPermissionsGranted = setupRepository.arePermissionsGranted(),
+                isServiceConnected = connected
+            )
         }
     }
 
@@ -164,50 +165,25 @@ class SetupViewModel @Inject constructor(
         }
     }
 
-    private fun requestPermissionsOrStartBleScan() = intent {
-        if (setupRepository.isBleSupported()) {
-            if (setupRepository.arePermissionsGranted()) {
-                reduce {
-                    state.copy(
-                        permissionsGranted = setupRepository.arePermissionsGranted(),
-                        bluetoothEnabled = setupRepository.isBluetoothEnabled()
-                    )
-                }
-            } else {
-                postSideEffect(
-                    SetupSideEffect.GrantPermissions(setupRepository.requiredPermissions)
-                )
-            }
-        } else {
-            postSideEffect(SetupSideEffect.Ble.Unsupported)
-        }
-    }
-
     fun startBleScan() = intent {
-        val success = setupRepository.startBleScan(
-            onScanResult = { result ->
-                viewModelScope.launch {
-                    scannedDeviceChannel.send(result)
-                }
-            }
-        )
-        if (success) {
-            reduce {
-                state.copy(isLoading = true)
-            }
+        val success = setupRepository.startBleScan()
+        reduce {
+            state.copy(isScanning = success)
         }
     }
 
     fun stopBleScan() = intent {
         setupRepository.stopBleScan()
         reduce {
-            state.copy(isLoading = false)
+            state.copy(isScanning = false)
         }
     }
 
-    fun synchronizeState() = intent {
-        reduce {
-            state.copy(permissionsGranted = setupRepository.arePermissionsGranted())
+    private fun verifyBleSupportedAndPermissionsGranted() = intent {
+        if (!setupRepository.isBleSupported()) {
+            postSideEffect(SetupSideEffect.Ble.Unsupported)
+        } else if (!setupRepository.arePermissionsGranted()) {
+            postSideEffect(SetupSideEffect.GrantPermissions(setupRepository.requiredPermissions))
         }
     }
 }

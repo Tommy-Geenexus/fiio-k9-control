@@ -20,6 +20,7 @@
 
 package com.tomg.fiiok9control.state.ui
 
+import androidx.core.view.forEach
 import androidx.recyclerview.widget.RecyclerView
 import com.tomg.fiiok9control.R
 import com.tomg.fiiok9control.databinding.ItemIndicatorBinding
@@ -59,7 +60,8 @@ class ItemIndicatorViewHolder(
 
     fun bindItemIndicator(
         indicatorState: IndicatorState,
-        indicatorBrightness: Int
+        indicatorBrightness: Int,
+        itemEnabled: Boolean
     ) {
         when (indicatorState) {
             IndicatorState.Disabled -> binding.disabled.isChecked = true
@@ -67,5 +69,9 @@ class ItemIndicatorViewHolder(
             IndicatorState.EnabledGradientOnly -> binding.enabledGradientOnly.isChecked = true
         }
         binding.indicatorBrightnessSlider.value = indicatorBrightness.toFloat()
+        binding.group.forEach { item ->
+            item.isEnabled = itemEnabled
+        }
+        binding.indicatorBrightnessSlider.isEnabled = itemEnabled
     }
 }

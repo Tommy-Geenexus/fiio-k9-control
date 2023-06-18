@@ -18,14 +18,15 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.fiiok9control.gaia
+package com.tomg.fiiok9control.gaia.data
 
-import android.os.Binder
-import java.lang.ref.WeakReference
+import com.qualcomm.qti.libraries.gaia.packets.GaiaPacketBLE
 
-class GaiaGattBinder(
-    private val service: WeakReference<GaiaGattService>
-) : Binder() {
+object GaiaPacketFactory {
 
-    fun getService(): GaiaGattService? = service.get()
+    fun createGaiaPacket(
+        vendorId: Int = GaiaPacketVendor.Fiio.vendorId,
+        commandId: Int,
+        payload: ByteArray = byteArrayOf()
+    ): GaiaPacketBLE = GaiaPacketBLE(vendorId, commandId, payload)
 }

@@ -78,14 +78,16 @@
 
     <string name="pop">Pop</string>
 
-    <string name="profile">Profil</string>
-    <string name="profile_export_failure">Profil konnte nicht exportiert werden</string>
-    <string name="profile_export_success">Profil erfolgreich exportiert</string>
+    <string name="profile">Profile</string>
+    <string name="profile_apply_failure">Profil nicht angewendet</string>
+    <string name="profile_apply_success">Profil angewendet</string>
+    <string name="profile_delete_failure">Profil nicht gelöscht</string>
+    <string name="profile_delete_success">Profil gelöscht</string>
+    <string name="profile_export_failure">Profil nicht exportiert</string>
+    <string name="profile_export_success">Profil exportiert</string>
     <string name="profile_name">Profilname</string>
 
-    <string name="r_b">
-        <![CDATA[R&B]]>
-    </string>
+    <string name="r_b"><![CDATA[R&B]]></string>
 
     <string name="reset_settings">Einstellungen zurücksetzen</string>
 
@@ -100,8 +102,10 @@
     <string name="short_delay_sharp_roll_off">Kurze Verzögerung scharfes Abrollen</string>
     <string name="short_delay_slow_roll_off">Kurze Verzögerung langsames Abrollen</string>
 
-    <string name="shortcut_profile_added">Profil-Shorcut hinzugefügt</string>
-    <string name="shortcut_profile_removed">Profil-Shorcut entfernt</string>
+    <string name="shortcut_profile_add_failure">Profil-Shortcut nicht hinzugefügt</string>
+    <string name="shortcut_profile_add_success">Profil-Shortcut hinzugefügt</string>
+    <string name="shortcut_profile_delete_failure">Profil-Shortcut nicht gelöscht</string>
+    <string name="shortcut_profile_delete_success">Profil-Shortcut gelöscht</string>
 
     <string name="slow_roll_off">Langsames Abrollen</string>
 

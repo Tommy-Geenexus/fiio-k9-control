@@ -26,46 +26,46 @@ import kotlinx.parcelize.Parcelize
 
 sealed class ProfileSideEffect : Parcelable {
 
-    sealed class Characteristic : ProfileSideEffect() {
+    sealed class Apply : ProfileSideEffect() {
 
         @Parcelize
-        object Write : Characteristic()
+        data object Success : Delete()
 
         @Parcelize
-        object Changed : Characteristic()
+        data object Failure : Delete()
     }
 
-    sealed class Reconnect : ProfileSideEffect() {
+    sealed class Delete : ProfileSideEffect() {
+        @Parcelize
+        data object Success : Delete()
 
         @Parcelize
-        object Initiated : Reconnect()
-
-        @Parcelize
-        object Success : Reconnect()
-
-        @Parcelize
-        object Failure : Reconnect()
-    }
-
-    sealed class Request : ProfileSideEffect() {
-
-        @Parcelize
-        data class Failure(
-            val disconnected: Boolean = false
-        ) : Request()
+        data object Failure : Delete()
     }
 
     sealed class Shortcut : ProfileSideEffect() {
 
-        @Parcelize
-        object Added : Shortcut()
+        sealed class Add : Shortcut() {
 
-        @Parcelize
-        object Removed : Shortcut()
+            @Parcelize
+            data object Success : Add()
 
-        @Parcelize
-        data class Selected(
-            val profile: Profile
-        ) : Shortcut()
+            @Parcelize
+            data object Failure : Add()
+        }
+
+        sealed class Delete : Shortcut() {
+
+            @Parcelize
+            data object Success : Delete()
+
+            @Parcelize
+            data object Failure : Delete()
+        }
     }
+
+    @Parcelize
+    data class Select(
+        val profile: Profile
+    ) : ProfileSideEffect()
 }

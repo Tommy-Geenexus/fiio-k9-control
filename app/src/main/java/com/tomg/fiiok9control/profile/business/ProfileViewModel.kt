@@ -23,25 +23,17 @@ package com.tomg.fiiok9control.profile.business
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.qualcomm.qti.libraries.gaia.packets.GaiaPacketBLE
-import com.tomg.fiiok9control.GAIA_CMD_DELAY_MS
-import com.tomg.fiiok9control.VOLUME_MAX
-import com.tomg.fiiok9control.VOLUME_MIN
-import com.tomg.fiiok9control.gaia.GaiaGattService
-import com.tomg.fiiok9control.gaia.fiio.K9Command
-import com.tomg.fiiok9control.gaia.fiio.K9PacketFactory
-import com.tomg.fiiok9control.gaia.isFiioPacket
+import com.tomg.fiiok9control.gaia.data.GaiaGattRepository
+import com.tomg.fiiok9control.gaia.data.fiio.FiioK9Command
+import com.tomg.fiiok9control.gaia.data.fiio.FiioK9Defaults
+import com.tomg.fiiok9control.gaia.data.fiio.FiioK9PacketFactory
+import com.tomg.fiiok9control.gaia.ui.GaiaGattService
 import com.tomg.fiiok9control.profile.data.Profile
 import com.tomg.fiiok9control.profile.data.ProfileRepository
 import com.tomg.fiiok9control.profile.ui.ProfileFragmentArgs
-import com.tomg.fiiok9control.setup.data.SetupRepository
 import com.tomg.fiiok9control.state.InputSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
@@ -51,159 +43,151 @@ import org.orbitmvi.orbit.viewmodel.container
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val profileRepository: ProfileRepository,
-    private val setupRepository: SetupRepository
+    private val gaiaGattRepository: GaiaGattRepository,
+    private val profileRepository: ProfileRepository
 ) : ViewModel(),
     ContainerHost<ProfileState, ProfileSideEffect> {
 
     override val container = container<ProfileState, ProfileSideEffect>(
-        savedStateHandle = savedStateHandle,
         initialState = ProfileState(),
+        savedStateHandle = savedStateHandle,
         onCreate = {
             loadProfiles(ProfileFragmentArgs.fromSavedStateHandle(savedStateHandle).profile)
         }
     )
 
-    private val gaiaPacketResponses: MutableList<Int> = mutableListOf()
+    fun addProfileShortcut(profile: Profile) = intent {
+        reduce {
+            state.copy(isAddingProfileShortcut = true)
+        }
+        val success = profileRepository.addProfileShortcut(profile)
+        reduce {
+            state.copy(isAddingProfileShortcut = false)
+        }
+        postSideEffect(
+            if (success) {
+                ProfileSideEffect.Shortcut.Add.Success
+            } else {
+                ProfileSideEffect.Shortcut.Add.Failure
+            }
+        )
+    }
 
-    fun clearGaiaPacketResponses() {
-        gaiaPacketResponses.clear()
+    fun deleteProfileShortcut(profile: Profile) = intent {
+        reduce {
+            state.copy(isDeletingProfileShortcut = true)
+        }
+        val success = profileRepository.deleteProfileShortcut(profile)
+        reduce {
+            state.copy(isDeletingProfileShortcut = false)
+        }
+        postSideEffect(
+            if (success) {
+                ProfileSideEffect.Shortcut.Delete.Success
+            } else {
+                ProfileSideEffect.Shortcut.Delete.Failure
+            }
+        )
     }
 
     fun deleteProfile(profile: Profile) = intent {
         reduce {
-            state.copy(areProfilesLoading = true)
+            state.copy(isDeletingProfile = true)
         }
         val success = profileRepository.deleteProfile(profile)
         val profiles = state.profiles.toMutableList().apply {
             remove(profile)
         }
         if (success) {
-            profileRepository.removeProfileShortcut(profile)
+            profileRepository.deleteProfileShortcut(profile)
         }
         reduce {
             state.copy(
                 profiles = if (success) profiles else state.profiles,
-                areProfilesLoading = false
+                isDeletingProfile = false
             )
         }
+        postSideEffect(
+            if (success) {
+                ProfileSideEffect.Delete.Success
+            } else {
+                ProfileSideEffect.Delete.Failure
+            }
+        )
     }
 
-    fun handleGaiaPacket(data: ByteArray) = intent {
-        val packet = GaiaPacketBLE(data)
-        if (packet.isFiioPacket()) {
-            gaiaPacketResponses.remove(packet.command)
-            if (gaiaPacketResponses.isEmpty()) {
-                postSideEffect(ProfileSideEffect.Characteristic.Changed)
-            }
+    fun handleCharacteristicWriteResult(packet: GaiaPacketBLE) = intent {
+        reduce {
+            state.copy(pendingCommands = state.pendingCommands.minus(packet.command))
         }
     }
 
-    fun handleGaiaPacketSendResult(commandId: Int) = intent {
-        gaiaPacketResponses.remove(commandId)
-        if (gaiaPacketResponses.isEmpty()) {
-            postSideEffect(ProfileSideEffect.Characteristic.Changed)
+    fun handleServiceConnectionStateChanged(connected: Boolean) = intent {
+        reduce {
+            state.copy(isServiceConnected = connected)
         }
     }
 
     private fun loadProfiles(profile: Profile?) = intent {
         reduce {
-            state.copy(areProfilesLoading = true)
+            state.copy(isLoadingProfiles = true)
         }
-        val profiles = profileRepository.getProfiles().firstOrNull()
+        val profiles = profileRepository.getProfiles()
         reduce {
             state.copy(
-                profiles = profiles ?: emptyList(),
-                areProfilesLoading = false
+                profiles = profiles,
+                isLoadingProfiles = false
             )
         }
         if (profile != null) {
-            postSideEffect(ProfileSideEffect.Shortcut.Selected(profile))
-        }
-    }
-
-    fun reconnectToDevice(service: GaiaGattService?) = intent {
-        postSideEffect(ProfileSideEffect.Reconnect.Initiated)
-        val device = service?.device
-        if (service != null && device != null) {
-            val success = if (setupRepository.isDeviceBonded(device.address)) {
-                service.connect(device.address)
-            } else {
-                false
-            }
-            postSideEffect(
-                if (success) {
-                    ProfileSideEffect.Reconnect.Success
-                } else {
-                    ProfileSideEffect.Reconnect.Failure
-                }
-            )
-        } else {
-            postSideEffect(ProfileSideEffect.Reconnect.Failure)
+            postSideEffect(ProfileSideEffect.Select(profile))
         }
     }
 
     fun sendGaiaPacketsForProfile(
-        scope: CoroutineScope,
-        service: GaiaGattService?,
+        service: GaiaGattService,
         profile: Profile
     ) = intent {
-        if (service != null) {
-            val commandIds = mutableListOf(
-                K9Command.Set.InputSource.commandId,
-                K9Command.Get.Volume.commandId
+        val commandIds = if (profile.inputSource == InputSource.Bluetooth) {
+            listOf(
+                FiioK9Command.Set.InputSource.commandId,
+                FiioK9Command.Get.Volume.commandId,
+                FiioK9Command.Get.CodecBit.commandId
             )
-            if (profile.inputSource == InputSource.Bluetooth) {
-                commandIds.add(K9Command.Get.CodecBit.commandId)
-            }
-            commandIds.add(K9Command.Set.IndicatorRgbLighting.commandId)
-            gaiaPacketResponses.addAll(commandIds)
-            postSideEffect(ProfileSideEffect.Characteristic.Write)
-            scope.launch(context = Dispatchers.IO) {
-                val packets = mutableListOf(
-                    K9PacketFactory.createGaiaPacketSetInputSource(profile.inputSource),
-                    K9PacketFactory.createGaiaPacketGetVolume()
-                )
-                if (profile.inputSource == InputSource.Bluetooth) {
-                    packets.add(K9PacketFactory.createGaiaPacketGetCodecBit())
-                }
-                packets.add(
-                    K9PacketFactory.createGaiaPacketSetIndicatorStateAndBrightness(
-                        indicatorState = profile.indicatorState,
-                        indicatorBrightness = profile.indicatorBrightness
-                    )
-                )
-                if (IntRange(VOLUME_MIN, VOLUME_MAX).contains(profile.volume)) {
-                    packets.add(K9PacketFactory.createGaiaPacketSetVolume(profile.volume))
-                }
-                packets.forEachIndexed { index, packet ->
-                    val success = service.sendGaiaPacket(packet)
-                    if (success == null || !success) {
-                        gaiaPacketResponses.removeAll(commandIds.toSet())
-                        postSideEffect(
-                            ProfileSideEffect.Request.Failure(disconnected = success == null)
-                        )
-                        return@launch
-                    }
-                    if (index < packets.lastIndex) {
-                        delay(GAIA_CMD_DELAY_MS)
-                    }
-                }
-            }
+        } else {
+            listOf(
+                FiioK9Command.Set.InputSource.commandId,
+                FiioK9Command.Get.Volume.commandId
+            )
         }
-    }
-
-    fun addProfileShortcut(profile: Profile) = intent {
-        val success = profileRepository.addProfileShortcut(profile)
-        if (success) {
-            postSideEffect(ProfileSideEffect.Shortcut.Added)
+        reduce {
+            state.copy(pendingCommands = state.pendingCommands.plus(commandIds))
         }
-    }
-
-    fun removeProfileShortcut(profile: Profile) = intent {
-        val success = profileRepository.removeProfileShortcut(profile)
-        if (success) {
-            postSideEffect(ProfileSideEffect.Shortcut.Removed)
+        val packets = mutableListOf(
+            FiioK9PacketFactory.createGaiaPacketSetInputSource(profile.inputSource),
+            FiioK9PacketFactory.createGaiaPacketGetVolume()
+        )
+        if (profile.inputSource == InputSource.Bluetooth) {
+            packets.add(FiioK9PacketFactory.createGaiaPacketGetCodecBit())
+        }
+        packets.add(
+            FiioK9PacketFactory.createGaiaPacketSetIndicatorStateAndBrightness(
+                indicatorState = profile.indicatorState,
+                indicatorBrightness = profile.indicatorBrightness
+            )
+        )
+        if (IntRange(
+                FiioK9Defaults.VOLUME_LEVEL_MIN,
+                FiioK9Defaults.VOLUME_LEVEL_MAX
+            ).contains(profile.volume)
+        ) {
+            packets.add(FiioK9PacketFactory.createGaiaPacketSetVolume(profile.volume))
+        }
+        val success = gaiaGattRepository.sendGaiaPackets(service, packets)
+        if (!success) {
+            reduce {
+                state.copy(pendingCommands = state.pendingCommands.minus(commandIds.toSet()))
+            }
         }
     }
 }

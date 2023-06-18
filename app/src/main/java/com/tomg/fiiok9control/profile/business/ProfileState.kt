@@ -27,5 +27,10 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class ProfileState(
     val profiles: List<Profile> = emptyList(),
-    val areProfilesLoading: Boolean = false
+    val pendingCommands: List<Int> = emptyList(),
+    val isAddingProfileShortcut: Boolean = false,
+    val isDeletingProfile: Boolean = false,
+    val isDeletingProfileShortcut: Boolean = false,
+    val isLoadingProfiles: Boolean = false,
+    val isServiceConnected: Boolean = false
 ) : Parcelable

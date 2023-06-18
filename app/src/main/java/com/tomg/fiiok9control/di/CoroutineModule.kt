@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
+ * Copyright (c) 2023, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -18,19 +18,33 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.fiiok9control.gaia
+package com.tomg.fiiok9control.di
 
-import com.qualcomm.qti.libraries.ble.Characteristics
-import com.qualcomm.qti.libraries.ble.Services
-import java.util.UUID
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Qualifier
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 
-val UUID_SERVICE_GAIA: UUID? = Services.getStringServiceUUID(Services.SERVICE_CSR_GAIA)
+@Module
+@InstallIn(SingletonComponent::class)
+object CoroutineModule {
 
-val UUID_CHARACTERISTIC_GAIA_RESPONSE: UUID? =
-    Characteristics.getCharacteristicUUID(Characteristics.CHARACTERISTIC_CSR_GAIA_RESPONSE_ENDPOINT)
+    @Provides
+    @DispatcherIo
+    fun provideDispatcherIo(): CoroutineDispatcher = Dispatchers.IO
 
-val UUID_CHARACTERISTIC_GAIA_COMMAND: UUID? =
-    Characteristics.getCharacteristicUUID(Characteristics.CHARACTERISTIC_CSR_GAIA_COMMAND_ENDPOINT)
+    @Provides
+    @DispatcherMainImmediate
+    fun provideDispatcherMainImmediate(): CoroutineDispatcher = Dispatchers.Main.immediate
+}
 
-val UUID_CHARACTERISTIC_GAIA_DATA_ENDPOINT: UUID? =
-    Characteristics.getCharacteristicUUID(Characteristics.CHARACTERISTIC_CSR_GAIA_DATA_ENDPOINT)
+@Qualifier
+@Retention(AnnotationRetention.RUNTIME)
+annotation class DispatcherIo
+
+@Qualifier
+@Retention(AnnotationRetention.RUNTIME)
+annotation class DispatcherMainImmediate

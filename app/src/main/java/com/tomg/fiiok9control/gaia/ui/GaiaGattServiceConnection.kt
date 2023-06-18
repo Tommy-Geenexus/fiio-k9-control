@@ -18,17 +18,27 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.fiiok9control.gaia
+package com.tomg.fiiok9control.gaia.ui
 
-import android.os.Parcelable
-import com.qualcomm.qti.libraries.gaia.packets.GaiaPacketBLE
-import kotlinx.parcelize.Parcelize
+import android.content.ComponentName
+import android.content.ServiceConnection
+import android.os.IBinder
 
-sealed class GaiaPacketVendor(val vendorId: Int) : Parcelable {
+class GaiaGattServiceConnection(
+    private val onServiceConnected: (GaiaGattService) -> Unit,
+    private val onServiceDisconnected: () -> Unit
+) : ServiceConnection {
 
-    @Parcelize
-    object Fiio : GaiaPacketVendor(vendorId = 0x0a)
+    override fun onServiceConnected(
+        name: ComponentName?,
+        service: IBinder?
+    ) {
+        (service as? GaiaGattBinder)?.getService()?.let { gaiaGattService ->
+            onServiceConnected(gaiaGattService)
+        }
+    }
+
+    override fun onServiceDisconnected(name: ComponentName?) {
+        onServiceDisconnected()
+    }
 }
-
-@Suppress("BooleanMethodIsAlwaysInverted")
-fun GaiaPacketBLE.isFiioPacket() = vendorId == GaiaPacketVendor.Fiio.vendorId

@@ -28,5 +28,6 @@ import kotlinx.parcelize.Parcelize
 data class BleScanResult(
     val deviceAddress: String = String.Empty,
     val bonded: Boolean = false,
-    val matchLost: Boolean = false
+    val matchLost: Boolean = false,
+    val scanFailed: Boolean = false
 ) : Parcelable

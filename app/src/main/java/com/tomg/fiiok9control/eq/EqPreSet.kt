@@ -42,23 +42,23 @@ sealed class EqPreSet(
     }
 
     @Parcelize
-    object Jazz : EqPreSet(id = 0)
+    data object Jazz : EqPreSet(id = 0)
 
     @Parcelize
-    object Pop : EqPreSet(id = 1)
+    data object Pop : EqPreSet(id = 1)
 
     @Parcelize
-    object Rock : EqPreSet(id = 2)
+    data object Rock : EqPreSet(id = 2)
 
     @Parcelize
-    object Dance : EqPreSet(id = 3)
+    data object Dance : EqPreSet(id = 3)
 
     @Parcelize
-    object Custom : EqPreSet(id = 4)
+    data object Custom : EqPreSet(id = 4)
 
     @Parcelize
-    object Rb : EqPreSet(id = 5)
+    data object Rb : EqPreSet(id = 5)
 
     @Parcelize
-    object Classical : EqPreSet(id = 6)
+    data object Classical : EqPreSet(id = 6)
 }

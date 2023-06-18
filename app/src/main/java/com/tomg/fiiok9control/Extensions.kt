@@ -28,9 +28,9 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import com.google.android.material.snackbar.Snackbar
 import com.qualcomm.qti.libraries.gaia.packets.GaiaPacketBREDR
-import dev.chrisbanes.insetter.applyInsetter
 import kotlin.coroutines.CoroutineContext
 import kotlin.experimental.and
+import kotlin.math.round
 import kotlinx.coroutines.ensureActive
 
 suspend fun <T> CoroutineContext.suspendRunCatching(block: suspend () -> T): Result<T> = try {
@@ -38,14 +38,6 @@ suspend fun <T> CoroutineContext.suspendRunCatching(block: suspend () -> T): Res
 } catch (exception: Exception) {
     ensureActive()
     Result.failure(exception)
-}
-
-fun View.applyInsetMargins() {
-    applyInsetter {
-        type(statusBars = true) {
-            margin()
-        }
-    }
 }
 
 fun View.showSnackbar(
@@ -116,3 +108,5 @@ fun String.toBytes(): ByteArray {
     }
     return bytes
 }
+
+fun Int.toVolumePercent() = "${round((this * 100 / 120).toDouble())}%"

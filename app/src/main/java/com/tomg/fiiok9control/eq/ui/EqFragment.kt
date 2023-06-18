@@ -20,26 +20,29 @@
 
 package com.tomg.fiiok9control.eq.ui
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
-import androidx.core.view.MenuProvider
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.tomg.fiiok9control.BaseFragment
 import com.tomg.fiiok9control.R
+import com.tomg.fiiok9control.WINDOW_SIZE_EXPANDED_COLUMNS
+import com.tomg.fiiok9control.WindowSizeClass
 import com.tomg.fiiok9control.databinding.FragmentEqBinding
 import com.tomg.fiiok9control.eq.EqPreSet
 import com.tomg.fiiok9control.eq.EqValue
-import com.tomg.fiiok9control.eq.business.EqSideEffect
 import com.tomg.fiiok9control.eq.business.EqState
 import com.tomg.fiiok9control.eq.business.EqViewModel
-import com.tomg.fiiok9control.gaia.GaiaGattSideEffect
+import com.tomg.fiiok9control.gaia.business.GaiaGattSideEffect
+import com.tomg.fiiok9control.gaia.data.fiio.FiioK9Defaults
 import com.tomg.fiiok9control.profile.data.Profile
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -56,38 +59,55 @@ class EqFragment :
         savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
-        val menuProvider = object : MenuProvider {
-
-            override fun onCreateMenu(
-                menu: Menu,
-                menuInflater: MenuInflater
-            ) {
-                menuInflater.inflate(R.menu.menu_eq, menu)
-            }
-
-            override fun onPrepareMenu(menu: Menu) {
-                menu.findItem(R.id.restore_default).isVisible = eqViewModel.hasCustomEqValues()
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.restore_default -> {
-                        eqViewModel.sendGaiaPacketsEqValue(
-                            lifecycleScope,
-                            gaiaGattService()
-                        )
-                        true
-                    }
-                    else -> false
+        (requireActivity() as? AppCompatActivity)?.supportActionBar?.title =
+            FiioK9Defaults.DISPLAY_NAME
+        val menuProvider = EqMenuProvider(
+            hasCustomEqValues = {
+                eqViewModel
+                    .container
+                    .stateFlow
+                    .value
+                    .eqValues
+                    .any { eqValue -> eqValue.value != 0f }
+            },
+            onRestoreDefault = {
+                if (eqViewModel.container.stateFlow.value.isServiceConnected) {
+                    eqViewModel.sendGaiaPacketsEqValue(requireGaiaGattService())
                 }
             }
-        }
+        )
         requireActivity().addMenuProvider(menuProvider, viewLifecycleOwner)
         binding.progress.setVisibilityAfterHide(View.GONE)
         binding.eq.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = EqAdapter(listener = this@EqFragment)
-            itemAnimator = null
+            layoutManager = if (getWindowSizeClass() == WindowSizeClass.Expanded) {
+                StaggeredGridLayoutManager(WINDOW_SIZE_EXPANDED_COLUMNS, RecyclerView.VERTICAL)
+            } else {
+                LinearLayoutManager(context)
+            }
+            adapter = EqAdapter(
+                listener = this@EqFragment,
+                currentEqEnabled = {
+                    with(eqViewModel.container.stateFlow.value) {
+                        pendingEqEnabled ?: eqEnabled
+                    }
+                },
+                currentEqPreSet = {
+                    with(eqViewModel.container.stateFlow.value) {
+                        pendingEqPreSet ?: eqPreSet
+                    }
+                },
+                currentEqValues = {
+                    with(eqViewModel.container.stateFlow.value) {
+                        pendingEqValues ?: eqValues
+                    }
+                },
+                currentIsLoading = {
+                    eqViewModel.container.stateFlow.value.pendingCommands.isNotEmpty()
+                },
+                currentIsServiceConnected = {
+                    eqViewModel.container.stateFlow.value.isServiceConnected
+                }
+            )
         }
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -98,38 +118,14 @@ class EqFragment :
         }
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                eqViewModel.container.sideEffectFlow.collect { sideEffect ->
-                    handleSideEffect(sideEffect)
-                }
-            }
-        }
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                gaiaGattSideEffectFlow.collect { sideEffect ->
+                gaiaGattSideEffects.collect { sideEffect ->
                     handleGaiaGattSideEffect(sideEffect)
                 }
             }
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        if (gaiaGattService()?.isConnected() == true) {
-            eqViewModel.sendGaiaPacketsDelayed(
-                lifecycleScope,
-                gaiaGattService()
-            )
-        }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        eqViewModel.clearGaiaPacketResponses()
-    }
-
-    override fun onProfileShortcutSelected(profile: Profile) {
-        navigate(EqFragmentDirections.eqToProfile(profile))
-    }
+    override fun bindLayout(view: View) = FragmentEqBinding.bind(view)
 
     override fun onBluetoothStateChanged(enabled: Boolean) {
         if (!enabled) {
@@ -137,90 +133,63 @@ class EqFragment :
         }
     }
 
-    override fun onReconnectToDevice() {
-        eqViewModel.reconnectToDevice(gaiaGattService())
+    override fun onProfileShortcutSelected(profile: Profile) {
+        navigate(EqFragmentDirections.eqToProfile(profile))
     }
 
-    override fun bindLayout(view: View) = FragmentEqBinding.bind(view)
+    override fun onServiceConnectionStateChanged(isConnected: Boolean) {
+        eqViewModel.handleServiceConnectionStateChanged(isConnected)
+        if (isConnected) {
+            if (shouldConsumeIntent(requireActivity().intent)) {
+                consumeIntent(requireActivity().intent)
+            } else {
+                eqViewModel.sendGaiaPacketsDelayed(requireGaiaGattService())
+            }
+        }
+    }
 
     override fun onEqEnabled(enabled: Boolean) {
-        if (!enabled) {
-            onEqPreSetRequested(EqPreSet.Custom)
+        if (eqViewModel.container.stateFlow.value.isServiceConnected) {
+            if (!enabled) {
+                eqViewModel.sendGaiaPacketEqPreSet(requireGaiaGattService(), EqPreSet.Custom)
+            }
+            eqViewModel.sendGaiaPacketEqEnabled(requireGaiaGattService(), enabled)
         }
-        eqViewModel.sendGaiaPacketEqEnabled(
-            lifecycleScope,
-            gaiaGattService(),
-            enabled
-        )
     }
 
     override fun onEqPreSetRequested(eqPreSet: EqPreSet) {
-        eqViewModel.sendGaiaPacketEqPreSet(
-            lifecycleScope,
-            gaiaGattService(),
-            eqPreSet
-        )
+        if (eqViewModel.container.stateFlow.value.isServiceConnected) {
+            eqViewModel.sendGaiaPacketEqPreSet(requireGaiaGattService(), eqPreSet)
+        }
     }
 
     override fun onEqValueChanged(value: EqValue) {
-        eqViewModel.sendGaiaPacketEqValue(
-            lifecycleScope,
-            gaiaGattService(),
-            value
-        )
+        if (eqViewModel.container.stateFlow.value.isServiceConnected) {
+            eqViewModel.sendGaiaPacketEqValue(requireGaiaGattService(), value)
+        }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun renderState(state: EqState) {
         requireActivity().invalidateOptionsMenu()
-        (binding.eq.adapter as? EqAdapter)?.submitList(
-            listOf(state.eqEnabled, state.eqPreSet, state.eqValues)
-        )
-    }
-
-    private fun handleSideEffect(sideEffect: EqSideEffect) {
-        when (sideEffect) {
-            EqSideEffect.Characteristic.Changed -> {
-                binding.progress.hide()
-            }
-            EqSideEffect.Characteristic.Write -> {
-                binding.progress.show()
-            }
-            EqSideEffect.Reconnect.Failure -> {
-                binding.progress.hide()
-                onBluetoothStateChanged(false)
-            }
-            EqSideEffect.Reconnect.Initiated -> {
-                binding.progress.show()
-            }
-            EqSideEffect.Reconnect.Success -> {
-                binding.progress.hide()
-                eqViewModel.sendGaiaPacketsDelayed(
-                    lifecycleScope,
-                    gaiaGattService()
-                )
-            }
-            is EqSideEffect.Request.Failure -> {
-                binding.progress.hide()
-                if (sideEffect.disconnected) {
-                    onBluetoothStateChanged(false)
-                }
-            }
-        }
+        val isLoading = state.pendingCommands.isNotEmpty()
+        binding.progress.isVisible = isLoading
+        binding.eq.adapter?.notifyDataSetChanged()
     }
 
     private fun handleGaiaGattSideEffect(sideEffect: GaiaGattSideEffect) {
         when (sideEffect) {
             GaiaGattSideEffect.Gatt.Disconnected -> {
-                onBluetoothStateChanged(false)
+                navigateToStartDestination()
             }
-            is GaiaGattSideEffect.Gatt.WriteCharacteristic.Failure -> {
-                eqViewModel.handleGaiaPacketSendResult(sideEffect.commandId)
+            is GaiaGattSideEffect.Gatt.Characteristic.Write.Failure -> {
+                eqViewModel.handleCharacteristicWriteResult(sideEffect.packet, success = false)
             }
-            is GaiaGattSideEffect.Gatt.WriteCharacteristic.Success -> {
-                eqViewModel.handleGaiaPacketSendResult(sideEffect.commandId)
+            is GaiaGattSideEffect.Gatt.Characteristic.Write.Success -> {
+                eqViewModel.handleCharacteristicWriteResult(sideEffect.packet, success = true)
             }
-            is GaiaGattSideEffect.Gaia.Packet -> {
-                eqViewModel.handleGaiaPacket(sideEffect.data)
+            is GaiaGattSideEffect.Gatt.Characteristic.Changed -> {
+                eqViewModel.handleCharacteristicChanged(sideEffect.packet)
             }
             else -> {
             }

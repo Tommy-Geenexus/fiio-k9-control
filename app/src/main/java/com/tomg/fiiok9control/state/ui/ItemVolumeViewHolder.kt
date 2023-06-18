@@ -39,10 +39,12 @@ class ItemVolumeViewHolder(
 
     fun bindItemVolume(
         volume: Int,
-        volumePercent: String
+        volumePercent: String,
+        itemEnabled: Boolean
     ) {
         binding.volumePercent.text =
             itemView.context.getString(R.string.volume_level, volumePercent)
         binding.volumeSlider.value = volume.toFloat()
+        binding.volumeSlider.isEnabled = itemEnabled
     }
 }

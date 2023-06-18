@@ -39,8 +39,10 @@ class ItemChannelBalanceViewHolder(
         }
     }
 
-    @Suppress("KotlinConstantConditions")
-    fun bindItemChannelBalance(channelBalance: Int) {
+    fun bindItemChannelBalance(
+        channelBalance: Int,
+        itemEnabled: Boolean
+    ) {
         binding.channelBalanceDb.text = when {
             channelBalance < 0 -> {
                 itemView.context.getString(
@@ -59,11 +61,12 @@ class ItemChannelBalanceViewHolder(
             else -> {
                 itemView.context.getString(
                     R.string.channel_balance_offset,
-                    channelBalance.toFloat(),
+                    0f,
                     String.Empty
                 )
             }
         }
         binding.channelBalanceSlider.value = channelBalance.toFloat()
+        binding.channelBalanceSlider.isEnabled = itemEnabled
     }
 }

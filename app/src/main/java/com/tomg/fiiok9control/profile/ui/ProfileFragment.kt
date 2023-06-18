@@ -22,15 +22,22 @@ package com.tomg.fiiok9control.profile.ui
 
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.tomg.fiiok9control.BaseFragment
 import com.tomg.fiiok9control.R
+import com.tomg.fiiok9control.WINDOW_SIZE_EXPANDED_COLUMNS
+import com.tomg.fiiok9control.WindowSizeClass
 import com.tomg.fiiok9control.databinding.FragmentProfileBinding
-import com.tomg.fiiok9control.gaia.GaiaGattSideEffect
+import com.tomg.fiiok9control.gaia.business.GaiaGattSideEffect
+import com.tomg.fiiok9control.gaia.data.fiio.FiioK9Defaults
 import com.tomg.fiiok9control.profile.business.ProfileSideEffect
 import com.tomg.fiiok9control.profile.business.ProfileState
 import com.tomg.fiiok9control.profile.business.ProfileViewModel
@@ -51,10 +58,15 @@ class ProfileFragment :
         savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
+        (requireActivity() as? AppCompatActivity)?.supportActionBar?.title =
+            FiioK9Defaults.DISPLAY_NAME
         binding.progress.setVisibilityAfterHide(View.GONE)
-        binding.progress2.setVisibilityAfterHide(View.GONE)
         binding.profile.apply {
-            layoutManager = LinearLayoutManager(context)
+            layoutManager = if (getWindowSizeClass() == WindowSizeClass.Expanded) {
+                StaggeredGridLayoutManager(WINDOW_SIZE_EXPANDED_COLUMNS, RecyclerView.VERTICAL)
+            } else {
+                LinearLayoutManager(context)
+            }
             adapter = ProfileAdapter(listener = this@ProfileFragment)
         }
         lifecycleScope.launch {
@@ -73,25 +85,14 @@ class ProfileFragment :
         }
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                gaiaGattSideEffectFlow.collect { sideEffect ->
+                gaiaGattSideEffects.collect { sideEffect ->
                     handleGaiaGattSideEffect(sideEffect)
                 }
             }
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        profileViewModel.clearGaiaPacketResponses()
-    }
-
-    override fun onProfileShortcutSelected(profile: Profile) {
-        profileViewModel.sendGaiaPacketsForProfile(
-            lifecycleScope,
-            gaiaGattService(),
-            profile
-        )
-    }
+    override fun bindLayout(view: View) = FragmentProfileBinding.bind(view)
 
     override fun onBluetoothStateChanged(enabled: Boolean) {
         if (!enabled) {
@@ -99,108 +100,120 @@ class ProfileFragment :
         }
     }
 
-    override fun onReconnectToDevice() {
-        profileViewModel.reconnectToDevice(gaiaGattService())
+    override fun onProfileShortcutSelected(profile: Profile) {
+        if (profileViewModel.container.stateFlow.value.isServiceConnected) {
+            profileViewModel.sendGaiaPacketsForProfile(requireGaiaGattService(), profile)
+        }
     }
 
-    override fun bindLayout(view: View) = FragmentProfileBinding.bind(view)
+    override fun onServiceConnectionStateChanged(isConnected: Boolean) {
+        profileViewModel.handleServiceConnectionStateChanged(isConnected)
+    }
 
     override fun onProfileShortcutAdd(position: Int) {
-        val profile = (binding.profile.adapter as? ProfileAdapter)?.currentList?.getOrNull(position)
-        if (profile != null) {
+        profileViewModel.container.stateFlow.value.profiles.getOrNull(position)?.let { profile ->
             profileViewModel.addProfileShortcut(profile)
         }
     }
 
     override fun onProfileShortcutRemove(position: Int) {
-        val profile = (binding.profile.adapter as? ProfileAdapter)?.currentList?.getOrNull(position)
-        if (profile != null) {
-            profileViewModel.removeProfileShortcut(profile)
+        profileViewModel.container.stateFlow.value.profiles.getOrNull(position)?.let { profile ->
+            profileViewModel.deleteProfileShortcut(profile)
         }
     }
 
     override fun onProfileApply(position: Int) {
-        val profile = (binding.profile.adapter as? ProfileAdapter)?.currentList?.getOrNull(position)
-        if (profile != null) {
-            profileViewModel.sendGaiaPacketsForProfile(
-                lifecycleScope,
-                gaiaGattService(),
-                profile
-            )
+        profileViewModel.container.stateFlow.value.profiles.getOrNull(position)?.let { profile ->
+            onProfileShortcutSelected(profile)
         }
     }
 
     override fun onProfileDelete(position: Int) {
-        val profile = (binding.profile.adapter as? ProfileAdapter)?.currentList?.getOrNull(position)
-        if (profile != null) {
+        profileViewModel.container.stateFlow.value.profiles.getOrNull(position)?.let { profile ->
             profileViewModel.deleteProfile(profile)
         }
     }
 
     private fun renderState(state: ProfileState) {
-        if (state.areProfilesLoading) {
-            binding.progress2.show()
-        } else {
-            binding.progress2.hide()
-        }
+        val isLoading =
+            state.isAddingProfileShortcut ||
+                state.isDeletingProfile ||
+                state.isDeletingProfileShortcut ||
+                state.isLoadingProfiles ||
+                state.pendingCommands.isNotEmpty()
+        binding.progress.isVisible = isLoading
         (binding.profile.adapter as? ProfileAdapter)?.submitList(state.profiles)
     }
 
     private fun handleSideEffect(sideEffect: ProfileSideEffect) {
         when (sideEffect) {
-            ProfileSideEffect.Characteristic.Changed -> {
-                binding.progress.hide()
-            }
-            ProfileSideEffect.Characteristic.Write -> {
-                binding.progress.show()
-            }
-            ProfileSideEffect.Reconnect.Failure -> {
-                binding.progress.hide()
-                onBluetoothStateChanged(false)
-            }
-            ProfileSideEffect.Reconnect.Initiated -> {
-                binding.progress.show()
-            }
-            ProfileSideEffect.Reconnect.Success -> {
-                binding.progress.hide()
-            }
-            is ProfileSideEffect.Request.Failure -> {
-                binding.progress.hide()
-                if (sideEffect.disconnected) {
-                    onBluetoothStateChanged(false)
-                }
-            }
-            ProfileSideEffect.Shortcut.Added -> {
+            ProfileSideEffect.Apply.Failure -> {
                 requireView().showSnackbar(
-                    anchor = requireActivity().findViewById(R.id.nav),
-                    msgRes = R.string.shortcut_profile_added
+                    anchor = requireActivity().findViewById(R.id.nav_view),
+                    msgRes = R.string.profile_apply_failure
                 )
             }
-            ProfileSideEffect.Shortcut.Removed -> {
+            ProfileSideEffect.Apply.Success -> {
                 requireView().showSnackbar(
-                    anchor = requireActivity().findViewById(R.id.nav),
-                    msgRes = R.string.shortcut_profile_removed
+                    anchor = requireActivity().findViewById(R.id.nav_view),
+                    msgRes = R.string.profile_apply_success
                 )
             }
-            is ProfileSideEffect.Shortcut.Selected -> {
+            ProfileSideEffect.Delete.Failure -> {
+                requireView().showSnackbar(
+                    anchor = requireActivity().findViewById(R.id.nav_view),
+                    msgRes = R.string.profile_delete_failure
+                )
+            }
+            ProfileSideEffect.Delete.Success -> {
+                requireView().showSnackbar(
+                    anchor = requireActivity().findViewById(R.id.nav_view),
+                    msgRes = R.string.profile_delete_success
+                )
+            }
+            is ProfileSideEffect.Select -> {
                 onProfileShortcutSelected(sideEffect.profile)
+            }
+            ProfileSideEffect.Shortcut.Add.Failure -> {
+                requireView().showSnackbar(
+                    anchor = requireActivity().findViewById(R.id.nav_view),
+                    msgRes = R.string.shortcut_profile_add_failure
+                )
+            }
+            ProfileSideEffect.Shortcut.Add.Success -> {
+                requireView().showSnackbar(
+                    anchor = requireActivity().findViewById(R.id.nav_view),
+                    msgRes = R.string.shortcut_profile_add_success
+                )
+            }
+            ProfileSideEffect.Shortcut.Delete.Failure -> {
+                requireView().showSnackbar(
+                    anchor = requireActivity().findViewById(R.id.nav_view),
+                    msgRes = R.string.shortcut_profile_delete_failure
+                )
+            }
+            ProfileSideEffect.Shortcut.Delete.Success -> {
+                requireView().showSnackbar(
+                    anchor = requireActivity().findViewById(R.id.nav_view),
+                    msgRes = R.string.shortcut_profile_delete_success
+                )
             }
         }
     }
 
-    private fun handleGaiaGattSideEffect(sideEffect: GaiaGattSideEffect?) {
+    private fun handleGaiaGattSideEffect(sideEffect: GaiaGattSideEffect) {
         when (sideEffect) {
             GaiaGattSideEffect.Gatt.Disconnected -> {
-                onBluetoothStateChanged(false)
+                navigateToStartDestination()
             }
-            is GaiaGattSideEffect.Gatt.WriteCharacteristic.Failure -> {
-                profileViewModel.handleGaiaPacketSendResult(sideEffect.commandId)
+            is GaiaGattSideEffect.Gatt.Characteristic.Write.Failure -> {
+                profileViewModel.handleCharacteristicWriteResult(sideEffect.packet)
             }
-            is GaiaGattSideEffect.Gatt.WriteCharacteristic.Success -> {
-                profileViewModel.handleGaiaPacketSendResult(sideEffect.commandId)
+            is GaiaGattSideEffect.Gatt.Characteristic.Write.Success -> {
+                profileViewModel.handleCharacteristicWriteResult(sideEffect.packet)
             }
-            is GaiaGattSideEffect.Gaia.Packet -> {
-                profileViewModel.handleGaiaPacket(sideEffect.data)
+            is GaiaGattSideEffect.Gatt.Characteristic.Changed -> {
+                profileViewModel.handleCharacteristicWriteResult(sideEffect.packet)
             }
             else -> {
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
+ * Copyright (c) 2023, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -18,9 +18,10 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.fiiok9control.gaia
+package com.tomg.fiiok9control.gaia.business
 
 import android.os.Parcelable
+import com.qualcomm.qti.libraries.gaia.packets.GaiaPacketBLE
 import kotlinx.parcelize.Parcelize
 
 sealed class GaiaGattSideEffect : Parcelable {
@@ -28,34 +29,16 @@ sealed class GaiaGattSideEffect : Parcelable {
     sealed class Gaia : GaiaGattSideEffect() {
 
         @Parcelize
-        object Ready : Gaia()
-
-        @Parcelize
-        data class Packet(
-            val data: ByteArray
-        ) : Gaia() {
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) return true
-                if (javaClass != other?.javaClass) return false
-                other as Packet
-                if (!data.contentEquals(other.data)) return false
-                return true
-            }
-
-            override fun hashCode(): Int {
-                return data.contentHashCode()
-            }
-        }
+        data object Ready : Gaia()
     }
 
     sealed class Gatt : GaiaGattSideEffect() {
 
         @Parcelize
-        object Disconnected : Gatt()
+        data object Disconnected : Gatt()
 
         @Parcelize
-        object Error : Gatt()
+        data object Error : Gatt()
 
         @Parcelize
         data class Ready(
@@ -67,17 +50,25 @@ sealed class GaiaGattSideEffect : Parcelable {
             val deviceAddress: String
         ) : Gatt()
 
-        sealed class WriteCharacteristic : Gatt() {
+        sealed class Characteristic : Gatt() {
+
+            sealed class Write : Characteristic() {
+
+                @Parcelize
+                data class Success(
+                    val packet: GaiaPacketBLE
+                ) : Write()
+
+                @Parcelize
+                data class Failure(
+                    val packet: GaiaPacketBLE
+                ) : Write()
+            }
 
             @Parcelize
-            data class Success(
-                val commandId: Int
-            ) : WriteCharacteristic()
-
-            @Parcelize
-            data class Failure(
-                val commandId: Int
-            ) : WriteCharacteristic()
+            data class Changed(
+                val packet: GaiaPacketBLE
+            ) : Characteristic()
         }
     }
 }

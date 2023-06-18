@@ -38,19 +38,19 @@ sealed class InputSource(val id: Int) : Parcelable {
     }
 
     @Parcelize
-    object Usb : InputSource(id = 1)
+    data object Usb : InputSource(id = 1)
 
     @Parcelize
-    object Coaxial : InputSource(id = 2)
+    data object Coaxial : InputSource(id = 2)
 
     @Parcelize
-    object Optical : InputSource(id = 3)
+    data object Optical : InputSource(id = 3)
 
     @Parcelize
-    object LineIn : InputSource(id = 4)
+    data object LineIn : InputSource(id = 4)
 
     @Parcelize
-    object Bluetooth : InputSource(id = 5)
+    data object Bluetooth : InputSource(id = 5)
 }
 
 fun InputSource?.orDefault() = this ?: InputSource.Usb

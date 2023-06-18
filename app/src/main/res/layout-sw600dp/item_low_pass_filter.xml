@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.FiioK9Control.CardView.Elevated.Medium">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/spacing_normal">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/low_pass_filter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/low_pass_filter"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <RadioGroup
+            android:id="@+id/group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_normal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/low_pass_filter">
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/sharp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/sharp_roll_off" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/slow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/slow_roll_off" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/sharp_delay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/short_delay_sharp_roll_off" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/slow_delay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/short_delay_slow_roll_off" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/super_slow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/super_slow" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/short_dispersion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/low_dispersion_short_delay" />
+        </RadioGroup>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

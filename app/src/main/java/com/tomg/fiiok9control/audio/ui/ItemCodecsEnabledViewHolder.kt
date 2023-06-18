@@ -62,12 +62,21 @@ class ItemCodecsEnabledViewHolder(
         }
     }
 
-    fun bindItemCodecsEnabled(codecsEnabled: List<BluetoothCodec>) {
+    fun bindItemCodecsEnabled(
+        codecsEnabled: List<BluetoothCodec>,
+        itemEnabled: Boolean
+    ) {
         binding.aptXAdaptive.isChecked = codecsEnabled.contains(BluetoothCodec.AptX.Adaptive)
+        binding.aptXAdaptive.isEnabled = itemEnabled
         binding.aac.isChecked = codecsEnabled.contains(BluetoothCodec.Aac)
+        binding.aac.isEnabled = itemEnabled
         binding.ldac.isChecked = codecsEnabled.contains(BluetoothCodec.Ldac)
+        binding.ldac.isEnabled = itemEnabled
         binding.aptX.isChecked = codecsEnabled.contains(BluetoothCodec.AptX.Default)
+        binding.aptX.isEnabled = itemEnabled
         binding.aptXLl.isChecked = codecsEnabled.contains(BluetoothCodec.AptX.Ll)
+        binding.aptXLl.isEnabled = itemEnabled
         binding.aptXHd.isChecked = codecsEnabled.contains(BluetoothCodec.AptX.Hd)
+        binding.aptXHd.isEnabled = itemEnabled
     }
 }

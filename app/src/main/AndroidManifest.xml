@@ -7,9 +7,12 @@
         android:required="true" />
 
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+    <uses-permission
+        android:name="android.permission.BLUETOOTH_SCAN"
+        android:usesPermissionFlags="neverForLocation" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
 
     <application
         android:name=".FiioK9ControlApplication"
@@ -31,8 +34,8 @@
             </intent-filter>
         </activity>
         <service
-            android:name="com.tomg.fiiok9control.gaia.GaiaGattService"
-            android:foregroundServiceType="connectedDevice"
-            android:exported="false" />
+            android:name="com.tomg.fiiok9control.gaia.ui.GaiaGattService"
+            android:exported="false"
+            android:foregroundServiceType="connectedDevice" />
     </application>
 </manifest>

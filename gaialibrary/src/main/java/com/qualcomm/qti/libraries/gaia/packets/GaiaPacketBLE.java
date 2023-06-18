@@ -6,6 +6,11 @@
 
 package com.qualcomm.qti.libraries.gaia.packets;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
 import com.qualcomm.qti.libraries.gaia.GaiaException;
 import com.qualcomm.qti.libraries.gaia.GaiaUtils;
 
@@ -25,7 +30,7 @@ import com.qualcomm.qti.libraries.gaia.GaiaUtils;
  * </blockquote></p>
  */
 @SuppressWarnings({"SameParameterValue", "unused", "WeakerAccess"})
-public class GaiaPacketBLE extends GaiaPacket {
+public class GaiaPacketBLE extends GaiaPacket implements Parcelable {
 
     /**
      * <p>The maximum length for the packet payload.</p>
@@ -117,6 +122,21 @@ public class GaiaPacketBLE extends GaiaPacket {
         this.mBytes = null;
     }
 
+    protected GaiaPacketBLE(Parcel in) {
+    }
+
+    public static final Creator<GaiaPacketBLE> CREATOR = new Creator<GaiaPacketBLE>() {
+        @Override
+        public GaiaPacketBLE createFromParcel(Parcel in) {
+            return new GaiaPacketBLE(in);
+        }
+
+        @Override
+        public GaiaPacketBLE[] newArray(int size) {
+            return new GaiaPacketBLE[size];
+        }
+    };
+
     /**
      * <p>To build the byte array which represents this Gaia Packet over BLE.</p>
      * <p>The bytes array is built according to the definition of a GAIA Packet sent over BLE:
@@ -160,5 +180,18 @@ public class GaiaPacketBLE extends GaiaPacket {
     @Override
     int getPayloadMaxLength() {
         return MAX_PAYLOAD;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel dest, int flags) {
+        dest.writeInt(mVendorId);
+        dest.writeInt(mCommandId);
+        dest.writeByteArray(mPayload);
+        dest.writeByteArray(mBytes);
     }
 }

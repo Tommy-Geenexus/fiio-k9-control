@@ -20,6 +20,7 @@
 
 package com.tomg.fiiok9control.state.ui
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -29,17 +30,18 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
-import androidx.core.view.MenuProvider
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.tomg.fiiok9control.BaseFragment
 import com.tomg.fiiok9control.Empty
 import com.tomg.fiiok9control.ID_NOTIFICATION
@@ -51,8 +53,11 @@ import com.tomg.fiiok9control.KEY_PROFILE_NAME
 import com.tomg.fiiok9control.KEY_PROFILE_VOLUME_EXPORT
 import com.tomg.fiiok9control.R
 import com.tomg.fiiok9control.REQUEST_CODE
+import com.tomg.fiiok9control.WINDOW_SIZE_EXPANDED_COLUMNS
+import com.tomg.fiiok9control.WindowSizeClass
 import com.tomg.fiiok9control.databinding.FragmentStateBinding
-import com.tomg.fiiok9control.gaia.GaiaGattSideEffect
+import com.tomg.fiiok9control.gaia.business.GaiaGattSideEffect
+import com.tomg.fiiok9control.gaia.data.fiio.FiioK9Defaults
 import com.tomg.fiiok9control.profile.data.Profile
 import com.tomg.fiiok9control.showSnackbar
 import com.tomg.fiiok9control.state.IndicatorState
@@ -61,6 +66,7 @@ import com.tomg.fiiok9control.state.VolumeBroadcastReceiver
 import com.tomg.fiiok9control.state.business.StateSideEffect
 import com.tomg.fiiok9control.state.business.StateState
 import com.tomg.fiiok9control.state.business.StateViewModel
+import com.tomg.fiiok9control.toVolumePercent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -72,24 +78,19 @@ class StateFragment :
     private val stateViewModel: StateViewModel by viewModels()
     private val volumeReceiver: VolumeBroadcastReceiver = VolumeBroadcastReceiver(
         onVolumeUp = {
-            stateViewModel.sendGaiaPacketVolume(
-                lifecycleScope,
-                gaiaGattService(),
-                volumeUp = true
-            )
+            if (stateViewModel.container.stateFlow.value.isServiceConnected) {
+                stateViewModel.sendGaiaPacketVolume(requireGaiaGattService(), volumeUp = true)
+            }
         },
         onVolumeDown = {
-            stateViewModel.sendGaiaPacketVolume(
-                lifecycleScope,
-                gaiaGattService(),
-                volumeUp = false
-            )
+            if (stateViewModel.container.stateFlow.value.isServiceConnected) {
+                stateViewModel.sendGaiaPacketVolume(requireGaiaGattService(), volumeUp = false)
+            }
         },
         onVolumeMute = {
-            stateViewModel.sendGaiaPacketMuteEnabled(
-                lifecycleScope,
-                gaiaGattService()
-            )
+            if (stateViewModel.container.stateFlow.value.isServiceConnected) {
+                stateViewModel.sendGaiaPacketMuteEnabled(requireGaiaGattService())
+            }
         }
     )
 
@@ -98,135 +99,127 @@ class StateFragment :
         savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
-        val menuProvider = object : MenuProvider {
-
-            override fun onCreateMenu(
-                menu: Menu,
-                menuInflater: MenuInflater
-            ) {
-                menuInflater.inflate(R.menu.menu_state, menu)
+        (requireActivity() as? AppCompatActivity)?.supportActionBar?.title =
+            FiioK9Defaults.DISPLAY_NAME
+        val menuProvider = StateMenuProvider(
+            isHpPreSimultaneouslyEnabled = {
+                stateViewModel.container.stateFlow.value.isHpPreSimultaneouslyEnabled
+            },
+            isLoading = {
+                with(stateViewModel.container.stateFlow.value) {
+                    isExportingProfile || isDisconnecting || pendingCommands.isNotEmpty()
+                }
+            },
+            isMqaEnabled = {
+                stateViewModel.container.stateFlow.value.isMqaEnabled
+            },
+            isMuteEnabled = {
+                stateViewModel.container.stateFlow.value.isMuteEnabled
+            },
+            isServiceConnected = {
+                stateViewModel.container.stateFlow.value.isServiceConnected
+            },
+            volumeStepSize = {
+                stateViewModel.container.stateFlow.value.volumeStepSize
+            },
+            onDisconnect = {
+                if (stateViewModel.container.stateFlow.value.isServiceConnected) {
+                    stateViewModel.disconnect(requireGaiaGattService())
+                }
+            },
+            onExportProfile = {
+                navigate(StateFragmentDirections.stateToExportProfile())
+            },
+            onToggleHpPreSimultaneously = {
+                if (stateViewModel.container.stateFlow.value.isServiceConnected) {
+                    stateViewModel.sendGaiaPacketHpPreSimultaneously(requireGaiaGattService())
+                }
+            },
+            onToggleMqaEnabled = {
+                if (stateViewModel.container.stateFlow.value.isServiceConnected) {
+                    stateViewModel.sendGaiaPacketMqa(requireGaiaGattService())
+                }
+            },
+            onToggleMuteEnabled = {
+                if (stateViewModel.container.stateFlow.value.isServiceConnected) {
+                    stateViewModel.sendGaiaPacketMuteEnabled(requireGaiaGattService())
+                }
+            },
+            onStandby = {
+                if (stateViewModel.container.stateFlow.value.isServiceConnected) {
+                    stateViewModel.sendGaiaPacketStandby(requireGaiaGattService())
+                }
+            },
+            onReset = {
+                if (stateViewModel.container.stateFlow.value.isServiceConnected) {
+                    stateViewModel.sendGaiaPacketRestore(requireGaiaGattService())
+                }
+            },
+            onVolumeUp = {
+                if (stateViewModel.container.stateFlow.value.isServiceConnected) {
+                    stateViewModel.sendGaiaPacketVolume(requireGaiaGattService(), volumeUp = true)
+                }
+            },
+            onVolumeDown = {
+                if (stateViewModel.container.stateFlow.value.isServiceConnected) {
+                    stateViewModel.sendGaiaPacketVolume(requireGaiaGattService(), volumeUp = false)
+                }
+            },
+            onVolumeStepSizeChanged = { volumeStepSize ->
+                stateViewModel.handleVolumeStepSize(volumeStepSize)
             }
-
-            override fun onPrepareMenu(menu: Menu) {
-                if (stateViewModel.container.stateFlow.value.isMuted) {
-                    menu.findItem(R.id.mute_on).isChecked = true
-                } else {
-                    menu.findItem(R.id.mute_off).isChecked = true
-                }
-                when (stateViewModel.container.stateFlow.value.volumeStepSize) {
-                    1 -> menu.findItem(R.id.volume_step_size_1).isChecked = true
-                    2 -> menu.findItem(R.id.volume_step_size_2).isChecked = true
-                    3 -> menu.findItem(R.id.volume_step_size_3).isChecked = true
-                    else -> menu.findItem(R.id.volume_step_size_4).isChecked = true
-                }
-                if (stateViewModel.container.stateFlow.value.isMqaEnabled) {
-                    menu.findItem(R.id.mqa_on).isChecked = true
-                } else {
-                    menu.findItem(R.id.mqa_off).isChecked = true
-                }
-                if (stateViewModel.container.stateFlow.value.isHpPreSimultaneously) {
-                    menu.findItem(R.id.hp_pre_simultaneously_on).isChecked = true
-                } else {
-                    menu.findItem(R.id.hp_pre_simultaneously_off).isChecked = true
-                }
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                return when (menuItem.itemId) {
-                    R.id.disconnect -> {
-                        stateViewModel.disconnect(gaiaGattService())
-                        true
-                    }
-                    R.id.export -> {
-                        navigate(StateFragmentDirections.stateToExportProfile())
-                        true
-                    }
-                    R.id.mute_on,
-                    R.id.mute_off -> {
-                        stateViewModel.sendGaiaPacketMuteEnabled(
-                            lifecycleScope,
-                            gaiaGattService()
-                        )
-                        true
-                    }
-                    R.id.mqa_on,
-                    R.id.mqa_off -> {
-                        stateViewModel.sendGaiaPacketMqa(
-                            lifecycleScope,
-                            gaiaGattService()
-                        )
-                        true
-                    }
-                    R.id.standby -> {
-                        stateViewModel.sendGaiaPacketStandby(
-                            lifecycleScope,
-                            gaiaGattService()
-                        )
-                        true
-                    }
-                    R.id.reset -> {
-                        stateViewModel.sendGaiaPacketRestore(
-                            lifecycleScope,
-                            gaiaGattService()
-                        )
-                        true
-                    }
-                    R.id.volume_up -> {
-                        stateViewModel.sendGaiaPacketVolume(
-                            lifecycleScope,
-                            gaiaGattService(),
-                            volumeUp = true
-                        )
-                        true
-                    }
-                    R.id.volume_down -> {
-                        stateViewModel.sendGaiaPacketVolume(
-                            lifecycleScope,
-                            gaiaGattService(),
-                            volumeUp = false
-                        )
-                        true
-                    }
-                    R.id.volume_step_size_1 -> {
-                        stateViewModel.handleVolumeStepSize(volumeStepSize = 1)
-                        true
-                    }
-                    R.id.volume_step_size_2 -> {
-                        stateViewModel.handleVolumeStepSize(volumeStepSize = 2)
-                        true
-                    }
-                    R.id.volume_step_size_3 -> {
-                        stateViewModel.handleVolumeStepSize(volumeStepSize = 3)
-                        true
-                    }
-                    R.id.volume_step_size_4 -> {
-                        stateViewModel.handleVolumeStepSize(volumeStepSize = 4)
-                        true
-                    }
-                    R.id.hp_pre_simultaneously_on,
-                    R.id.hp_pre_simultaneously_off -> {
-                        stateViewModel.sendGaiaPacketHpPreSimultaneously(
-                            lifecycleScope,
-                            gaiaGattService()
-                        )
-                        true
-                    }
-                    else -> false
-                }
-            }
-        }
+        )
         requireActivity().addMenuProvider(menuProvider, viewLifecycleOwner)
         binding.progress.setVisibilityAfterHide(View.GONE)
-        binding.progress2.setVisibilityAfterHide(View.GONE)
         binding.state.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = StateAdapter(listener = this@StateFragment)
-            itemAnimator = null
+            layoutManager = if (getWindowSizeClass() == WindowSizeClass.Expanded) {
+                StaggeredGridLayoutManager(WINDOW_SIZE_EXPANDED_COLUMNS, RecyclerView.VERTICAL)
+            } else {
+                LinearLayoutManager(context)
+            }
+            adapter = StateAdapter(
+                listener = this@StateFragment,
+                currentAudioFormat = {
+                    stateViewModel.container.stateFlow.value.audioFmt
+                },
+                currentFirmwareVersion = {
+                    stateViewModel.container.stateFlow.value.fwVersion
+                },
+                currentIndicatorBrightness = {
+                    with(stateViewModel.container.stateFlow.value) {
+                        pendingIndicatorBrightness ?: indicatorBrightness
+                    }
+                },
+                currentIndicatorState = {
+                    with(stateViewModel.container.stateFlow.value) {
+                        pendingIndicatorState ?: indicatorState
+                    }
+                },
+                currentInputSource = {
+                    with(stateViewModel.container.stateFlow.value) {
+                        pendingInputSource ?: inputSource
+                    }
+                },
+                currentVolume = {
+                    with(stateViewModel.container.stateFlow.value) {
+                        pendingVolume ?: volume
+                    }
+                },
+                currentIsLoading = {
+                    with(stateViewModel.container.stateFlow.value) {
+                        isExportingProfile || isDisconnecting || pendingCommands.isNotEmpty()
+                    }
+                },
+                currentIsServiceConnected = {
+                    stateViewModel.container.stateFlow.value.isServiceConnected
+                }
+            )
         }
         setFragmentResultListener(KEY_PROFILE_NAME) { _, args ->
-            val profileName = args.getString(KEY_PROFILE_NAME, String.Empty)
-            val exportVolume = args.getBoolean(KEY_PROFILE_VOLUME_EXPORT, false)
-            stateViewModel.exportStateProfile(profileName, exportVolume)
+            stateViewModel.exportStateProfile(
+                profileName = args.getString(KEY_PROFILE_NAME, String.Empty),
+                exportVolume = args.getBoolean(KEY_PROFILE_VOLUME_EXPORT, false)
+            )
         }
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -244,40 +237,31 @@ class StateFragment :
         }
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.CREATED) {
-                gaiaGattSideEffectFlow.collect { sideEffect ->
+                gaiaGattSideEffects.collect { sideEffect ->
                     handleGaiaGattSideEffect(sideEffect)
                 }
             }
         }
-        requireActivity().registerReceiver(
+        ContextCompat.registerReceiver(
+            requireContext(),
             volumeReceiver,
             IntentFilter(INTENT_ACTION_VOLUME_UP).apply {
                 addAction(INTENT_ACTION_VOLUME_DOWN)
                 addAction(INTENT_ACTION_VOLUME_MUTE)
-            }
+            },
+            ContextCompat.RECEIVER_NOT_EXPORTED
         )
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (gaiaGattService()?.isConnected() == true) {
-            stateViewModel.sendGaiaPacketsDelayed(
-                lifecycleScope,
-                gaiaGattService()
-            )
-        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         requireActivity().unregisterReceiver(volumeReceiver)
-        stateViewModel.clearGaiaPacketResponses()
-        gaiaGattService()?.stopForeground(Service.STOP_FOREGROUND_REMOVE)
+        if (stateViewModel.container.stateFlow.value.isServiceConnected) {
+            requireGaiaGattService().stopForeground(Service.STOP_FOREGROUND_REMOVE)
+        }
     }
 
-    override fun onProfileShortcutSelected(profile: Profile) {
-        navigate(StateFragmentDirections.stateToProfile(profile))
-    }
+    override fun bindLayout(view: View) = FragmentStateBinding.bind(view)
 
     override fun onBluetoothStateChanged(enabled: Boolean) {
         if (!enabled) {
@@ -285,162 +269,137 @@ class StateFragment :
         }
     }
 
-    override fun onReconnectToDevice() {
-        stateViewModel.reconnectToDevice(gaiaGattService())
+    override fun onProfileShortcutSelected(profile: Profile) {
+        navigate(StateFragmentDirections.stateToProfile(profile))
     }
 
-    override fun bindLayout(view: View) = FragmentStateBinding.bind(view)
+    override fun onServiceConnectionStateChanged(isConnected: Boolean) {
+        stateViewModel.handleServiceConnectionStateChanged(isConnected)
+        if (isConnected) {
+            if (shouldConsumeIntent(requireActivity().intent)) {
+                consumeIntent(requireActivity().intent)
+            } else {
+                stateViewModel.sendGaiaPacketsDelayed(requireGaiaGattService())
+            }
+        }
+    }
 
     override fun onInputSourceRequested(inputSource: InputSource) {
-        stateViewModel.sendGaiaPacketsInputSource(
-            lifecycleScope,
-            gaiaGattService(),
-            inputSource
-        )
+        if (stateViewModel.container.stateFlow.value.isServiceConnected) {
+            stateViewModel.sendGaiaPacketInputSource(requireGaiaGattService(), inputSource)
+        }
     }
 
     override fun onIndicatorStateRequested(indicatorState: IndicatorState) {
-        stateViewModel.sendGaiaPacketIndicatorState(
-            lifecycleScope,
-            gaiaGattService(),
-            indicatorState
-        )
+        if (stateViewModel.container.stateFlow.value.isServiceConnected) {
+            stateViewModel.sendGaiaPacketIndicatorState(
+                requireGaiaGattService(),
+                indicatorState
+            )
+        }
     }
 
     override fun onIndicatorBrightnessRequested(indicatorBrightness: Int) {
-        stateViewModel.sendGaiaPacketIndicatorBrightness(
-            lifecycleScope,
-            gaiaGattService(),
-            indicatorBrightness
-        )
+        if (stateViewModel.container.stateFlow.value.isServiceConnected) {
+            stateViewModel.sendGaiaPacketIndicatorBrightness(
+                requireGaiaGattService(),
+                indicatorBrightness
+            )
+        }
     }
 
     override fun onVolumeRequested(volume: Int) {
-        stateViewModel.sendGaiaPacketVolume(
-            lifecycleScope,
-            gaiaGattService(),
-            volume
-        )
+        if (stateViewModel.container.stateFlow.value.isServiceConnected) {
+            stateViewModel.sendGaiaPacketVolume(requireGaiaGattService(), volume)
+        }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun renderState(state: StateState) {
         requireActivity().invalidateOptionsMenu()
-        if (state.isProfileExporting) {
-            binding.progress2.show()
-        } else {
-            binding.progress2.hide()
+        binding.progress.isVisible = with(state) {
+            isExportingProfile || isDisconnecting || pendingCommands.isNotEmpty()
         }
-        (binding.state.adapter as? StateAdapter)?.submitList(
-            listOf(
-                Pair(state.fwVersion, state.audioFmt),
-                Pair(state.volume, state.volumePercent),
-                state.inputSource,
-                state.indicatorState to state.indicatorBrightness
-            )
-        )
+        binding.state.adapter?.notifyDataSetChanged()
     }
 
     private fun handleSideEffect(sideEffect: StateSideEffect) {
         when (sideEffect) {
-            StateSideEffect.Characteristic.Changed -> {
-                binding.progress.hide()
-            }
-            StateSideEffect.Characteristic.Write -> {
-                binding.progress.show()
-            }
             StateSideEffect.ExportProfile.Failure -> {
                 requireView().showSnackbar(
-                    anchor = requireActivity().findViewById(R.id.nav),
+                    anchor = requireActivity().findViewById(R.id.nav_view),
                     msgRes = R.string.profile_export_failure
                 )
             }
+
             StateSideEffect.ExportProfile.Success -> {
                 requireView().showSnackbar(
-                    anchor = requireActivity().findViewById(R.id.nav),
+                    anchor = requireActivity().findViewById(R.id.nav_view),
                     msgRes = R.string.profile_export_success
                 )
             }
-            StateSideEffect.Reconnect.Failure -> {
-                binding.progress.hide()
-                onBluetoothStateChanged(false)
-            }
-            StateSideEffect.Reconnect.Initiated -> {
-                binding.progress.show()
-            }
-            StateSideEffect.Disconnect -> {
-                binding.progress.show()
-            }
-            StateSideEffect.Reconnect.Success -> {
-                binding.progress.hide()
-                stateViewModel.sendGaiaPacketsDelayed(
-                    lifecycleScope,
-                    gaiaGattService()
-                )
-            }
+
             is StateSideEffect.NotifyVolume -> {
-                startGaiaGattForegroundService(
-                    volumePercent = sideEffect.volumePercent,
-                    mute = if (sideEffect.isMuted) {
-                        getString(R.string.volume_unmute)
-                    } else {
-                        getString(R.string.volume_mute)
-                    }
-                )
-            }
-            is StateSideEffect.Request.Failure -> {
-                binding.progress.hide()
-                if (sideEffect.disconnected) {
-                    onBluetoothStateChanged(false)
+                if (stateViewModel.container.stateFlow.value.isServiceConnected) {
+                    createNotificationChannelIfNotExists()
+                    requireGaiaGattService().startForeground(
+                        ID_NOTIFICATION,
+                        buildVolumeNotification(
+                            volumePercent = sideEffect.volume.toVolumePercent(),
+                            mute = getString(
+                                if (sideEffect.isMuteEnabled) {
+                                    R.string.volume_unmute
+                                } else {
+                                    R.string.volume_mute
+                                }
+                            )
+                        )
+                    )
                 }
             }
         }
     }
 
-    private fun handleGaiaGattSideEffect(sideEffect: GaiaGattSideEffect?) {
+    private fun handleGaiaGattSideEffect(sideEffect: GaiaGattSideEffect) {
         when (sideEffect) {
             GaiaGattSideEffect.Gatt.Disconnected -> {
-                onBluetoothStateChanged(false)
+                navigateToStartDestination()
             }
-            is GaiaGattSideEffect.Gatt.WriteCharacteristic.Failure -> {
-                stateViewModel.handleGaiaPacketSendResult(sideEffect.commandId)
+
+            is GaiaGattSideEffect.Gatt.Characteristic.Write.Failure -> {
+                stateViewModel.handleCharacteristicWriteResult(sideEffect.packet, success = false)
             }
-            is GaiaGattSideEffect.Gatt.WriteCharacteristic.Success -> {
-                stateViewModel.handleGaiaPacketSendResult(sideEffect.commandId)
+
+            is GaiaGattSideEffect.Gatt.Characteristic.Write.Success -> {
+                stateViewModel.handleCharacteristicWriteResult(sideEffect.packet, success = true)
             }
-            is GaiaGattSideEffect.Gaia.Packet -> {
-                stateViewModel.handleGaiaPacket(sideEffect.data)
+
+            is GaiaGattSideEffect.Gatt.Characteristic.Changed -> {
+                stateViewModel.handleCharacteristicChanged(sideEffect.packet)
             }
+
             else -> {
             }
         }
     }
 
-    private fun startGaiaGattForegroundService(
-        volumePercent: String,
-        mute: String
-    ) {
+    private fun createNotificationChannelIfNotExists(
+        id: String = ID_NOTIFICATION_CHANNEL,
+        name: CharSequence = requireContext().getString(R.string.app_name),
+        importance: Int = NotificationManager.IMPORTANCE_HIGH
+    ) = kotlin.runCatching {
         val nm =
             requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        kotlin.runCatching {
-            if (nm.getNotificationChannel(ID_NOTIFICATION_CHANNEL) == null) {
-                nm.createNotificationChannel(
-                    NotificationChannel(
-                        ID_NOTIFICATION_CHANNEL,
-                        requireContext().getString(R.string.app_name),
-                        NotificationManager.IMPORTANCE_HIGH
-                    ).apply {
-                        setShowBadge(false)
-                    }
-                )
-            }
-            gaiaGattService()?.startForeground(
-                ID_NOTIFICATION,
-                buildNotification(volumePercent, mute)
+        if (nm.getNotificationChannel(id) == null) {
+            nm.createNotificationChannel(
+                NotificationChannel(id, name, importance).apply {
+                    setShowBadge(false)
+                }
             )
         }
     }
 
-    private fun buildNotification(
+    private fun buildVolumeNotification(
         volumePercent: String,
         mute: String
     ): Notification {

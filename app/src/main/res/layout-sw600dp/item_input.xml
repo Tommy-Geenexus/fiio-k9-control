@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/image_source"
+    style="@style/Widget.FiioK9Control.CardView.Elevated.Medium">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/spacing_normal">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/input_source"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <RadioGroup
+            android:id="@+id/group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_normal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title">
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/usb"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/usb" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/opt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/optical" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/coax"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/coaxial" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/line"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/line_in" />
+
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/bt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/bluetooth" />
+        </RadioGroup>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

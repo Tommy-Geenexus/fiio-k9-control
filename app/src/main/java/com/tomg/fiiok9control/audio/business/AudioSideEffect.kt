@@ -21,36 +21,5 @@
 package com.tomg.fiiok9control.audio.business
 
 import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
 
-sealed class AudioSideEffect : Parcelable {
-
-    sealed class Characteristic : AudioSideEffect() {
-
-        @Parcelize
-        object Write : Characteristic()
-
-        @Parcelize
-        object Changed : Characteristic()
-    }
-
-    sealed class Reconnect : AudioSideEffect() {
-
-        @Parcelize
-        object Initiated : Reconnect()
-
-        @Parcelize
-        object Success : Reconnect()
-
-        @Parcelize
-        object Failure : Reconnect()
-    }
-
-    sealed class Request : AudioSideEffect() {
-
-        @Parcelize
-        data class Failure(
-            val disconnected: Boolean = false
-        ) : Request()
-    }
-}
+sealed class AudioSideEffect : Parcelable

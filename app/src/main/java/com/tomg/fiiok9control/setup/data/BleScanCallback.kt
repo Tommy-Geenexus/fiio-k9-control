@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
+ * Copyright (c) 2023, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -25,15 +25,14 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
-import java.lang.ref.WeakReference
 
 class BleScanCallback(
-    private val permissionsGranted: () -> Boolean,
-    private val callback: WeakReference<(Result<BleScanResult>) -> Unit>
+    private val onScanResult: (BleScanResult) -> Unit,
+    private val arePermissionsGranted: () -> Boolean
 ) : ScanCallback() {
 
     override fun onScanFailed(errorCode: Int) {
-        callback.get()?.invoke(Result.failure(Exception("Scan failed with error $errorCode")))
+        onScanResult(BleScanResult(scanFailed = true))
     }
 
     @SuppressLint("MissingPermission")
@@ -41,18 +40,14 @@ class BleScanCallback(
         callbackType: Int,
         result: ScanResult?
     ) {
-        val bonded = if (permissionsGranted()) {
-            result?.device?.bondState == BluetoothDevice.BOND_BONDED
-        } else {
-            false
+        if (!arePermissionsGranted()) {
+            return
         }
-        callback.get()?.invoke(
-            Result.success(
-                BleScanResult(
-                    deviceAddress = result?.device?.address.orEmpty(),
-                    bonded = bonded,
-                    matchLost = callbackType == ScanSettings.CALLBACK_TYPE_MATCH_LOST
-                )
+        onScanResult(
+            BleScanResult(
+                deviceAddress = result?.device?.address.orEmpty(),
+                bonded = result?.device?.bondState == BluetoothDevice.BOND_BONDED,
+                matchLost = callbackType == ScanSettings.CALLBACK_TYPE_MATCH_LOST
             )
         )
     }

@@ -36,13 +36,13 @@ sealed class IndicatorState(val id: Int) : Parcelable {
     }
 
     @Parcelize
-    object Disabled : IndicatorState(id = 0)
+    data object Disabled : IndicatorState(id = 0)
 
     @Parcelize
-    object EnabledDefault : IndicatorState(id = 1)
+    data object EnabledDefault : IndicatorState(id = 1)
 
     @Parcelize
-    object EnabledGradientOnly : IndicatorState(id = 2)
+    data object EnabledGradientOnly : IndicatorState(id = 2)
 }
 
 fun IndicatorState?.orDefault() = this ?: IndicatorState.EnabledDefault

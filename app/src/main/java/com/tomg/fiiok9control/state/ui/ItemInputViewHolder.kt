@@ -20,6 +20,7 @@
 
 package com.tomg.fiiok9control.state.ui
 
+import androidx.core.view.forEach
 import androidx.recyclerview.widget.RecyclerView
 import com.tomg.fiiok9control.R
 import com.tomg.fiiok9control.databinding.ItemInputBinding
@@ -62,13 +63,19 @@ class ItemInputViewHolder(
         }
     }
 
-    fun bindItemInput(inputSource: InputSource) {
+    fun bindItemInput(
+        inputSource: InputSource,
+        itemEnabled: Boolean
+    ) {
         when (inputSource) {
             InputSource.Bluetooth -> binding.bt.isChecked = true
             InputSource.Coaxial -> binding.coax.isChecked = true
             InputSource.LineIn -> binding.line.isChecked = true
             InputSource.Optical -> binding.opt.isChecked = true
             InputSource.Usb -> binding.usb.isChecked = true
+        }
+        binding.group.forEach { item ->
+            item.isEnabled = itemEnabled
         }
     }
 }

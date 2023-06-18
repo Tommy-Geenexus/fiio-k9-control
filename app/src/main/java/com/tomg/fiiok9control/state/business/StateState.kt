@@ -21,22 +21,32 @@
 package com.tomg.fiiok9control.state.business
 
 import android.os.Parcelable
+import com.tomg.fiiok9control.gaia.data.fiio.FiioK9Defaults
 import com.tomg.fiiok9control.state.IndicatorState
 import com.tomg.fiiok9control.state.InputSource
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class StateState(
-    val fwVersion: String = "1.0",
-    val audioFmt: String = "44.1kHz",
-    val volume: Int = 0,
-    val volumePercent: String = "0%",
-    val inputSource: InputSource = InputSource.Usb,
+    val audioFmt: String = FiioK9Defaults.AUDIO_FMT,
+    val fwVersion: String = FiioK9Defaults.FW_VERSION,
+    val indicatorBrightness: Int = FiioK9Defaults.INDICATOR_BRIGHTNESS,
     val indicatorState: IndicatorState = IndicatorState.EnabledDefault,
-    val indicatorBrightness: Int = 5,
-    val volumeStepSize: Int = 4,
-    val isMuted: Boolean = false,
+    val inputSource: InputSource = InputSource.Usb,
     val isMqaEnabled: Boolean = true,
-    val isProfileExporting: Boolean = false,
-    val isHpPreSimultaneously: Boolean = false
+    val isMuteEnabled: Boolean = false,
+    val isHpPreSimultaneouslyEnabled: Boolean = false,
+    val volume: Int = FiioK9Defaults.VOLUME,
+    val volumeStepSize: Int = FiioK9Defaults.VOLUME_STEP_SIZE,
+    val pendingCommands: List<Int> = emptyList(),
+    val pendingIndicatorBrightness: Int? = null,
+    val pendingIndicatorState: IndicatorState? = null,
+    val pendingInputSource: InputSource? = null,
+    val pendingIsHpPreSimultaneouslyEnabled: Boolean? = null,
+    val pendingIsMqaEnabled: Boolean? = null,
+    val pendingIsMuteEnabled: Boolean? = null,
+    val pendingVolume: Int? = null,
+    val isDisconnecting: Boolean = false,
+    val isExportingProfile: Boolean = false,
+    val isServiceConnected: Boolean = false
 ) : Parcelable

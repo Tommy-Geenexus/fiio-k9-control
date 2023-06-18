@@ -24,27 +24,32 @@ import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Build
+import android.content.res.Configuration
 import android.os.Bundle
-import android.os.PersistableBundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.core.view.WindowCompat
 import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import androidx.window.layout.WindowMetricsCalculator
 import com.google.android.material.elevation.SurfaceColors
 import com.tomg.fiiok9control.databinding.ActivityFiioK9ControlBinding
-import com.tomg.fiiok9control.gaia.GaiaGattService
-import com.tomg.fiiok9control.gaia.GaiaGattServiceConnection
-import com.tomg.fiiok9control.gaia.GaiaGattSideEffect
+import com.tomg.fiiok9control.gaia.business.GaiaGattSideEffect
+import com.tomg.fiiok9control.gaia.ui.GaiaGattService
+import com.tomg.fiiok9control.gaia.ui.GaiaGattServiceConnection
 import com.tomg.fiiok9control.setup.BluetoothStateBroadcastReceiver
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -60,91 +65,94 @@ class FiioK9ControlActivity : AppCompatActivity() {
     )
 
     private val connection = GaiaGattServiceConnection(
-        onServiceConnected = { gaiaGattService ->
-            this.gaiaGattService = gaiaGattService
+        onServiceConnected = { service ->
+            gaiaGattService = service
+            _serviceConnection.compareAndSet(expect = false, update = true)
             lifecycleScope.launch {
-                _gaiaGattSideEffectFlow.emitAll(
-                    gaiaGattService.gaiaGattSideEffectChannel.consumeAsFlow()
-                )
+                _gaiaGattSideEffects.emitAll(service.gaiaGattSideEffects.receiveAsFlow())
             }
-            supportFragmentManager.setFragmentResult(
-                KEY_SERVICE_CONNECTED,
-                bundleOf(KEY_SERVICE_CONNECTED to true)
-            )
-            handleProfileShortcutIntent()
         },
         onServiceDisconnected = {
             gaiaGattService = null
-            supportFragmentManager.setFragmentResult(
-                KEY_SERVICE_CONNECTED,
-                bundleOf(KEY_SERVICE_CONNECTED to false)
-            )
+            _serviceConnection.compareAndSet(expect = true, update = false)
+            lifecycleScope.launch {
+                _serviceConnection.emit(false)
+            }
         }
     )
 
-    private val _gaiaGattSideEffectFlow: MutableSharedFlow<GaiaGattSideEffect> = MutableSharedFlow()
-    val gaiaGattSideEffectFlow: Flow<GaiaGattSideEffect> = _gaiaGattSideEffectFlow
+    private val _serviceConnection = MutableStateFlow(false)
+    val serviceConnection = _serviceConnection.asStateFlow()
+    private val _gaiaGattSideEffects = MutableSharedFlow<GaiaGattSideEffect>()
+    val gaiaGattSideEffects = _gaiaGattSideEffects.asSharedFlow()
     var gaiaGattService: GaiaGattService? = null
 
+    internal var windowSizeClass: WindowSizeClass = WindowSizeClass.Unspecified
+
     init {
-        addOnNewIntentListener { intent ->
-            setIntent(intent)
-            handleProfileShortcutIntent()
-        }
+        addOnNewIntentListener { intent -> setIntent(intent) }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         val binding = ActivityFiioK9ControlBinding.inflate(layoutInflater)
-        window.statusBarColor =
-            SurfaceColors.getColorForElevation(this, binding.toolbar.elevation)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
-        binding.toolbar.applyInsetMargins()
-        val navController =
-            (supportFragmentManager.findFragmentById(R.id.nav_controller) as NavHostFragment)
-                .navController
-        navController.addOnDestinationChangedListener { _, navDestination, _ ->
-            if (navDestination.id == R.id.fragment_setup) {
-                window.navigationBarColor = getColor(android.R.color.transparent)
-                binding.nav.isInvisible = true
-            } else if (binding.nav.isInvisible) {
-                window.navigationBarColor =
-                    SurfaceColors.getColorForElevation(this, binding.nav.elevation)
-                binding.nav.isInvisible = false
+        window.statusBarColor = getColor(android.R.color.transparent)
+        val host = supportFragmentManager.findFragmentById(R.id.nav_controller) as NavHostFragment
+        setupNavigation(binding, host.navController)
+        binding.layout.addView(object : View(this) {
+            override fun onConfigurationChanged(newConfig: Configuration?) {
+                super.onConfigurationChanged(newConfig)
+                computeWindowSizeClass()
             }
-        }
-        binding.nav.setupWithNavController(navController)
+        })
+        computeWindowSizeClass()
         registerReceiver(
             bluetoothStateReceiver,
             IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
         )
-        bindService(Intent(this, GaiaGattService::class.java), connection, Context.BIND_AUTO_CREATE)
+        val intent = Intent(this, GaiaGattService::class.java)
+        startService(intent)
+        bindService(intent, connection, Context.BIND_AUTO_CREATE)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(bluetoothStateReceiver)
         unbindService(connection)
-        gaiaGattService = null
+        if (!isChangingConfigurations) {
+            stopService(Intent(this, GaiaGattService::class.java))
+        }
     }
 
-    @Suppress("DEPRECATION")
-    private fun handleProfileShortcutIntent() {
-        if (intent.hasExtra(INTENT_EXTRA_CONSUMED)) {
-            return
-        }
-        val profile = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra(INTENT_ACTION_SHORTCUT_PROFILE, PersistableBundle::class.java)
-        } else {
-            intent.getParcelableExtra(INTENT_ACTION_SHORTCUT_PROFILE)
-        }
-        if (profile != null) {
-            supportFragmentManager.setFragmentResult(
-                KEY_SHORTCUT_PROFILE,
-                bundleOf(KEY_SHORTCUT_PROFILE to profile)
+    private fun setupNavigation(
+        binding: ActivityFiioK9ControlBinding,
+        navController: NavController
+    ) {
+        binding.navView?.setupWithNavController(navController)
+        binding.navRail?.setupWithNavController(navController)
+        navController.addOnDestinationChangedListener { _, navDestination, _ ->
+            val isSetup = navDestination.id == R.id.fragment_setup
+            binding.navRail?.isVisible = !isSetup
+            binding.navView?.isInvisible = isSetup
+            window.navigationBarColor = SurfaceColors.getColorForElevation(
+                this,
+                if (binding.navView?.isVisible == true) {
+                    binding.navView.elevation
+                } else if (binding.navRail?.isVisible == true) {
+                    binding.navRail.elevation
+                } else {
+                    0f
+                }
             )
         }
+    }
+
+    private fun computeWindowSizeClass() {
+        val metrics = WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(this)
+        val widthDp = metrics.bounds.width() / resources.displayMetrics.density
+        windowSizeClass = WindowSizeClass.calculate(widthDp, height = false)
     }
 }

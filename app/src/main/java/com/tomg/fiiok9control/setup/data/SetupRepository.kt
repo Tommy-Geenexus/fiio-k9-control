@@ -29,18 +29,21 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.ContextCompat
-import com.tomg.fiiok9control.DEVICE_K9_PRO_NAME
+import com.tomg.fiiok9control.di.DispatcherIo
+import com.tomg.fiiok9control.gaia.data.fiio.FiioK9Defaults
 import com.tomg.fiiok9control.suspendRunCatching
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.lang.ref.WeakReference
 import javax.inject.Inject
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
-@Suppress("BooleanMethodIsAlwaysInverted", "BooleanMethodIsAlwaysInverted")
+@Suppress("BooleanMethodIsAlwaysInverted")
 class SetupRepository @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    @DispatcherIo private val dispatcherIo: CoroutineDispatcher
 ) {
 
     val requiredPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -56,16 +59,29 @@ class SetupRepository @Inject constructor(
         )
     }
 
-    @Volatile
-    private var callback: BleScanCallback? = null
+    val bleScanResults = MutableSharedFlow<BleScanResult>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+
+    private val bleScanCallback = BleScanCallback(
+        onScanResult = { bleScanResult -> bleScanResults.tryEmit(bleScanResult) },
+        arePermissionsGranted = ::arePermissionsGranted
+    )
 
     fun isBleSupported(): Boolean {
         return context.packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)
     }
 
-    fun isBluetoothEnabled(): Boolean {
-        val bm = context.getSystemService(BluetoothManager::class.java)
-        return bm?.adapter?.isEnabled == true
+    suspend fun isBluetoothEnabled(): Boolean {
+        return withContext(dispatcherIo) {
+            coroutineContext.suspendRunCatching {
+                context.getSystemService(BluetoothManager::class.java)?.adapter?.isEnabled == true
+            }.getOrElse { exception ->
+                Timber.e(exception)
+                false
+            }
+        }
     }
 
     fun arePermissionsGranted() = requiredPermissions.none { permission ->
@@ -77,15 +93,13 @@ class SetupRepository @Inject constructor(
         if (!arePermissionsGranted()) {
             return false
         }
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatcherIo) {
             coroutineContext.suspendRunCatching {
                 context
                     .getSystemService(BluetoothManager::class.java)
                     ?.adapter
                     ?.bondedDevices
-                    ?.find { device ->
-                        device.address == deviceAddress
-                    } != null
+                    ?.find { device -> device.address == deviceAddress } != null
             }.getOrElse { exception ->
                 Timber.e(exception)
                 false
@@ -94,34 +108,37 @@ class SetupRepository @Inject constructor(
     }
 
     @SuppressLint("MissingPermission")
-    suspend fun startBleScan(onScanResult: (Result<BleScanResult>) -> Unit): Boolean {
+    suspend fun startBleScan(): Boolean {
         if (!arePermissionsGranted()) {
             return false
         }
-        return withContext(Dispatchers.IO) {
-            val scanner =
-                context.getSystemService(BluetoothManager::class.java)?.adapter?.bluetoothLeScanner
-            if (scanner != null) {
-                val filter = ScanFilter
-                    .Builder()
-                    .setDeviceName(DEVICE_K9_PRO_NAME)
-                    .build()
-                val settings = ScanSettings
-                    .Builder()
-                    .setCallbackType(
-                        ScanSettings.CALLBACK_TYPE_FIRST_MATCH or
-                            ScanSettings.CALLBACK_TYPE_MATCH_LOST
-                    )
-                    .setNumOfMatches(ScanSettings.MATCH_NUM_ONE_ADVERTISEMENT)
-                    .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-                    .build()
-                scanner.startScan(
-                    listOf(filter),
-                    settings,
-                    getBleScanCallback(onScanResult)
-                )
-                true
-            } else {
+        return withContext(dispatcherIo) {
+            coroutineContext.suspendRunCatching {
+                val scanner = context
+                    .getSystemService(BluetoothManager::class.java)
+                    ?.adapter
+                    ?.bluetoothLeScanner
+                if (scanner != null) {
+                    val filter = ScanFilter
+                        .Builder()
+                        .setDeviceName(FiioK9Defaults.DISPLAY_NAME)
+                        .build()
+                    val settings = ScanSettings
+                        .Builder()
+                        .setCallbackType(
+                            ScanSettings.CALLBACK_TYPE_FIRST_MATCH or
+                                ScanSettings.CALLBACK_TYPE_MATCH_LOST
+                        )
+                        .setNumOfMatches(ScanSettings.MATCH_NUM_ONE_ADVERTISEMENT)
+                        .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                        .build()
+                    scanner.startScan(listOf(filter), settings, bleScanCallback)
+                    true
+                } else {
+                    false
+                }
+            }.getOrElse { exception ->
+                Timber.e(exception)
                 false
             }
         }
@@ -132,31 +149,16 @@ class SetupRepository @Inject constructor(
         if (!arePermissionsGranted()) {
             return
         }
-        withContext(Dispatchers.IO) {
-            context
-                .getSystemService(BluetoothManager::class.java)
-                ?.adapter
-                ?.bluetoothLeScanner
-                ?.stopScan(getBleScanCallback())
-            synchronized(this) {
-                callback = null
+        withContext(dispatcherIo) {
+            coroutineContext.suspendRunCatching {
+                context
+                    .getSystemService(BluetoothManager::class.java)
+                    ?.adapter
+                    ?.bluetoothLeScanner
+                    ?.stopScan(bleScanCallback)
+            }.getOrElse { exception ->
+                Timber.e(exception)
             }
-        }
-    }
-
-    private fun getBleScanCallback(
-        onScanResult: (Result<BleScanResult>) -> Unit = {}
-    ): BleScanCallback {
-        val v = callback
-        return v ?: synchronized(this) {
-            val v2 = BleScanCallback(
-                permissionsGranted = ::arePermissionsGranted,
-                callback = WeakReference { result ->
-                    onScanResult(result)
-                }
-            )
-            callback = v2
-            v2
         }
     }
 }

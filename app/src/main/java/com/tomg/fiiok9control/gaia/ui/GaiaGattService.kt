@@ -18,7 +18,7 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.fiiok9control.gaia
+package com.tomg.fiiok9control.gaia.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -40,20 +40,28 @@ import com.qualcomm.qti.libraries.ble.BLEService
 import com.qualcomm.qti.libraries.ble.Characteristics
 import com.qualcomm.qti.libraries.gaia.packets.GaiaPacket
 import com.qualcomm.qti.libraries.gaia.packets.GaiaPacketBLE
+import com.tomg.fiiok9control.di.DispatcherIo
+import com.tomg.fiiok9control.di.DispatcherMainImmediate
+import com.tomg.fiiok9control.gaia.business.GaiaGattSideEffect
+import com.tomg.fiiok9control.gaia.data.UUID_CHARACTERISTIC_GAIA_COMMAND
+import com.tomg.fiiok9control.gaia.data.UUID_CHARACTERISTIC_GAIA_DATA_ENDPOINT
+import com.tomg.fiiok9control.gaia.data.UUID_CHARACTERISTIC_GAIA_RESPONSE
+import com.tomg.fiiok9control.gaia.data.UUID_SERVICE_GAIA
+import dagger.hilt.android.AndroidEntryPoint
 import java.lang.ref.WeakReference
 import java.util.UUID
+import javax.inject.Inject
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-@Suppress("BooleanMethodIsAlwaysInverted", "BooleanMethodIsAlwaysInverted")
+@AndroidEntryPoint
 class GaiaGattService : BLEService() {
 
     private val notificationCharacteristics: MutableList<UUID> = mutableListOf()
-    val gaiaGattSideEffectChannel = Channel<GaiaGattSideEffect>(Channel.UNLIMITED)
 
     private lateinit var bm: BluetoothManager
 
@@ -65,9 +73,18 @@ class GaiaGattService : BLEService() {
     private var isGattReady = false
     private var isGaiaReady = false
 
+    lateinit var gaiaGattSideEffects: Channel<GaiaGattSideEffect>
     private lateinit var coroutineScope: CoroutineScope
     private lateinit var thread: HandlerThread
     private lateinit var handler: Handler
+
+    @Inject
+    @DispatcherIo
+    lateinit var dispatcherIo: CoroutineDispatcher
+
+    @Inject
+    @DispatcherMainImmediate
+    lateinit var dispatcherMainImmediate: CoroutineDispatcher
 
     public override fun getDevice(): BluetoothDevice? = super.getDevice()
 
@@ -81,7 +98,8 @@ class GaiaGattService : BLEService() {
     override fun onCreate() {
         super.onCreate()
         bm = applicationContext.getSystemService(BluetoothManager::class.java)
-        coroutineScope = CoroutineScope(Dispatchers.Main.immediate)
+        gaiaGattSideEffects = Channel(Channel.UNLIMITED)
+        coroutineScope = CoroutineScope(dispatcherMainImmediate)
         thread = HandlerThread("GaiaGattService", Process.THREAD_PRIORITY_BACKGROUND)
         thread.start()
         handler = Handler(thread.looper)
@@ -107,7 +125,7 @@ class GaiaGattService : BLEService() {
             }
             else -> {
                 coroutineScope.launch {
-                    gaiaGattSideEffectChannel.send(GaiaGattSideEffect.Gatt.Error)
+                    gaiaGattSideEffects.send(GaiaGattSideEffect.Gatt.Error)
                     disconnectAndReset()
                 }
             }
@@ -122,15 +140,11 @@ class GaiaGattService : BLEService() {
     ) {
         val value = characteristic?.value ?: return
         coroutineScope.launch {
-            gaiaGattSideEffectChannel.send(
+            gaiaGattSideEffects.send(
                 if (status == BluetoothGatt.GATT_SUCCESS) {
-                    GaiaGattSideEffect.Gatt.WriteCharacteristic.Success(
-                        commandId = GaiaPacketBLE(value).command
-                    )
+                    GaiaGattSideEffect.Gatt.Characteristic.Write.Success(GaiaPacketBLE(value))
                 } else {
-                    GaiaGattSideEffect.Gatt.WriteCharacteristic.Failure(
-                        commandId = GaiaPacketBLE(value).command
-                    )
+                    GaiaGattSideEffect.Gatt.Characteristic.Write.Failure(GaiaPacketBLE(value))
                 }
             )
         }
@@ -147,7 +161,7 @@ class GaiaGattService : BLEService() {
         }
         if (status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothProfile.STATE_CONNECTED) {
             coroutineScope.launch {
-                gaiaGattSideEffectChannel.send(
+                gaiaGattSideEffects.send(
                     GaiaGattSideEffect.Gatt.ServiceDiscovery(device?.address.orEmpty())
                 )
             }
@@ -156,7 +170,7 @@ class GaiaGattService : BLEService() {
             }
         } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
             coroutineScope.launch {
-                gaiaGattSideEffectChannel.send(GaiaGattSideEffect.Gatt.Disconnected)
+                gaiaGattSideEffects.send(GaiaGattSideEffect.Gatt.Disconnected)
             }
         }
     }
@@ -187,7 +201,7 @@ class GaiaGattService : BLEService() {
             isGaiaReady = true
             if (!ready) {
                 coroutineScope.launch {
-                    gaiaGattSideEffectChannel.send(GaiaGattSideEffect.Gaia.Ready)
+                    gaiaGattSideEffects.send(GaiaGattSideEffect.Gaia.Ready)
                 }
             }
         }
@@ -202,6 +216,7 @@ class GaiaGattService : BLEService() {
         }
         handler.removeCallbacksAndMessages(null)
         thread.quit()
+        gaiaGattSideEffects.close()
     }
 
     override fun onMtuChanged(
@@ -222,7 +237,9 @@ class GaiaGattService : BLEService() {
             value.isNotEmpty()
         ) {
             coroutineScope.launch {
-                gaiaGattSideEffectChannel.send(GaiaGattSideEffect.Gaia.Packet(value))
+                gaiaGattSideEffects.send(
+                    GaiaGattSideEffect.Gatt.Characteristic.Changed(GaiaPacketBLE(value))
+                )
             }
         }
     }
@@ -294,14 +311,14 @@ class GaiaGattService : BLEService() {
     }
 
     suspend fun connect(address: String): Boolean {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatcherIo) {
             disconnectAndReset()
             super.connectToDevice(address)
         }
     }
 
     suspend fun disconnectAndReset() {
-        withContext(Dispatchers.IO) {
+        withContext(dispatcherIo) {
             notificationCharacteristics.forEach { characteristic ->
                 requestCharacteristicNotification(characteristic, false)
             }
@@ -317,16 +334,12 @@ class GaiaGattService : BLEService() {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    fun isConnected() = connectionState == State.CONNECTED
-
     private fun onGattReady() {
         val ready = isGattReady
         isGattReady = true
         if (!ready) {
             coroutineScope.launch {
-                gaiaGattSideEffectChannel.send(
-                    GaiaGattSideEffect.Gatt.Ready(device?.address.orEmpty())
-                )
+                gaiaGattSideEffects.send(GaiaGattSideEffect.Gatt.Ready(device?.address.orEmpty()))
             }
         }
         requestCharacteristicNotification(gaiaResponseCharacteristic, true)
@@ -343,13 +356,10 @@ class GaiaGattService : BLEService() {
     }
 
     @SuppressLint("MissingPermission")
-    suspend fun sendGaiaPacket(packet: GaiaPacket): Boolean? {
-        return withContext(Dispatchers.IO) {
+    suspend fun sendGaiaPacket(packet: GaiaPacket): Boolean {
+        return withContext(dispatcherIo) {
             if (!hasBluetoothConnectPermission()) {
                 return@withContext false
-            }
-            if (bm.getConnectedDevices(BluetoothProfile.GATT).isNullOrEmpty()) {
-                return@withContext null
             }
             if (gaiaCommandCharacteristic != null) {
                 requestWriteCharacteristic(gaiaCommandCharacteristic, packet.bytes)

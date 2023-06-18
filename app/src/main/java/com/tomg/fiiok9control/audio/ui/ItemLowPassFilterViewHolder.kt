@@ -20,6 +20,7 @@
 
 package com.tomg.fiiok9control.audio.ui
 
+import androidx.core.view.forEach
 import androidx.recyclerview.widget.RecyclerView
 import com.tomg.fiiok9control.R
 import com.tomg.fiiok9control.audio.LowPassFilter
@@ -67,7 +68,10 @@ class ItemLowPassFilterViewHolder(
         }
     }
 
-    fun bindItemLowPassFilter(lowPassFilter: LowPassFilter) {
+    fun bindItemLowPassFilter(
+        lowPassFilter: LowPassFilter,
+        itemEnabled: Boolean
+    ) {
         when (lowPassFilter) {
             LowPassFilter.Sharp -> binding.sharp.isChecked = true
             LowPassFilter.SharpDelay -> binding.sharpDelay.isChecked = true
@@ -75,6 +79,9 @@ class ItemLowPassFilterViewHolder(
             LowPassFilter.Slow -> binding.slow.isChecked = true
             LowPassFilter.SlowDelay -> binding.slowDelay.isChecked = true
             LowPassFilter.SuperSlow -> binding.superSlow.isChecked = true
+        }
+        binding.group.forEach { item ->
+            item.isEnabled = itemEnabled
         }
     }
 }

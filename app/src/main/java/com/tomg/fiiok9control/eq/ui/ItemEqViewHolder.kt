@@ -157,16 +157,18 @@ class ItemEqViewHolder(
     fun bindItemEq(
         eqEnabled: Boolean,
         eqPreSet: EqPreSet,
-        eqValues: List<EqValue>
+        eqValues: List<EqValue>,
+        itemEnabled: Boolean
     ) {
         binding.apply {
             this.eqEnabled.isChecked = eqEnabled
-            this.eqPreSet.isEnabled = eqEnabled
+            this.eqEnabled.isEnabled = itemEnabled
+            this.eqPreSet.isEnabled = eqEnabled && itemEnabled
             group.children.forEach { child ->
-                child.isEnabled = eqEnabled
+                child.isEnabled = eqEnabled && itemEnabled
             }
             eqCustom.children.forEach { child ->
-                child.isEnabled = eqEnabled
+                child.isEnabled = eqEnabled && itemEnabled
             }
             when (eqPreSet) {
                 EqPreSet.Classical -> classical.isChecked = true

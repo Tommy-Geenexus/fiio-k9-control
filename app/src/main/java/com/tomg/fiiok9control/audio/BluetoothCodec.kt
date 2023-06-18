@@ -49,21 +49,21 @@ sealed class BluetoothCodec(val id: Int) : Parcelable {
     sealed class AptX(id: Int) : BluetoothCodec(id) {
 
         @Parcelize
-        object Adaptive : AptX(id = 1)
+        data object Adaptive : AptX(id = 1)
 
         @Parcelize
-        object Default : AptX(id = 8)
+        data object Default : AptX(id = 8)
 
         @Parcelize
-        object Ll : AptX(id = 16)
+        data object Ll : AptX(id = 16)
 
         @Parcelize
-        object Hd : AptX(id = 32)
+        data object Hd : AptX(id = 32)
     }
 
     @Parcelize
-    object Aac : BluetoothCodec(id = 2)
+    data object Aac : BluetoothCodec(id = 2)
 
     @Parcelize
-    object Ldac : BluetoothCodec(id = 4)
+    data object Ldac : BluetoothCodec(id = 4)
 }

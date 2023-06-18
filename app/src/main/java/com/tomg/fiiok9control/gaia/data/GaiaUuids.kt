@@ -18,27 +18,19 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.tomg.fiiok9control.gaia
+package com.tomg.fiiok9control.gaia.data
 
-import android.content.ComponentName
-import android.content.ServiceConnection
-import android.os.IBinder
+import com.qualcomm.qti.libraries.ble.Characteristics
+import com.qualcomm.qti.libraries.ble.Services
+import java.util.UUID
 
-class GaiaGattServiceConnection(
-    private val onServiceConnected: (GaiaGattService) -> Unit,
-    private val onServiceDisconnected: () -> Unit
-) : ServiceConnection {
+val UUID_SERVICE_GAIA: UUID? = Services.getStringServiceUUID(Services.SERVICE_CSR_GAIA)
 
-    override fun onServiceConnected(
-        name: ComponentName?,
-        service: IBinder?
-    ) {
-        (service as? GaiaGattBinder)?.getService()?.let { gaiaGattService ->
-            onServiceConnected(gaiaGattService)
-        }
-    }
+val UUID_CHARACTERISTIC_GAIA_RESPONSE: UUID? =
+    Characteristics.getCharacteristicUUID(Characteristics.CHARACTERISTIC_CSR_GAIA_RESPONSE_ENDPOINT)
 
-    override fun onServiceDisconnected(name: ComponentName?) {
-        onServiceDisconnected()
-    }
-}
+val UUID_CHARACTERISTIC_GAIA_COMMAND: UUID? =
+    Characteristics.getCharacteristicUUID(Characteristics.CHARACTERISTIC_CSR_GAIA_COMMAND_ENDPOINT)
+
+val UUID_CHARACTERISTIC_GAIA_DATA_ENDPOINT: UUID? =
+    Characteristics.getCharacteristicUUID(Characteristics.CHARACTERISTIC_CSR_GAIA_DATA_ENDPOINT)

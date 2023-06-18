@@ -21,18 +21,24 @@
 package com.tomg.fiiok9control
 
 import android.content.Context
-import android.os.Build
+import android.content.Intent
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.view.View
 import androidx.annotation.LayoutRes
+import androidx.core.content.IntentCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import androidx.viewbinding.ViewBinding
-import com.tomg.fiiok9control.gaia.GaiaGattSideEffect
+import com.tomg.fiiok9control.gaia.business.GaiaGattSideEffect
+import com.tomg.fiiok9control.gaia.ui.GaiaGattService
 import com.tomg.fiiok9control.profile.data.Profile
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
 abstract class BaseFragment<B : ViewBinding>(
     @LayoutRes layoutRes: Int
@@ -41,49 +47,32 @@ abstract class BaseFragment<B : ViewBinding>(
     private var _binding: B? = null
     internal val binding: B get() = _binding!!
 
-    lateinit var gaiaGattSideEffectFlow: Flow<GaiaGattSideEffect>
+    private lateinit var serviceConnection: Flow<Boolean>
+    internal lateinit var gaiaGattSideEffects: Flow<GaiaGattSideEffect>
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        gaiaGattSideEffectFlow = (requireActivity() as FiioK9ControlActivity).gaiaGattSideEffectFlow
+        serviceConnection = (requireActivity() as FiioK9ControlActivity).serviceConnection
+        gaiaGattSideEffects = (requireActivity() as FiioK9ControlActivity).gaiaGattSideEffects
     }
 
-    @Suppress("DEPRECATION")
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?
     ) {
         _binding = bindLayout(view)
-        requireActivity().supportFragmentManager.apply {
-            setFragmentResultListener(KEY_BLUETOOTH_ENABLED, viewLifecycleOwner) { _, args ->
-                val enabled = args.getBoolean(KEY_BLUETOOTH_ENABLED, false)
-                onBluetoothStateChanged(enabled)
-            }
-            setFragmentResultListener(KEY_SERVICE_CONNECTED, viewLifecycleOwner) { _, args ->
-                val connected = args.getBoolean(KEY_SERVICE_CONNECTED, false)
-                if (connected && gaiaGattService()?.isConnected() == false) {
-                    onReconnectToDevice()
-                }
-            }
-            setFragmentResultListener(KEY_SHORTCUT_PROFILE, viewLifecycleOwner) { _, args ->
-                val profile = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    args.getParcelable(KEY_SHORTCUT_PROFILE, PersistableBundle::class.java)
-                } else {
-                    args.getParcelable(KEY_SHORTCUT_PROFILE)
-                }
-                if (profile != null) {
-                    requireActivity().intent.putExtra(INTENT_EXTRA_CONSUMED, true)
-                    onProfileShortcutSelected(Profile.createFromPersistableBundle(profile))
-                }
-            }
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            KEY_BLUETOOTH_ENABLED,
+            viewLifecycleOwner
+        ) { _, args ->
+            onBluetoothStateChanged(args.getBoolean(KEY_BLUETOOTH_ENABLED, false))
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        val service = gaiaGattService()
-        if (service != null && !service.isConnected()) {
-            onReconnectToDevice()
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                serviceConnection.collect { isConnected ->
+                    onServiceConnectionStateChanged(isConnected)
+                }
+            }
         }
     }
 
@@ -92,15 +81,32 @@ abstract class BaseFragment<B : ViewBinding>(
         _binding = null
     }
 
-    abstract fun onProfileShortcutSelected(profile: Profile)
+    abstract fun bindLayout(view: View): B
 
     abstract fun onBluetoothStateChanged(enabled: Boolean)
 
-    abstract fun onReconnectToDevice()
+    abstract fun onProfileShortcutSelected(profile: Profile)
 
-    abstract fun bindLayout(view: View): B
+    abstract fun onServiceConnectionStateChanged(isConnected: Boolean)
 
-    fun gaiaGattService() = (requireActivity() as? FiioK9ControlActivity)?.gaiaGattService
+    internal fun shouldConsumeIntent(intent: Intent): Boolean {
+        return intent.hasExtra(INTENT_ACTION_SHORTCUT_PROFILE) &&
+            !intent.hasExtra(INTENT_EXTRA_CONSUMED)
+    }
+
+    internal fun consumeIntent(intent: Intent) {
+        val profile = IntentCompat.getParcelableExtra(
+            intent,
+            INTENT_ACTION_SHORTCUT_PROFILE,
+            PersistableBundle::class.java
+        )
+        if (profile != null) {
+            requireActivity().intent.putExtra(INTENT_EXTRA_CONSUMED, true)
+            onProfileShortcutSelected(Profile.createFromPersistableBundle(profile))
+        }
+    }
+
+    internal fun getWindowSizeClass() = (requireActivity() as FiioK9ControlActivity).windowSizeClass
 
     internal fun navigate(navDirections: NavDirections) {
         val navController = findNavController()
@@ -112,5 +118,9 @@ abstract class BaseFragment<B : ViewBinding>(
 
     internal fun navigateToStartDestination() {
         findNavController().setGraph(R.navigation.nav_graph)
+    }
+
+    internal fun requireGaiaGattService(): GaiaGattService {
+        return (requireActivity() as? FiioK9ControlActivity)?.gaiaGattService ?: error("")
     }
 }

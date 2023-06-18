@@ -27,10 +27,13 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class SetupState(
-    val permissionsGranted: Boolean = false,
-    val bluetoothEnabled: Boolean = false,
     val deviceAddress: String = String.Empty,
-    val bonded: Boolean = false,
     val shortcutProfile: Profile? = null,
-    val isLoading: Boolean = false
+    val isBluetoothEnabled: Boolean = false,
+    val isConnecting: Boolean = false,
+    val isDeviceBonded: Boolean = false,
+    val isDisconnecting: Boolean = false,
+    val isPermissionsGranted: Boolean = false,
+    val isScanning: Boolean = false,
+    val isServiceConnected: Boolean = false
 ) : Parcelable
