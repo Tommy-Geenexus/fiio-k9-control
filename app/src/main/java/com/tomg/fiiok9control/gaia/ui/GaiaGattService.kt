@@ -334,6 +334,8 @@ class GaiaGattService : BLEService() {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
+    fun isDeviceConnected() = connectionState == State.CONNECTED
+
     private fun onGattReady() {
         val ready = isGattReady
         isGattReady = true
@@ -345,7 +347,7 @@ class GaiaGattService : BLEService() {
         requestCharacteristicNotification(gaiaResponseCharacteristic, true)
     }
 
-    private fun reset() {
+    fun reset() {
         gattService = null
         gaiaResponseCharacteristic = null
         gaiaCommandCharacteristic = null

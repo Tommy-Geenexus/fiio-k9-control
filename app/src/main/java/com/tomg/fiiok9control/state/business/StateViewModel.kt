@@ -60,7 +60,12 @@ class StateViewModel @Inject constructor(
         reduce {
             state.copy(isDisconnecting = true)
         }
-        service.disconnectAndReset()
+        if (!service.isDeviceConnected()) {
+            service.reset()
+            postSideEffect(StateSideEffect.Disconnected)
+        } else {
+            service.disconnectAndReset()
+        }
         reduce {
             state.copy(isDisconnecting = false)
         }

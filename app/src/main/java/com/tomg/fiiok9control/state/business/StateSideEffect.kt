@@ -39,4 +39,7 @@ sealed class StateSideEffect : Parcelable {
         val volume: Int,
         val isMuteEnabled: Boolean
     ) : StateSideEffect()
+
+    @Parcelize
+    data object Disconnected : StateSideEffect()
 }

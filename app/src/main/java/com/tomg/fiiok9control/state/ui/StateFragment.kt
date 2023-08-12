@@ -325,6 +325,9 @@ class StateFragment :
 
     private fun handleSideEffect(sideEffect: StateSideEffect) {
         when (sideEffect) {
+            StateSideEffect.Disconnected -> {
+                navigateToStartDestination()
+            }
             StateSideEffect.ExportProfile.Failure -> {
                 requireView().showSnackbar(
                     anchor = requireActivity().findViewById(R.id.nav_view),
