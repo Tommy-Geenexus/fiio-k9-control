@@ -82,7 +82,9 @@ class SetupViewModel @Inject constructor(
             state.copy(
                 deviceAddress = String.Empty,
                 isBluetoothEnabled = enabled,
-                isDeviceBonded = false
+                isConnecting = if (enabled) state.isConnecting else false,
+                isDeviceBonded = false,
+                isScanning = if (enabled) state.isScanning else false
             )
         }
     }
