@@ -33,6 +33,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.tomg.fiiok9control.BaseFragment
 import com.tomg.fiiok9control.R
+import com.tomg.fiiok9control.RecyclerViewItemDecoration
 import com.tomg.fiiok9control.WINDOW_SIZE_EXPANDED_COLUMNS
 import com.tomg.fiiok9control.WindowSizeClass
 import com.tomg.fiiok9control.databinding.FragmentProfileBinding
@@ -62,6 +63,12 @@ class ProfileFragment :
             FiioK9Defaults.DISPLAY_NAME
         binding.progress.setVisibilityAfterHide(View.GONE)
         binding.profile.apply {
+            addItemDecoration(
+                RecyclerViewItemDecoration(
+                    margin = resources.getDimension(R.dimen.spacing_small).toInt(),
+                    isLtr = resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_LTR
+                )
+            )
             layoutManager = if (getWindowSizeClass() == WindowSizeClass.Expanded) {
                 StaggeredGridLayoutManager(WINDOW_SIZE_EXPANDED_COLUMNS, RecyclerView.VERTICAL)
             } else {

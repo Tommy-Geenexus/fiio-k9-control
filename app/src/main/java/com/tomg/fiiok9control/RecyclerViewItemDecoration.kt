@@ -1,5 +1,5 @@
 /*
- * Copyright (c) $YEAR, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
+ * Copyright (c) 2023, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -18,3 +18,30 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+package com.tomg.fiiok9control
+
+import android.graphics.Rect
+import android.view.View
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
+
+class RecyclerViewItemDecoration(
+    private val margin: Int,
+    private val isLtr: Boolean
+) : RecyclerView.ItemDecoration() {
+
+    override fun getItemOffsets(
+        outRect: Rect,
+        view: View,
+        parent: RecyclerView,
+        state: RecyclerView.State
+    ) {
+        val column = (view.layoutParams as? StaggeredGridLayoutManager.LayoutParams)?.spanIndex ?: 0
+        outRect.apply {
+            left = if (isLtr && column > 0) margin else 0
+            right = if (!isLtr && column > 0) margin else 0
+            top = margin / 2
+            bottom = margin / 2
+        }
+    }
+}

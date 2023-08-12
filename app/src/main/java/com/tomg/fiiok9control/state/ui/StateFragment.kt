@@ -53,6 +53,7 @@ import com.tomg.fiiok9control.KEY_PROFILE_NAME
 import com.tomg.fiiok9control.KEY_PROFILE_VOLUME_EXPORT
 import com.tomg.fiiok9control.R
 import com.tomg.fiiok9control.REQUEST_CODE
+import com.tomg.fiiok9control.RecyclerViewItemDecoration
 import com.tomg.fiiok9control.WINDOW_SIZE_EXPANDED_COLUMNS
 import com.tomg.fiiok9control.WindowSizeClass
 import com.tomg.fiiok9control.databinding.FragmentStateBinding
@@ -172,6 +173,12 @@ class StateFragment :
         requireActivity().addMenuProvider(menuProvider, viewLifecycleOwner)
         binding.progress.setVisibilityAfterHide(View.GONE)
         binding.state.apply {
+            addItemDecoration(
+                RecyclerViewItemDecoration(
+                    margin = resources.getDimension(R.dimen.spacing_small).toInt(),
+                    isLtr = resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_LTR
+                )
+            )
             layoutManager = if (getWindowSizeClass() == WindowSizeClass.Expanded) {
                 StaggeredGridLayoutManager(WINDOW_SIZE_EXPANDED_COLUMNS, RecyclerView.VERTICAL)
             } else {
