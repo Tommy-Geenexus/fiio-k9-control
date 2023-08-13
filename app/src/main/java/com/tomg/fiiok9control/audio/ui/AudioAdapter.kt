@@ -41,7 +41,9 @@ class AudioAdapter(
     interface Listener {
 
         fun onBluetoothCodecChanged(codec: BluetoothCodec, enabled: Boolean)
-        fun onChannelBalanceRequested(value: Int)
+        fun onUpdatePendingChannelBalance(channelBalance: Int)
+
+        fun onChannelBalanceRequested(channelBalance: Int)
         fun onLowPassFilterRequested(lowPassFilter: LowPassFilter)
     }
 

@@ -306,6 +306,10 @@ class StateFragment :
         }
     }
 
+    override fun onUpdatePendingIndicatorBrightness(indicatorBrightness: Int) {
+        stateViewModel.updatePendingIndicatorBrightness(indicatorBrightness)
+    }
+
     override fun onIndicatorBrightnessRequested(indicatorBrightness: Int) {
         if (stateViewModel.container.stateFlow.value.isServiceConnected) {
             stateViewModel.sendGaiaPacketIndicatorBrightness(
@@ -315,7 +319,11 @@ class StateFragment :
         }
     }
 
-    override fun onVolumeRequested(volume: Int) {
+    override fun onUpdatePendingVolumeLevel(volume: Int) {
+        stateViewModel.updatePendingVolumeLevel(volume)
+    }
+
+    override fun onVolumeLevelRequested(volume: Int) {
         if (stateViewModel.container.stateFlow.value.isServiceConnected) {
             stateViewModel.sendGaiaPacketVolume(requireGaiaGattService(), volume)
         }

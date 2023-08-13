@@ -23,6 +23,7 @@ package com.tomg.fiiok9control.eq.ui
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.slider.Slider
 import com.tomg.fiiok9control.R
 import com.tomg.fiiok9control.databinding.ItemEqBinding
 import com.tomg.fiiok9control.eq.EqPreSet
@@ -81,77 +82,164 @@ class ItemEqViewHolder(
         }
         binding.band31Slider.slider.addOnChangeListener { _, value, fromUser ->
             if (fromUser) {
-                listener.onEqValueChanged(
-                    EqValue(id = 1, value = value)
-                )
+                listener.onUpdatePendingEqValues(EqValue(id = 1, value = value))
             }
         }
+        binding.band31Slider.slider.addOnSliderTouchListener(
+            object : Slider.OnSliderTouchListener {
+
+                override fun onStartTrackingTouch(slider: Slider) {
+                }
+
+                override fun onStopTrackingTouch(slider: Slider) {
+                    listener.onEqValueChanged(EqValue(id = 1, value = slider.value))
+                }
+            }
+        )
         binding.band62Slider.slider.addOnChangeListener { _, value, fromUser ->
             if (fromUser) {
-                listener.onEqValueChanged(
-                    EqValue(id = 2, value = value)
-                )
+                listener.onUpdatePendingEqValues(EqValue(id = 2, value = value))
             }
         }
+        binding.band62Slider.slider.addOnSliderTouchListener(
+            object : Slider.OnSliderTouchListener {
+
+                override fun onStartTrackingTouch(slider: Slider) {
+                }
+
+                override fun onStopTrackingTouch(slider: Slider) {
+                    listener.onEqValueChanged(EqValue(id = 2, value = slider.value))
+                }
+            }
+        )
         binding.band125Slider.slider.addOnChangeListener { _, value, fromUser ->
             if (fromUser) {
-                listener.onEqValueChanged(
-                    EqValue(id = 3, value = value)
-                )
+                listener.onUpdatePendingEqValues(EqValue(id = 3, value = value))
             }
         }
+        binding.band125Slider.slider.addOnSliderTouchListener(
+            object : Slider.OnSliderTouchListener {
+
+                override fun onStartTrackingTouch(slider: Slider) {
+                }
+
+                override fun onStopTrackingTouch(slider: Slider) {
+                    listener.onEqValueChanged(EqValue(id = 3, value = slider.value))
+                }
+            }
+        )
         binding.band250Slider.slider.addOnChangeListener { _, value, fromUser ->
             if (fromUser) {
-                listener.onEqValueChanged(
-                    EqValue(id = 4, value = value)
-                )
+                listener.onUpdatePendingEqValues(EqValue(id = 4, value = value))
             }
         }
+        binding.band250Slider.slider.addOnSliderTouchListener(
+            object : Slider.OnSliderTouchListener {
+
+                override fun onStartTrackingTouch(slider: Slider) {
+                }
+
+                override fun onStopTrackingTouch(slider: Slider) {
+                    listener.onEqValueChanged(EqValue(id = 4, value = slider.value))
+                }
+            }
+        )
         binding.band500Slider.slider.addOnChangeListener { _, value, fromUser ->
             if (fromUser) {
-                listener.onEqValueChanged(
-                    EqValue(id = 5, value = value)
-                )
+                listener.onUpdatePendingEqValues(EqValue(id = 5, value = value))
             }
         }
+        binding.band500Slider.slider.addOnSliderTouchListener(
+            object : Slider.OnSliderTouchListener {
+
+                override fun onStartTrackingTouch(slider: Slider) {
+                }
+
+                override fun onStopTrackingTouch(slider: Slider) {
+                    listener.onEqValueChanged(EqValue(id = 5, value = slider.value))
+                }
+            }
+        )
         binding.band1kSlider.slider.addOnChangeListener { _, value, fromUser ->
             if (fromUser) {
-                listener.onEqValueChanged(
-                    EqValue(id = 6, value = value)
-                )
+                listener.onUpdatePendingEqValues(EqValue(id = 6, value = value))
             }
         }
+        binding.band1kSlider.slider.addOnSliderTouchListener(
+            object : Slider.OnSliderTouchListener {
+
+                override fun onStartTrackingTouch(slider: Slider) {
+                }
+
+                override fun onStopTrackingTouch(slider: Slider) {
+                    listener.onEqValueChanged(EqValue(id = 6, value = slider.value))
+                }
+            }
+        )
         binding.band2kSlider.slider.addOnChangeListener { _, value, fromUser ->
             if (fromUser) {
-                listener.onEqValueChanged(
-                    EqValue(id = 7, value = value)
-                )
+                listener.onUpdatePendingEqValues(EqValue(id = 7, value = value))
             }
         }
+        binding.band2kSlider.slider.addOnSliderTouchListener(
+            object : Slider.OnSliderTouchListener {
+
+                override fun onStartTrackingTouch(slider: Slider) {
+                }
+
+                override fun onStopTrackingTouch(slider: Slider) {
+                    listener.onEqValueChanged(EqValue(id = 7, value = slider.value))
+                }
+            }
+        )
         binding.band4kSlider.slider.addOnChangeListener { _, value, fromUser ->
             if (fromUser) {
-                listener.onEqValueChanged(
-                    EqValue(id = 8, value = value)
-                )
+                listener.onUpdatePendingEqValues(EqValue(id = 8, value = value))
             }
         }
+        binding.band4kSlider.slider.addOnSliderTouchListener(
+            object : Slider.OnSliderTouchListener {
+
+                override fun onStartTrackingTouch(slider: Slider) {
+                }
+
+                override fun onStopTrackingTouch(slider: Slider) {
+                    listener.onEqValueChanged(EqValue(id = 8, value = slider.value))
+                }
+            }
+        )
         binding.band8kSlider.slider.addOnChangeListener { _, value, fromUser ->
             if (fromUser) {
-                listener.onEqValueChanged(
-                    EqValue(id = 9, value = value)
-                )
+                listener.onUpdatePendingEqValues(EqValue(id = 9, value = value))
             }
         }
+        binding.band8kSlider.slider.addOnSliderTouchListener(
+            object : Slider.OnSliderTouchListener {
+
+                override fun onStartTrackingTouch(slider: Slider) {
+                }
+
+                override fun onStopTrackingTouch(slider: Slider) {
+                    listener.onEqValueChanged(EqValue(id = 9, value = slider.value))
+                }
+            }
+        )
         binding.band16kSlider.slider.addOnChangeListener { _, value, fromUser ->
             if (fromUser) {
-                listener.onEqValueChanged(
-                    EqValue(
-                        id = 10,
-                        value = value
-                    )
-                )
+                listener.onUpdatePendingEqValues(EqValue(id = 10, value = value))
             }
         }
+        binding.band16kSlider.slider.addOnSliderTouchListener(
+            object : Slider.OnSliderTouchListener {
+
+                override fun onStartTrackingTouch(slider: Slider) {
+                }
+
+                override fun onStopTrackingTouch(slider: Slider) {
+                    listener.onEqValueChanged(EqValue(id = 10, value = slider.value))
+                }
+            }
+        )
     }
 
     fun bindItemEq(
@@ -206,7 +294,7 @@ class ItemEqViewHolder(
             val v8k = eqValues.getOrNull(8)?.value ?: 0f
             band8k.text = itemView.context.getString(R.string._8khz, v8k)
             band8kSlider.slider.value = eqValues.getOrNull(8)?.value ?: 0f
-            val v16k = eqValues.getOrNull(9)?.value ?: 0f
+            val v16k = eqValues.lastOrNull()?.value ?: 0f
             band16k.text = itemView.context.getString(R.string._16khz, v16k)
             band16kSlider.slider.value = v16k
         }

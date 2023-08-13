@@ -227,4 +227,12 @@ class EqViewModel @Inject constructor(
             )
         }
     }
+
+    fun updatePendingEqValues(eqValue: EqValue) = intent {
+        reduce {
+            state.copy(
+                pendingEqValues = state.eqValues.map { v -> if (v.id == eqValue.id) eqValue else v }
+            )
+        }
+    }
 }

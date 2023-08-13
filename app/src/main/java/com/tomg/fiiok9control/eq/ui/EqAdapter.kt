@@ -40,6 +40,7 @@ class EqAdapter(
 
         fun onEqEnabled(enabled: Boolean)
         fun onEqPreSetRequested(eqPreSet: EqPreSet)
+        fun onUpdatePendingEqValues(value: EqValue)
         fun onEqValueChanged(value: EqValue)
     }
 

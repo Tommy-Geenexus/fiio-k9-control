@@ -47,8 +47,11 @@ class StateAdapter(
 
         fun onInputSourceRequested(inputSource: InputSource)
         fun onIndicatorStateRequested(indicatorState: IndicatorState)
+        fun onUpdatePendingIndicatorBrightness(indicatorBrightness: Int)
+
         fun onIndicatorBrightnessRequested(indicatorBrightness: Int)
-        fun onVolumeRequested(volume: Int)
+        fun onUpdatePendingVolumeLevel(volume: Int)
+        fun onVolumeLevelRequested(volume: Int)
     }
 
     private companion object {

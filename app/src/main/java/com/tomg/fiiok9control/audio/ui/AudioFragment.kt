@@ -148,9 +148,13 @@ class AudioFragment :
         }
     }
 
-    override fun onChannelBalanceRequested(value: Int) {
+    override fun onUpdatePendingChannelBalance(channelBalance: Int) {
+        audioViewModel.updatePendingChannelBalance(channelBalance)
+    }
+
+    override fun onChannelBalanceRequested(channelBalance: Int) {
         if (audioViewModel.container.stateFlow.value.isServiceConnected) {
-            audioViewModel.sendGaiaPacketChannelBalance(requireGaiaGattService(), value)
+            audioViewModel.sendGaiaPacketChannelBalance(requireGaiaGattService(), channelBalance)
         }
     }
 

@@ -22,9 +22,11 @@ package com.tomg.fiiok9control.state.ui
 
 import androidx.core.view.forEach
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.slider.Slider
 import com.tomg.fiiok9control.R
 import com.tomg.fiiok9control.databinding.ItemIndicatorBinding
 import com.tomg.fiiok9control.state.IndicatorState
+import kotlin.math.roundToInt
 
 class ItemIndicatorViewHolder(
     private val binding: ItemIndicatorBinding,
@@ -51,11 +53,22 @@ class ItemIndicatorViewHolder(
                 }
             }
         }
-        binding.indicatorBrightnessSlider.addOnChangeListener { _, value, fromUser ->
+        binding.indicatorBrightnessSlider.addOnChangeListener { _, value: Float, fromUser ->
             if (fromUser) {
-                listener.onIndicatorBrightnessRequested(value.toInt())
+                listener.onUpdatePendingIndicatorBrightness(value.roundToInt())
             }
         }
+        binding.indicatorBrightnessSlider.addOnSliderTouchListener(
+            object : Slider.OnSliderTouchListener {
+
+                override fun onStartTrackingTouch(slider: Slider) {
+                }
+
+                override fun onStopTrackingTouch(slider: Slider) {
+                    listener.onIndicatorBrightnessRequested(slider.value.toInt())
+                }
+            }
+        )
     }
 
     fun bindItemIndicator(

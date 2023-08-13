@@ -27,7 +27,6 @@ import com.qualcomm.qti.libraries.gaia.packets.GaiaPacketBLE
 import com.tomg.fiiok9control.gaia.data.GaiaGattRepository
 import com.tomg.fiiok9control.gaia.data.GaiaPacketFactory
 import com.tomg.fiiok9control.gaia.data.fiio.FiioK9Command
-import com.tomg.fiiok9control.gaia.data.fiio.FiioK9Defaults
 import com.tomg.fiiok9control.gaia.data.fiio.FiioK9PacketDecoder
 import com.tomg.fiiok9control.gaia.data.fiio.FiioK9PacketFactory
 import com.tomg.fiiok9control.gaia.ui.GaiaGattService
@@ -344,15 +343,11 @@ class StateViewModel @Inject constructor(
         service: GaiaGattService,
         volume: Int
     ) = intent {
-        val clampedVolume = maxOf(
-            minOf(volume, FiioK9Defaults.VOLUME_LEVEL_MAX),
-            FiioK9Defaults.VOLUME_LEVEL_MIN
-        )
-        val packet = FiioK9PacketFactory.createGaiaPacketSetVolume(clampedVolume)
+        val packet = FiioK9PacketFactory.createGaiaPacketSetVolume(volume)
         reduce {
             state.copy(
                 pendingCommands = state.pendingCommands.plus(packet.command),
-                pendingVolume = clampedVolume
+                pendingVolume = volume
             )
         }
         val success = gaiaGattRepository.sendGaiaPacket(service, packet)
@@ -540,6 +535,18 @@ class StateViewModel @Inject constructor(
             reduce {
                 state.copy(pendingCommands = state.pendingCommands.minus(commandIds.toSet()))
             }
+        }
+    }
+
+    fun updatePendingIndicatorBrightness(indicatorBrightness: Int) = intent {
+        reduce {
+            state.copy(pendingIndicatorBrightness = indicatorBrightness)
+        }
+    }
+
+    fun updatePendingVolumeLevel(volume: Int) = intent {
+        reduce {
+            state.copy(pendingVolume = volume)
         }
     }
 }

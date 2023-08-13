@@ -21,10 +21,12 @@
 package com.tomg.fiiok9control.audio.ui
 
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.slider.Slider
 import com.tomg.fiiok9control.Empty
 import com.tomg.fiiok9control.R
 import com.tomg.fiiok9control.databinding.ItemChannelBalanceBinding
 import kotlin.math.absoluteValue
+import kotlin.math.roundToInt
 
 class ItemChannelBalanceViewHolder(
     private val binding: ItemChannelBalanceBinding,
@@ -34,9 +36,20 @@ class ItemChannelBalanceViewHolder(
     init {
         binding.channelBalanceSlider.addOnChangeListener { _, value, fromUser ->
             if (fromUser) {
-                listener.onChannelBalanceRequested(value.toInt())
+                listener.onUpdatePendingChannelBalance(value.roundToInt())
             }
         }
+        binding.channelBalanceSlider.addOnSliderTouchListener(
+            object : Slider.OnSliderTouchListener {
+
+                override fun onStartTrackingTouch(slider: Slider) {
+                }
+
+                override fun onStopTrackingTouch(slider: Slider) {
+                    listener.onChannelBalanceRequested(slider.value.roundToInt())
+                }
+            }
+        )
     }
 
     fun bindItemChannelBalance(

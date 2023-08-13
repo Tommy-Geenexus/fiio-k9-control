@@ -170,6 +170,10 @@ class EqFragment :
         }
     }
 
+    override fun onUpdatePendingEqValues(value: EqValue) {
+        eqViewModel.updatePendingEqValues(value)
+    }
+
     override fun onEqValueChanged(value: EqValue) {
         if (eqViewModel.container.stateFlow.value.isServiceConnected) {
             eqViewModel.sendGaiaPacketEqValue(requireGaiaGattService(), value)

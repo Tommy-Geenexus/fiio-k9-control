@@ -21,8 +21,10 @@
 package com.tomg.fiiok9control.state.ui
 
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.slider.Slider
 import com.tomg.fiiok9control.R
 import com.tomg.fiiok9control.databinding.ItemVolumeBinding
+import kotlin.math.roundToInt
 
 class ItemVolumeViewHolder(
     private val binding: ItemVolumeBinding,
@@ -30,11 +32,22 @@ class ItemVolumeViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     init {
-        binding.volumeSlider.addOnChangeListener { _, value, fromUser ->
+        binding.volumeSlider.addOnChangeListener { _, value: Float, fromUser ->
             if (fromUser) {
-                listener.onVolumeRequested(value.toInt())
+                listener.onUpdatePendingVolumeLevel(value.roundToInt())
             }
         }
+        binding.volumeSlider.addOnSliderTouchListener(
+            object : Slider.OnSliderTouchListener {
+
+                override fun onStartTrackingTouch(slider: Slider) {
+                }
+
+                override fun onStopTrackingTouch(slider: Slider) {
+                    listener.onVolumeLevelRequested(slider.value.roundToInt())
+                }
+            }
+        )
     }
 
     fun bindItemVolume(

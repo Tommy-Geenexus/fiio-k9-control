@@ -227,4 +227,10 @@ class AudioViewModel @Inject constructor(
             }
         }
     }
+
+    fun updatePendingChannelBalance(channelBalance: Int) = intent {
+        reduce {
+            state.copy(pendingChannelBalance = channelBalance)
+        }
+    }
 }

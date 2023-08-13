@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/slider"
     style="@style/Widget.FiioK9Control.Slider"
+    android:stepSize="0.1"
     android:value="0"
     android:valueFrom="-12"
     android:valueTo="12"

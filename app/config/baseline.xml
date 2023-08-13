@@ -11,6 +11,10 @@
     <ID>CyclomaticComplexMethod:StateViewModel.kt$StateViewModel$fun handleCharacteristicChanged(packet: GaiaPacket)</ID>
     <ID>CyclomaticComplexMethod:StateViewModel.kt$StateViewModel$fun handleCharacteristicWriteResult( packet: GaiaPacketBLE, success: Boolean )</ID>
     <ID>EmptyFunctionBlock:GaiaGattService.kt$GaiaGattService${ }</ID>
+    <ID>EmptyFunctionBlock:ItemChannelBalanceViewHolder.kt$ItemChannelBalanceViewHolder.&lt;no name provided&gt;${ }</ID>
+    <ID>EmptyFunctionBlock:ItemEqViewHolder.kt$ItemEqViewHolder.&lt;no name provided&gt;${ }</ID>
+    <ID>EmptyFunctionBlock:ItemIndicatorViewHolder.kt$ItemIndicatorViewHolder.&lt;no name provided&gt;${ }</ID>
+    <ID>EmptyFunctionBlock:ItemVolumeViewHolder.kt$ItemVolumeViewHolder.&lt;no name provided&gt;${ }</ID>
     <ID>LongMethod:EqFragment.kt$EqFragment$override fun onViewCreated( view: View, savedInstanceState: Bundle? )</ID>
     <ID>LongMethod:SetupFragment.kt$SetupFragment$override fun onViewCreated( view: View, savedInstanceState: Bundle? )</ID>
     <ID>LongMethod:StateFragment.kt$StateFragment$override fun onViewCreated( view: View, savedInstanceState: Bundle? )</ID>
@@ -36,10 +40,11 @@
     <ID>MagicNumber:ItemEqViewHolder.kt$ItemEqViewHolder$6</ID>
     <ID>MagicNumber:ItemEqViewHolder.kt$ItemEqViewHolder$7</ID>
     <ID>MagicNumber:ItemEqViewHolder.kt$ItemEqViewHolder$8</ID>
-    <ID>MagicNumber:ItemEqViewHolder.kt$ItemEqViewHolder$9</ID>
     <ID>NestedBlockDepth:GaiaGattService.kt$GaiaGattService$private fun checkService(gattService: BluetoothGattService): Boolean</ID>
     <ID>TooGenericExceptionCaught:Extensions.kt$exception: Exception</ID>
+    <ID>TooManyFunctions:AudioFragment.kt$AudioFragment : BaseFragmentListener</ID>
     <ID>TooManyFunctions:BaseFragment.kt$BaseFragment&lt;B : ViewBinding&gt; : Fragment</ID>
+    <ID>TooManyFunctions:EqFragment.kt$EqFragment : BaseFragmentListener</ID>
     <ID>TooManyFunctions:FiioK9PacketDecoder.kt$FiioK9PacketDecoder</ID>
     <ID>TooManyFunctions:FiioK9PacketFactory.kt$FiioK9PacketFactory</ID>
     <ID>TooManyFunctions:GaiaGattService.kt$GaiaGattService : BLEService</ID>
