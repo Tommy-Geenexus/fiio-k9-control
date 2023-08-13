@@ -23,6 +23,7 @@ package com.tomg.fiiok9control.state.ui
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
+import android.view.WindowInsets
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -50,6 +51,12 @@ class ExportProfileFragment : DialogFragment() {
             }
             .setNegativeButton(android.R.string.cancel, null)
             .create()
+            .apply {
+                setOnShowListener {
+                    binding.profileName.requestFocus()
+                    window?.insetsController?.show(WindowInsets.Type.ime())
+                }
+            }
     }
 
     override fun onDismiss(dialog: DialogInterface) {
