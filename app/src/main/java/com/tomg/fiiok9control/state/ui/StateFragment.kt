@@ -29,6 +29,7 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.drawable.Icon
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -256,7 +257,7 @@ class StateFragment :
                 addAction(INTENT_ACTION_VOLUME_DOWN)
                 addAction(INTENT_ACTION_VOLUME_MUTE)
             },
-            ContextCompat.RECEIVER_NOT_EXPORTED
+            ContextCompat.RECEIVER_EXPORTED
         )
     }
 
@@ -437,7 +438,7 @@ class StateFragment :
             )
             .addAction(
                 Notification.Action.Builder(
-                    null,
+                    Icon.createWithResource(requireContext(), R.drawable.ic_volume_up),
                     context.getString(R.string.volume_up),
                     PendingIntent.getBroadcast(
                         context,
@@ -449,7 +450,7 @@ class StateFragment :
             )
             .addAction(
                 Notification.Action.Builder(
-                    null,
+                    Icon.createWithResource(requireContext(), R.drawable.ic_volume_down),
                     context.getString(R.string.volume_down),
                     PendingIntent.getBroadcast(
                         context,
@@ -461,7 +462,7 @@ class StateFragment :
             )
             .addAction(
                 Notification.Action.Builder(
-                    null,
+                    Icon.createWithResource(requireContext(), R.drawable.ic_volume_mute),
                     mute,
                     PendingIntent.getBroadcast(
                         context,
