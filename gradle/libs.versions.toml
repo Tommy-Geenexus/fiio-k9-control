@@ -1,27 +1,28 @@
 [versions]
-activity = "1.8.2"
-agp = "8.2.2"
-app-compat = "1.6.1"
+activity = "1.9.2"
+agp = "8.5.2"
+app-compat = "1.7.0"
 constraint-layout = "2.1.4"
-core = "1.12.0"
-coroutines = "1.8.0"
-dagger-hilt = "2.50"
-dagger-hilt-compiler = "1.1.0"
-detekt = "1.23.5"
-fragment = "1.6.2"
-kotlin = "1.9.22"
-ktlint = "12.1.0"
-leakcanary = "2.13"
-lifecycle = "2.7.0"
-material = "1.12.0-alpha03"
-navigation = "2.7.7"
-orbit = "6.1.0"
+core = "1.13.1"
+coroutines = "1.8.1"
+dagger-hilt = "2.52"
+dagger-hilt-compiler = "1.2.0"
+detekt = "1.23.6"
+fragment = "1.8.3"
+kotlin = "2.0.10"
+ksp = "2.0.10-1.0.24"
+ktlint = "12.1.1"
+leakcanary = "2.14"
+lifecycle = "2.8.5"
+material = "1.12.0"
+navigation = "2.8.0"
+orbit = "9.0.0"
 recyclerview = "1.3.2"
 room = "2.6.1"
 spotless = "6.25.0"
 timber = "5.0.1"
 versions = "0.51.0"
-window = "1.2.0"
+window = "1.3.0"
 
 [libraries]
 activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activity" }
@@ -46,6 +47,7 @@ room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 window = { module = "androidx.window:window", version.ref = "window" }
+window-core = { module = "androidx.window:window-core", version.ref = "window" }
 
 [bundles]
 implementation = [
@@ -66,9 +68,10 @@ implementation = [
     "room-ktx",
     "room-runtime",
     "timber",
-    "window"
+    "window",
+    "window-core"
 ]
-kapt = [
+ksp = [
     "dagger-hilt-android-compiler",
     "dagger-hilt-compiler",
     "room-compiler"
@@ -82,6 +85,7 @@ detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 navigation-safe-args = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navigation" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

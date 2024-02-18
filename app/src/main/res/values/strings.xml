@@ -1,25 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <resources>
-    <string name="_125hz" translatable="false">125Hz: %.1fdB</string>
-
-    <string name="_16khz" translatable="false">16kHz: %.1fdB</string>
-
-    <string name="_1khz" translatable="false">1kHz: %.1fdB</string>
-
-    <string name="_250hz" translatable="false">250Hz: %.1fdB</string>
-
-    <string name="_2khz" translatable="false">2kHz: %.1fdB</string>
-
-    <string name="_31hz" translatable="false">31Hz: %.1fdB</string>
-
-    <string name="_4khz" translatable="false">4kHz: %.1fdB</string>
-
-    <string name="_500hz" translatable="false">500Hz: %.1fdB</string>
-
-    <string name="_62hz" translatable="false">62Hz: %.1fdB</string>
-
-    <string name="_8khz" translatable="false">8kHz: %.1fdB</string>
-
     <string name="aac" translatable="false">AAC</string>
 
     <string name="app_name" translatable="false">FiiOK9Control</string>
@@ -38,7 +18,8 @@
     <string name="bluetooth_codecs">Bluetooth codecs</string>
 
     <string name="channel_balance">Channel balance</string>
-    <string name="channel_balance_offset">Offset: %1$.1f dB %2$s</string>
+    <string name="channel_balance_offset" translatable="false">%1$s%2$.1fdB</string>
+    <string name="channel_balance_offset_direction">Offset: %1$.1f dB %2$s</string>
 
     <string name="choose_a_profile_name">Choose a profile name</string>
 
@@ -69,6 +50,18 @@
     <string name="enabled_default_behaviour">Enabled, default behaviour</string>
     <string name="enabled_multi_color_gradient_only">Enabled, multi-color gradient only</string>
 
+    <string name="eq_offset">%.1fdB</string>
+    <string name="eq_offset_125hz">125Hz: %.1fdB</string>
+    <string name="eq_offset_16khz">16kHz: %.1fdB</string>
+    <string name="eq_offset_1khz">1kHz: %.1fdB</string>
+    <string name="eq_offset_250hz">250Hz: %.1fdB</string>
+    <string name="eq_offset_2khz">2kHz: %.1fdB</string>
+    <string name="eq_offset_31hz">31Hz: %.1fdB</string>
+    <string name="eq_offset_4khz">4kHz: %.1fdB</string>
+    <string name="eq_offset_500hz">500Hz: %.1fdB</string>
+    <string name="eq_offset_62hz">62Hz: %.1fdB</string>
+    <string name="eq_offset_8khz">8kHz: %.1fdB</string>
+
     <string name="equalizer">Equalizer</string>
     <string name="equalizer_preset">Equalizer preset</string>
 
@@ -86,8 +79,9 @@
 
     <string name="hp_pre_simultaneously">HP/Pre out simult.</string>
 
-    <string name="indicator">Indicator</string>
     <string name="indicator_brightness">Indicator brightness</string>
+    <string name="indicator_brightness_value">%d%%</string>
+    <string name="indicator_state">Indicator state</string>
 
     <string name="input_source">Input source</string>
 
@@ -154,7 +148,8 @@
     <string name="volume">Volume</string>
     <string name="volume_down">Volume down</string>
     <string name="volume_export">Export volume level</string>
-    <string name="volume_level">Volume level: %s</string>
+    <string name="volume_level">%1$d equates to %2$d%%</string>
+    <string name="volume_level_value">Volume level: %s</string>
     <string name="volume_mute">Mute</string>
     <string name="volume_step_size">Volume step size</string>
     <string name="volume_step_size_1">1</string>

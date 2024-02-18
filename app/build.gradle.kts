@@ -1,14 +1,16 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.dagger.hilt.android)
     alias(libs.plugins.detekt)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.ktlint)
     alias(libs.plugins.navigation.safe.args)
     alias(libs.plugins.spotless)
@@ -16,19 +18,49 @@ plugins {
 }
 
 android {
-    namespace = "com.tomg.fiiok9control"
+    namespace = "io.github.tommygeenexus.fiiok9control"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.tomg.fiiok9control"
+        applicationId = "io.github.tommygeenexus"
         minSdk = 31
         targetSdk = 34
         versionCode = 18
         versionName = "2.0.3"
     }
 
+    signingConfigs {
+        create("release") {
+            val keyStorePassword = "KS_PASSWORD"
+            val keyStoreKeyAlias = "KS_KEY_ALIAS"
+            val properties = Properties().apply {
+                val file = File(projectDir.parent, "keystore.properties")
+                if (file.exists()) {
+                    load(FileInputStream(file))
+                }
+            }
+            val password = properties
+                .getOrDefault(keyStorePassword, null)
+                ?.toString()
+                ?: System.getenv(keyStorePassword)
+            val alias = properties
+                .getOrDefault(keyStoreKeyAlias, null)
+                ?.toString()
+                ?: System.getenv(keyStoreKeyAlias)
+            storeFile = File(projectDir.parent, "keystore.jks")
+            storePassword = password
+            keyAlias = alias
+            keyPassword = password
+            enableV1Signing = false
+            enableV2Signing = false
+            enableV3Signing = true
+            enableV4Signing = true
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.findByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
@@ -79,6 +111,15 @@ detekt {
     baseline = file("$projectDir/config/detekt/baseline.xml")
 }
 
+kotlin {
+    compilerOptions {
+        freeCompilerArgs.addAll(
+            "-opt-in=androidx.window.core.ExperimentalWindowCoreApi",
+            "-opt-in=kotlin.ExperimentalStdlibApi"
+        )
+    }
+}
+
 ktlint {
     android = true
     filter {
@@ -100,5 +141,5 @@ dependencies {
     implementation(project(":gaialibrary"))
     debugImplementation(libs.leakcanary)
     implementation(libs.bundles.implementation)
-    kapt(libs.bundles.kapt)
+    ksp(libs.bundles.ksp)
 }

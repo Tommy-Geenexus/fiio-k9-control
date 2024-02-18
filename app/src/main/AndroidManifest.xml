@@ -34,7 +34,7 @@
             </intent-filter>
         </activity>
         <service
-            android:name="com.tomg.fiiok9control.gaia.ui.GaiaGattService"
+            android:name=".core.ui.gaia.GaiaGattService"
             android:exported="false"
             android:foregroundServiceType="connectedDevice" />
     </application>

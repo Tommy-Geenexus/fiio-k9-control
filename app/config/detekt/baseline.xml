@@ -5,28 +5,26 @@
     <ID>ComplexCondition:FiioK9PacketDecoder.kt$FiioK9PacketDecoder$indicatorState == null || indicatorBrightness == null || indicatorBrightness &lt; FiioK9Defaults.INDICATOR_BRIGHTNESS_MIN || indicatorBrightness &gt; FiioK9Defaults.INDICATOR_BRIGHTNESS_MAX</ID>
     <ID>ComplexCondition:GaiaGattService.kt$GaiaGattService$characteristic != null &amp;&amp; characteristic.uuid == UUID_CHARACTERISTIC_GAIA_RESPONSE &amp;&amp; value != null &amp;&amp; value.isNotEmpty()</ID>
     <ID>ComplexCondition:GaiaGattService.kt$GaiaGattService$gatt == null || characteristic == null || characteristic.uuid != UUID_CHARACTERISTIC_GAIA_DATA_ENDPOINT || isGattReady</ID>
-    <ID>CyclomaticComplexMethod:ItemEqViewHolder.kt$ItemEqViewHolder$fun bindItemEq( eqEnabled: Boolean, eqPreSet: EqPreSet, eqValues: List&lt;EqValue&gt;, itemEnabled: Boolean )</ID>
-    <ID>CyclomaticComplexMethod:StateFragment.kt$StateFragment$override fun onViewCreated( view: View, savedInstanceState: Bundle? )</ID>
+    <ID>CyclomaticComplexMethod:ItemEqViewHolder.kt$ItemEqViewHolder$fun bindItemEq( isEqEnabled: Boolean, eqPreSet: EqPreSet, eqValues: List&lt;EqValue&gt;, isItemEnabled: Boolean )</ID>
+    <ID>CyclomaticComplexMethod:StateFragment.kt$StateFragment$override fun onViewCreated(view: View, savedInstanceState: Bundle?)</ID>
     <ID>CyclomaticComplexMethod:StateMenuProvider.kt$StateMenuProvider$override fun onMenuItemSelected(menuItem: MenuItem): Boolean</ID>
     <ID>CyclomaticComplexMethod:StateViewModel.kt$StateViewModel$fun handleCharacteristicChanged(packet: GaiaPacket)</ID>
-    <ID>CyclomaticComplexMethod:StateViewModel.kt$StateViewModel$fun handleCharacteristicWriteResult( packet: GaiaPacketBLE, success: Boolean )</ID>
+    <ID>CyclomaticComplexMethod:StateViewModel.kt$StateViewModel$fun handleCharacteristicWriteResult(packet: GaiaPacketBLE, isSuccess: Boolean)</ID>
     <ID>EmptyFunctionBlock:GaiaGattService.kt$GaiaGattService${ }</ID>
     <ID>EmptyFunctionBlock:ItemChannelBalanceViewHolder.kt$ItemChannelBalanceViewHolder.&lt;no name provided&gt;${ }</ID>
     <ID>EmptyFunctionBlock:ItemEqViewHolder.kt$ItemEqViewHolder.&lt;no name provided&gt;${ }</ID>
     <ID>EmptyFunctionBlock:ItemIndicatorViewHolder.kt$ItemIndicatorViewHolder.&lt;no name provided&gt;${ }</ID>
     <ID>EmptyFunctionBlock:ItemVolumeViewHolder.kt$ItemVolumeViewHolder.&lt;no name provided&gt;${ }</ID>
-    <ID>LongMethod:EqFragment.kt$EqFragment$override fun onViewCreated( view: View, savedInstanceState: Bundle? )</ID>
-    <ID>LongMethod:SetupFragment.kt$SetupFragment$override fun onViewCreated( view: View, savedInstanceState: Bundle? )</ID>
-    <ID>LongMethod:StateFragment.kt$StateFragment$override fun onViewCreated( view: View, savedInstanceState: Bundle? )</ID>
+    <ID>LongMethod:EqFragment.kt$EqFragment$override fun onViewCreated(view: View, savedInstanceState: Bundle?)</ID>
+    <ID>LongMethod:GaiaGattServiceNotification.kt$GaiaGattServiceNotification$private fun build( context: Context, volume: Int, volumeRelative: Int, isMuteEnabled: Boolean ): Notification</ID>
+    <ID>LongMethod:ProfileFragment.kt$ProfileFragment$private fun handleSideEffect(sideEffect: ProfileSideEffect)</ID>
+    <ID>LongMethod:SetupFragment.kt$SetupFragment$override fun onViewCreated(view: View, savedInstanceState: Bundle?)</ID>
+    <ID>LongMethod:StateFragment.kt$StateFragment$override fun onViewCreated(view: View, savedInstanceState: Bundle?)</ID>
     <ID>LongMethod:StateMenuProvider.kt$StateMenuProvider$override fun onMenuItemSelected(menuItem: MenuItem): Boolean</ID>
     <ID>LongMethod:StateViewModel.kt$StateViewModel$fun handleCharacteristicChanged(packet: GaiaPacket)</ID>
-    <ID>LongMethod:StateViewModel.kt$StateViewModel$fun handleCharacteristicWriteResult( packet: GaiaPacketBLE, success: Boolean )</ID>
-    <ID>LongParameterList:StateAdapter.kt$StateAdapter$( private val listener: Listener, private val currentAudioFormat: () -&gt; String, private val currentFirmwareVersion: () -&gt; String, private val currentIndicatorBrightness: () -&gt; Int, private val currentIndicatorState: () -&gt; IndicatorState, private val currentInputSource: () -&gt; InputSource, private val currentVolume: () -&gt; Int, private val currentIsLoading: () -&gt; Boolean, private val currentIsServiceConnected: () -&gt; Boolean )</ID>
+    <ID>LongMethod:StateViewModel.kt$StateViewModel$fun handleCharacteristicWriteResult(packet: GaiaPacketBLE, isSuccess: Boolean)</ID>
+    <ID>LongParameterList:StateAdapter.kt$StateAdapter$( private val listener: Listener, private val currentAudioFormat: () -&gt; String, private val currentFirmwareVersion: () -&gt; String, private val currentIndicatorBrightness: () -&gt; Int, private val currentIndicatorState: () -&gt; IndicatorState, private val currentInputSource: () -&gt; InputSource, private val currentVolume: () -&gt; Int, private val currentVolumeRelative: () -&gt; Int, private val currentIsLoading: () -&gt; Boolean, private val currentIsServiceConnected: () -&gt; Boolean )</ID>
     <ID>LongParameterList:StateMenuProvider.kt$StateMenuProvider$( private val isHpPreSimultaneouslyEnabled: () -&gt; Boolean, private val isLoading: () -&gt; Boolean, private val isMqaEnabled: () -&gt; Boolean, private val isMuteEnabled: () -&gt; Boolean, private val isServiceConnected: () -&gt; Boolean, private val volumeStepSize: () -&gt; Int, private val onDisconnect: () -&gt; Unit, private val onExportProfile: () -&gt; Unit, private val onToggleHpPreSimultaneously: () -&gt; Unit, private val onToggleMqaEnabled: () -&gt; Unit, private val onToggleMuteEnabled: () -&gt; Unit, private val onStandby: () -&gt; Unit, private val onReset: () -&gt; Unit, private val onVolumeUp: () -&gt; Unit, private val onVolumeDown: () -&gt; Unit, private val onVolumeStepSizeChanged: (Int) -&gt; Unit )</ID>
-    <ID>MagicNumber:Extensions.kt$100</ID>
-    <ID>MagicNumber:Extensions.kt$120</ID>
-    <ID>MagicNumber:Extensions.kt$16</ID>
-    <ID>MagicNumber:Extensions.kt$3</ID>
     <ID>MagicNumber:FiioK9PacketDecoder.kt$FiioK9PacketDecoder$3</ID>
     <ID>MagicNumber:FiioK9PacketDecoder.kt$FiioK9PacketDecoder$4</ID>
     <ID>MagicNumber:FiioK9PacketDecoder.kt$FiioK9PacketDecoder$44.1f</ID>
@@ -34,6 +32,7 @@
     <ID>MagicNumber:FiioK9PacketDecoder.kt$FiioK9PacketDecoder$6</ID>
     <ID>MagicNumber:FiioK9PacketDecoder.kt$FiioK9PacketDecoder$64</ID>
     <ID>MagicNumber:FiioK9PacketFactory.kt$FiioK9PacketFactory$60f</ID>
+    <ID>MagicNumber:IntExtensions.kt$100</ID>
     <ID>MagicNumber:ItemEqViewHolder.kt$ItemEqViewHolder$3</ID>
     <ID>MagicNumber:ItemEqViewHolder.kt$ItemEqViewHolder$4</ID>
     <ID>MagicNumber:ItemEqViewHolder.kt$ItemEqViewHolder$5</ID>
@@ -41,10 +40,8 @@
     <ID>MagicNumber:ItemEqViewHolder.kt$ItemEqViewHolder$7</ID>
     <ID>MagicNumber:ItemEqViewHolder.kt$ItemEqViewHolder$8</ID>
     <ID>NestedBlockDepth:GaiaGattService.kt$GaiaGattService$private fun checkService(gattService: BluetoothGattService): Boolean</ID>
-    <ID>TooGenericExceptionCaught:Extensions.kt$exception: Exception</ID>
-    <ID>TooManyFunctions:AudioFragment.kt$AudioFragment : BaseFragmentListener</ID>
+    <ID>TooGenericExceptionCaught:CoroutineExtensions.kt$exception: Exception</ID>
     <ID>TooManyFunctions:BaseFragment.kt$BaseFragment&lt;B : ViewBinding&gt; : Fragment</ID>
-    <ID>TooManyFunctions:EqFragment.kt$EqFragment : BaseFragmentListener</ID>
     <ID>TooManyFunctions:FiioK9PacketDecoder.kt$FiioK9PacketDecoder</ID>
     <ID>TooManyFunctions:FiioK9PacketFactory.kt$FiioK9PacketFactory</ID>
     <ID>TooManyFunctions:GaiaGattService.kt$GaiaGattService : BLEService</ID>

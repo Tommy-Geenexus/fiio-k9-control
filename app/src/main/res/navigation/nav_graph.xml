@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/fragment_setup"
-        android:name="com.tomg.fiiok9control.setup.ui.SetupFragment"
+        android:name="io.github.tommygeenexus.fiiok9control.setup.ui.SetupFragment"
         tools:layout="@layout/fragment_setup">
 
         <action
@@ -25,7 +25,7 @@
 
     <fragment
         android:id="@+id/fragment_state"
-        android:name="com.tomg.fiiok9control.state.ui.StateFragment"
+        android:name="io.github.tommygeenexus.fiiok9control.state.ui.StateFragment"
         tools:layout="@layout/fragment_state">
 
         <action
@@ -39,12 +39,12 @@
 
     <dialog
         android:id="@+id/fragment_export_profile"
-        android:name="com.tomg.fiiok9control.state.ui.ExportProfileFragment"
+        android:name="io.github.tommygeenexus.fiiok9control.state.ui.ExportProfileFragment"
         tools:layout="@layout/fragment_export_profile" />
 
     <fragment
         android:id="@+id/fragment_audio"
-        android:name="com.tomg.fiiok9control.audio.ui.AudioFragment"
+        android:name="io.github.tommygeenexus.fiiok9control.audio.ui.AudioFragment"
         tools:layout="@layout/fragment_audio">
 
         <action
@@ -54,7 +54,7 @@
 
     <fragment
         android:id="@+id/fragment_eq"
-        android:name="com.tomg.fiiok9control.eq.ui.EqFragment"
+        android:name="io.github.tommygeenexus.fiiok9control.eq.ui.EqFragment"
         tools:layout="@layout/fragment_eq">
 
         <action
@@ -64,13 +64,13 @@
 
     <fragment
         android:id="@+id/fragment_profile"
-        android:name="com.tomg.fiiok9control.profile.ui.ProfileFragment"
+        android:name="io.github.tommygeenexus.fiiok9control.profile.ui.ProfileFragment"
         tools:layout="@layout/fragment_profile">
 
         <argument
             android:name="profile"
             android:defaultValue="@null"
-            app:argType="com.tomg.fiiok9control.profile.data.Profile"
+            app:argType="io.github.tommygeenexus.fiiok9control.core.db.Profile"
             app:nullable="true" />
     </fragment>
 </navigation>

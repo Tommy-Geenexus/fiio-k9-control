@@ -33,7 +33,7 @@
             android:id="@+id/volume_slider"
             style="@style/Widget.FiioK9Control.Slider"
             android:layout_marginTop="@dimen/spacing_normal"
-            android:stepSize="1"
+            android:stepSize="0"
             android:value="0"
             android:valueFrom="0"
             android:valueTo="120"

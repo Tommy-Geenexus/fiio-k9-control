@@ -8,4 +8,4 @@
     android:valueFrom="-12"
     android:valueTo="12"
     app:tickColor="?attr/colorPrimary"
-    app:trackColor="?attr/colorSurfaceVariant" />
+    app:trackColor="?attr/colorSurfaceContainerHighest" />

@@ -22,4 +22,5 @@ android {
 
 dependencies {
     implementation(libs.app.compat)
+    implementation(libs.kotlin.stdlib)
 }

@@ -209,6 +209,7 @@ public abstract class GaiaPacket {
      *
      * @deprecated since 3.0.7 The maximum length is implementation dependant.
      */
+    @Deprecated
     abstract int getPayloadMaxLength();
 
     /**

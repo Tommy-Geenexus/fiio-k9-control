@@ -8,7 +8,7 @@
     <string name="bluetooth_codecs">Bluetooth-Codecs</string>
 
     <string name="channel_balance">Kanalbalance</string>
-    <string name="channel_balance_offset">Offset: %1$.1f dB %2$s</string>
+    <string name="channel_balance_offset_direction">Offset: %1$.1f dB %2$s</string>
 
     <string name="choose_a_profile_name">Wähle einen Profilnamen</string>
 
@@ -39,6 +39,18 @@
     <string name="enabled_default_behaviour">Aktiviert, Standardverhalten</string>
     <string name="enabled_multi_color_gradient_only">Aktiviert, nur mehrfarbiger Farbverlauf</string>
 
+    <string name="eq_offset">%.1fdB</string>
+    <string name="eq_offset_125hz">125Hz: %.1fdB</string>
+    <string name="eq_offset_16khz">16kHz: %.1fdB</string>
+    <string name="eq_offset_1khz">1kHz: %.1fdB</string>
+    <string name="eq_offset_250hz">250Hz: %.1fdB</string>
+    <string name="eq_offset_2khz">2kHz: %.1fdB</string>
+    <string name="eq_offset_31hz">31Hz: %.1fdB</string>
+    <string name="eq_offset_4khz">4kHz: %.1fdB</string>
+    <string name="eq_offset_500hz">500Hz: %.1fdB</string>
+    <string name="eq_offset_62hz">62Hz: %.1fdB</string>
+    <string name="eq_offset_8khz">8kHz: %.1fdB</string>
+
     <string name="equalizer">Equalizer</string>
     <string name="equalizer_preset">Equalizer-Voreinstellung</string>
 
@@ -54,8 +66,9 @@
 
     <string name="hp_pre_simultaneously">HP/Pre-Ausgabe glz.</string>
 
-    <string name="indicator">Indikator</string>
     <string name="indicator_brightness">Indikator-Helligkeit</string>
+    <string name="indicator_brightness_value">%d%%</string>
+    <string name="indicator_state">Indikator</string>
 
     <string name="input_source">Eingangsquelle</string>
 
@@ -116,9 +129,10 @@
     <string name="usb">USB</string>
 
     <string name="volume">Lautstärke</string>
-    <string name="volume_down">Lautst. senken</string>
+    <string name="volume_down">Lautst. verringern</string>
     <string name="volume_export">Lautstärkelevel exportieren</string>
-    <string name="volume_level">Lautstärkelevel: %s</string>
+    <string name="volume_level">%1$d entspricht %2$d%%</string>
+    <string name="volume_level_value">Lautstärkelevel: %s</string>
     <string name="volume_mute">Stummsch.</string>
     <string name="volume_step_size">Lautstärke-Schrittgröße</string>
     <string name="volume_step_size_1">1</string>

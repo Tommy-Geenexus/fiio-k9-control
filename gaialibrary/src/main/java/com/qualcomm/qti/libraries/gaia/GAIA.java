@@ -60,6 +60,7 @@ public final class GAIA {
      * @deprecated
      */
     @SuppressWarnings("DeprecatedIsStillUsed")
+    @Deprecated
     public static final int COMMAND_SET_RAW_CONFIGURATION = 0x0100;
     /**
      * <p>Retrieves the version of the configuration set.</p>
@@ -98,6 +99,7 @@ public final class GAIA {
      * @deprecated
      */
     @SuppressWarnings("DeprecatedIsStillUsed")
+    @Deprecated
     public static final int COMMAND_GET_CONFIGURATION_ID = 0x0184;
     /**
      * <p>Configures per-event vibrator patterns.</p>
@@ -580,6 +582,7 @@ public final class GAIA {
      * @see #COMMAND_DFU_GET_RESULT
      */
     @SuppressWarnings("DeprecatedIsStillUsed")
+    @Deprecated
     public static final int COMMAND_GET_DFU_STATUS = 0x0310;
     /**
      * <p>To request status of certain information from the host. Here we are talking about information as
