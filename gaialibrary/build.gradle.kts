@@ -7,26 +7,19 @@ plugins {
 }
 
 android {
-    compileSdk 34
+    namespace = "com.qualcomm.qti.libraries.gaia"
+    compileSdk = 34
 
     defaultConfig {
-        minSdkVersion 30
-        targetSdkVersion 34
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-        }
+        minSdk = 30
     }
 
     compileOptions {
-        sourceCompatibility "1.8"
-        targetCompatibility "1.8"
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
-    namespace 'com.qualcomm.qti.libraries.ble'
 }
 
 dependencies {
-    implementation libs.app.compat
+    implementation(libs.app.compat)
 }

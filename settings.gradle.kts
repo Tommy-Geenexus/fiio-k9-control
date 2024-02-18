@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 pluginManagement {
     repositories {
         gradlePluginPortal()
@@ -13,4 +15,6 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "FiioK9Control"
-include ':app', ':blelibrary', 'gaialibrary'
+include(":app")
+include(":blelibrary")
+include(":gaialibrary")
