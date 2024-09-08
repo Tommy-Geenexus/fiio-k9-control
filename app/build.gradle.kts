@@ -24,7 +24,7 @@ android {
     defaultConfig {
         applicationId = "io.github.tommygeenexus"
         minSdk = 31
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 18
         versionName = "2.0.3"
     }
