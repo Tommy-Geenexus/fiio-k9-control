@@ -158,9 +158,6 @@ class EqFragment :
 
     override fun onEqEnabled(isEnabled: Boolean) {
         if (eqViewModel.container.stateFlow.value.isServiceConnected) {
-            if (!isEnabled) {
-                eqViewModel.sendGaiaPacketEqPreSet(requireGaiaGattService(), EqPreSet.Custom)
-            }
             eqViewModel.sendGaiaPacketEqEnabled(requireGaiaGattService(), isEnabled)
         }
     }
