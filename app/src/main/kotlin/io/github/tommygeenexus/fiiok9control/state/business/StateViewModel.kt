@@ -360,9 +360,9 @@ class StateViewModel @Inject constructor(
         sendGaiaPacketVolume(
             service = service,
             volume = if (isVolumeUp) {
-                state.volume + state.volumeStepSize
+                (state.volume + state.volumeStepSize).coerceAtMost(FiioK9Defaults.VOLUME_LEVEL_MAX)
             } else {
-                state.volume - state.volumeStepSize
+                (state.volume - state.volumeStepSize).coerceAtLeast(FiioK9Defaults.VOLUME_LEVEL_MIN)
             }
         )
     }
