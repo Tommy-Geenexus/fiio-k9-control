@@ -19,7 +19,7 @@ plugins {
 
 android {
     namespace = "io.github.tommygeenexus.fiiok9control"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "io.github.tommygeenexus"
