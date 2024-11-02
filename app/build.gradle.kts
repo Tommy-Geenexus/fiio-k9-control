@@ -25,8 +25,8 @@ android {
         applicationId = "io.github.tommygeenexus"
         minSdk = 31
         targetSdk = 35
-        versionCode = 19
-        versionName = "2.0.4"
+        versionCode = 20
+        versionName = "2.0.5"
     }
 
     signingConfigs {
