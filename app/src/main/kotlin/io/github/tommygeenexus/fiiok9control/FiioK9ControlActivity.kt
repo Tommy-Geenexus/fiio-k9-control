@@ -42,7 +42,7 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import androidx.window.core.layout.WindowSizeClass
-import androidx.window.core.layout.WindowWidthSizeClass
+import androidx.window.core.layout.computeWindowSizeClass
 import androidx.window.layout.WindowMetricsCalculator
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.tommygeenexus.fiiok9control.core.business.GaiaGattSideEffect
@@ -95,7 +95,7 @@ class FiioK9ControlActivity : AppCompatActivity() {
     val gaiaGattSideEffects = _gaiaGattSideEffects.asSharedFlow()
     var gaiaGattService: GaiaGattService? = null
 
-    lateinit var windowWidthSizeClass: WindowWidthSizeClass
+    lateinit var windowSizeClass: WindowSizeClass
 
     init {
         addOnNewIntentListener { intent -> setIntent(intent) }
@@ -106,7 +106,7 @@ class FiioK9ControlActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         with(ActivityFiioK9ControlBinding.inflate(layoutInflater)) {
             setContentView(root)
-            computeWindowSizeClass()
+            computeWindowSizeClasses()
             setSupportActionBar(toolbar)
             setupNavigation(this, findNavController())
             ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsetsCompat ->
@@ -124,7 +124,7 @@ class FiioK9ControlActivity : AppCompatActivity() {
                 object : View(this@FiioK9ControlActivity) {
                     override fun onConfigurationChanged(newConfig: Configuration?) {
                         super.onConfigurationChanged(newConfig)
-                        computeWindowSizeClass()
+                        computeWindowSizeClasses()
                     }
                 }
             )
@@ -169,11 +169,11 @@ class FiioK9ControlActivity : AppCompatActivity() {
         }
     }
 
-    private fun computeWindowSizeClass() {
+    private fun computeWindowSizeClasses() {
         val metrics = WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(this)
         val widthDp = metrics.bounds.width() / resources.displayMetrics.density
         val heightDp = metrics.bounds.height() / resources.displayMetrics.density
-        windowWidthSizeClass = WindowSizeClass.compute(widthDp, heightDp).windowWidthSizeClass
+        windowSizeClass = WindowSizeClass.BREAKPOINTS_V1.computeWindowSizeClass(widthDp, heightDp)
     }
 
     private fun findNavController(): NavController {

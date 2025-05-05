@@ -34,7 +34,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import androidx.viewbinding.ViewBinding
-import androidx.window.core.layout.WindowWidthSizeClass
+import androidx.window.core.layout.WindowSizeClass
 import io.github.tommygeenexus.fiiok9control.FiioK9ControlActivity
 import io.github.tommygeenexus.fiiok9control.R
 import io.github.tommygeenexus.fiiok9control.core.business.GaiaGattSideEffect
@@ -109,9 +109,10 @@ abstract class BaseFragment<B : ViewBinding>(
         }
     }
 
-    internal fun getWindowWidthSizeClass(): WindowWidthSizeClass {
-        return (requireActivity() as FiioK9ControlActivity).windowWidthSizeClass
-    }
+    internal fun isWidthAtLeastBreakpointExpandedLowerBound() =
+        (requireActivity() as FiioK9ControlActivity)
+            .windowSizeClass
+            .isWidthAtLeastBreakpoint(WindowSizeClass.WIDTH_DP_EXPANDED_LOWER_BOUND)
 
     internal fun navigateToSetup() {
         with(findNavController()) {

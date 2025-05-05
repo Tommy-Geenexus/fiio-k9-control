@@ -33,7 +33,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import androidx.window.core.layout.WindowWidthSizeClass
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.tommygeenexus.fiiok9control.R
 import io.github.tommygeenexus.fiiok9control.audio.business.AudioState
@@ -68,7 +67,7 @@ class AudioFragment :
                     isLtr = resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_LTR
                 )
             )
-            layoutManager = if (getWindowWidthSizeClass() == WindowWidthSizeClass.EXPANDED) {
+            layoutManager = if (isWidthAtLeastBreakpointExpandedLowerBound()) {
                 StaggeredGridLayoutManager(WINDOW_SIZE_EXPANDED_COLUMNS, RecyclerView.VERTICAL)
             } else {
                 LinearLayoutManager(context)
