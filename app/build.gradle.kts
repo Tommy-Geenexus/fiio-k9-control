@@ -83,6 +83,10 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+
+    lint {
+        disable += "LogNotTimber"
+    }
 }
 
 tasks.withType<DependencyUpdatesTask>().configureEach {

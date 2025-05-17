@@ -23,7 +23,7 @@ package io.github.tommygeenexus.fiiok9control.core.gaia
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
-sealed class GaiaPacketVendor(val vendorId: Int) : Parcelable {
+sealed class GaiaPacketVendor(@Suppress("SameParameterValue") val vendorId: Int) : Parcelable {
 
     @Parcelize
     data object Fiio : GaiaPacketVendor(vendorId = 0x0a)

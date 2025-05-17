@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
+ * Copyright (c) 2021-2025, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -80,16 +80,14 @@ object FiioK9PacketFactory {
             payload = byteArrayOf(lowPassFilter.id.toByte())
         )
 
-    fun createGaiaPacketSetChannelBalance(
-        @IntRange(
-            from = FiioK9Defaults.CHANNEL_BALANCE_MIN.toLong(),
-            to = FiioK9Defaults.CHANNEL_BALANCE_MAX.toLong()
-        ) channelBalance: Int
-    ) = GaiaPacketFactory.createGaiaPacket(
+    fun createGaiaPacketSetChannelBalance(channelBalance: Int) = GaiaPacketFactory.createGaiaPacket(
         commandId = FiioK9Command.Set.ChannelBalance.commandId,
         payload = byteArrayOf(
             if (channelBalance < 0) 1.toByte() else 2.toByte(),
-            channelBalance.toByte()
+            channelBalance.coerceIn(
+                minimumValue = FiioK9Defaults.CHANNEL_BALANCE_MIN,
+                maximumValue = FiioK9Defaults.CHANNEL_BALANCE_MAX
+            ).toByte()
         )
     )
 
@@ -115,14 +113,14 @@ object FiioK9PacketFactory {
         )
     }
 
-    fun createGaiaPacketSetVolume(
-        @IntRange(
-            from = FiioK9Defaults.VOLUME_LEVEL_MIN.toLong(),
-            to = FiioK9Defaults.VOLUME_LEVEL_MAX.toLong()
-        ) volume: Int
-    ) = GaiaPacketFactory.createGaiaPacket(
+    fun createGaiaPacketSetVolume(volume: Int) = GaiaPacketFactory.createGaiaPacket(
         commandId = FiioK9Command.Set.Volume.commandId,
-        payload = byteArrayOf(volume.toByte())
+        payload = byteArrayOf(
+            volume.coerceIn(
+                minimumValue = FiioK9Defaults.VOLUME_LEVEL_MIN,
+                maximumValue = FiioK9Defaults.VOLUME_LEVEL_MAX
+            ).toByte()
+        )
     )
 
     fun createGaiaPacketGetVolume() =

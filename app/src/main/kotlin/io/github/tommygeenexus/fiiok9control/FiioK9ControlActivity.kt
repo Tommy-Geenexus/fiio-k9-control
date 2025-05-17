@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
+ * Copyright (c) 2021-2025, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -21,10 +21,10 @@
 package io.github.tommygeenexus.fiiok9control
 
 import android.bluetooth.BluetoothAdapter
-import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.FrameLayout
@@ -137,7 +137,7 @@ class FiioK9ControlActivity : AppCompatActivity() {
         )
         val intent = Intent(this, GaiaGattService::class.java)
         startService(intent)
-        bindService(intent, connection, Context.BIND_AUTO_CREATE)
+        bindService(intent, connection, BIND_AUTO_CREATE)
     }
 
     override fun onDestroy() {
@@ -145,6 +145,7 @@ class FiioK9ControlActivity : AppCompatActivity() {
         unregisterReceiver(bluetoothStateReceiver)
         unbindService(connection)
         if (!isChangingConfigurations) {
+            @Suppress("ImplicitSamInstance")
             stopService(Intent(this, GaiaGattService::class.java))
         }
     }
@@ -159,13 +160,16 @@ class FiioK9ControlActivity : AppCompatActivity() {
             val isSetup = navDestination.id == R.id.fragment_setup
             binding.navRail?.isVisible = !isSetup
             binding.navView?.isInvisible = isSetup
-            window.navigationBarColor = resolveThemeAttribute(
-                if (binding.navView?.isVisible == true) {
-                    com.google.android.material.R.attr.colorSurfaceContainer
-                } else {
-                    com.google.android.material.R.attr.colorSurface
-                }
-            )
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                @Suppress("DEPRECATION")
+                window.navigationBarColor = resolveThemeAttribute(
+                    if (binding.navView?.isVisible == true) {
+                        com.google.android.material.R.attr.colorSurfaceContainer
+                    } else {
+                        com.google.android.material.R.attr.colorSurface
+                    }
+                )
+            }
         }
     }
 
