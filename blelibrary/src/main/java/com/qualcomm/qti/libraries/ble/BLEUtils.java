@@ -125,28 +125,28 @@ public class BLEUtils {
 
             // Android framework: BluetoothGatt Java class
             String bluetoothGattStatus = ErrorStatus.getBluetoothGattStatusLabel(status, detailed);
-            if (bluetoothGattStatus.length() > 0) {
+            if (!bluetoothGattStatus.isEmpty()) {
                 statusFound = true;
                 builder.append("\n\t> BluetoothGatt - ").append(bluetoothGattStatus);
             }
 
             // ATT layer as defined in the Bluetooth Core Specification
             String attStatus = ErrorStatus.ATT.getLabel(status, detailed);
-            if (attStatus.length() > 0) {
+            if (!attStatus.isEmpty()) {
                 statusFound = true;
                 builder.append("\n\t> ATT - ").append(attStatus);
             }
 
             // HCI layer as defined in the Bluetooth Core Specification
             String hciStatus = ErrorStatus.HCI.getLabel(status, detailed);
-            if (hciStatus.length() > 0) {
+            if (!hciStatus.isEmpty()) {
                 statusFound = true;
                 builder.append("\n\t> HCI - ").append(hciStatus);
             }
 
             // error status defined in Android framework
             String frameworkStatus = ErrorStatus.GattApi.getLabel(status, detailed);
-            if (frameworkStatus.length() > 0) {
+            if (!frameworkStatus.isEmpty()) {
                 statusFound = true;
                 builder.append("\n\t> gatt_api.h - ").append(frameworkStatus);
             }

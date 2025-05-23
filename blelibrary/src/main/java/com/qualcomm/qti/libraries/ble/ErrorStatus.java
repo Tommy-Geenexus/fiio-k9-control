@@ -39,51 +39,52 @@ public final class ErrorStatus {
     public static String getBluetoothGattStatusLabel(int status, boolean detailed) {
         String message = "", details = "";
 
-        switch (status) {
-            case BluetoothGatt.GATT_SUCCESS:                        // 0x00
+        details = switch (status) {
+            case BluetoothGatt.GATT_SUCCESS -> {
                 message = "GATT_SUCCESS";
-                details = "A GATT operation completed successfully.";
-                break;
-            case BluetoothGatt.GATT_READ_NOT_PERMITTED:             // 0x02
+                yield "A GATT operation completed successfully.";
+            }
+            case BluetoothGatt.GATT_READ_NOT_PERMITTED -> {
                 message = "GATT_READ_NOT_PERMITTED";
-                details = "GATT read operation is not permitted.";
-                break;
-            case BluetoothGatt.GATT_WRITE_NOT_PERMITTED:            // 0x03
+                yield "GATT read operation is not permitted.";
+            }
+            case BluetoothGatt.GATT_WRITE_NOT_PERMITTED -> {
                 message = "GATT_WRITE_NOT_PERMITTED";
-                details = "GATT write operation is not permitted.";
-                break;
-            case BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION:    // 0x05
+                yield "GATT write operation is not permitted.";
+            }
+            case BluetoothGatt.GATT_INSUFFICIENT_AUTHENTICATION -> {
                 message = "GATT_INSUFFICIENT_AUTHENTICATION";
-                details = "Insufficient authentication for a given operation.";
-                break;
-            case BluetoothGatt.GATT_REQUEST_NOT_SUPPORTED:          // 0x06
+                yield "Insufficient authentication for a given operation.";
+            }
+            case BluetoothGatt.GATT_REQUEST_NOT_SUPPORTED -> {
                 message = "GATT_REQUEST_NOT_SUPPORTED";
-                details = "The given request is not supported.";
-                break;
-            case BluetoothGatt.GATT_INVALID_OFFSET:                 // 0x07
+                yield "The given request is not supported.";
+            }
+            case BluetoothGatt.GATT_INVALID_OFFSET -> {
                 message = "GATT_INVALID_OFFSET";
-                details = "A read or write operation was requested with an invalid offset.";
-                break;
-            case BluetoothGatt.GATT_INVALID_ATTRIBUTE_LENGTH:       // 0x0d
+                yield "A read or write operation was requested with an invalid offset.";
+            }
+            case BluetoothGatt.GATT_INVALID_ATTRIBUTE_LENGTH -> {
                 message = "GATT_INVALID_ATTRIBUTE_LENGTH";
-                details = "A write operation exceeds the maximum length of the attribute.";
-                break;
-            case BluetoothGatt.GATT_INSUFFICIENT_ENCRYPTION:        // 0x0f
+                yield "A write operation exceeds the maximum length of the attribute.";
+            }
+            case BluetoothGatt.GATT_INSUFFICIENT_ENCRYPTION -> {
                 message = "GATT_INSUFFICIENT_ENCRYPTION";
-                details = "Insufficient encryption for a given operation.";
-                break;
-            case BluetoothGatt.GATT_CONNECTION_CONGESTED:           // 0x8f
+                yield "Insufficient encryption for a given operation.";
+            }
+            case BluetoothGatt.GATT_CONNECTION_CONGESTED -> {
                 message = "GATT_CONNECTION_CONGESTED";
-                details = "A remote device connection is congested.";
-                break;
-            case BluetoothGatt.GATT_FAILURE:                        // 0x0101
+                yield "A remote device connection is congested.";
+            }
+            case BluetoothGatt.GATT_FAILURE -> {
                 message = "GATT_FAILURE";
-                details = "A GATT operation failed, different error of the BluetoothGatt ones.";
-                break;
-        }
+                yield "A GATT operation failed, different error of the BluetoothGatt ones.";
+            }
+            default -> details;
+        };
 
-        return message.length() > 0 ?
-                message + (detailed && (details.length() > 0) ? ": " + details : "")
+        return !message.isEmpty() ?
+                message + (detailed && (!details.isEmpty()) ? ": " + details : "")
                 : "";
     }
 
@@ -182,8 +183,8 @@ public final class ErrorStatus {
                     break;
             }
 
-            return message.length() > 0 ?
-                    message + (detailed && (details.length() > 0) ? ": " + details : "")
+            return !message.isEmpty() ?
+                    message + (detailed && (!details.isEmpty()) ? ": " + details : "")
                     : "";
         }
 
@@ -247,79 +248,80 @@ public final class ErrorStatus {
         public static String getLabel(int status, boolean detailed) {
             String message = "", details = "";
 
-            switch (status) {
-                case ATT.INVALID_HANDLE:                                // 0x01
+            details = switch (status) {
+                case ATT.INVALID_HANDLE -> {
                     message = "INVALID_HANDLE";
-                    details = "The attribute handle given was not valid on this server.";
-                    break;
-                case ATT.READ_NOT_PERMITTED:                            // 0x02
+                    yield "The attribute handle given was not valid on this server.";
+                }
+                case ATT.READ_NOT_PERMITTED -> {
                     message = "READ_NOT_PERMITTED";
-                    details = "The attribute cannot be read.";
-                    break;
-                case ATT.WRITE_NOT_PERMITTED:                           // 0x03
+                    yield "The attribute cannot be read.";
+                }
+                case ATT.WRITE_NOT_PERMITTED -> {
                     message = "WRITE_NOT_PERMITTED";
-                    details = "The attribute cannot be written.";
-                    break;
-                case ATT.INVALID_PDU:                                   // 0x04
+                    yield "The attribute cannot be written.";
+                }
+                case ATT.INVALID_PDU -> {
                     message = "INVALID_PDU";
-                    details = "The attribute PDU was invalid.";
-                    break;
-                case ATT.INSUFFICIENT_AUTHENTICATION:                   // 0x05
+                    yield "The attribute PDU was invalid.";
+                }
+                case ATT.INSUFFICIENT_AUTHENTICATION -> {
                     message = "INSUFFICIENT_AUTHENTICATION";
-                    details = "The attribute requires authentication before it can be read or written.";
-                    break;
-                case ATT.REQUEST_NOT_SUPPORTED:                         // 0x06
+                    yield "The attribute requires authentication before it can be read or written.";
+                }
+                case ATT.REQUEST_NOT_SUPPORTED -> {
                     message = "REQUEST_NOT_SUPPORTED";
-                    details = "Attribute server does not support the request received from the client.";
-                    break;
-                case ATT.INVALID_OFFSET:                                // 0x07
+                    yield "Attribute server does not support the request received from the client.";
+                }
+                case ATT.INVALID_OFFSET -> {
                     message = "INVALID_OFFSET";
-                    details = "Offset specified was past the end of the attribute.";
-                    break;
-                case ATT.INSUFFICIENT_AUTHORIZATION:                    // 0x08
+                    yield "Offset specified was past the end of the attribute.";
+                }
+                case ATT.INSUFFICIENT_AUTHORIZATION -> {
                     message = "INSUFFICIENT_AUTHORIZATION";
-                    details = "The attribute requires authorization before it can be read or written.";
-                    break;
-                case ATT.PREPARE_QUEUE_FULL:                            // 0x09
+                    yield "The attribute requires authorization before it can be read or written.";
+                }
+                case ATT.PREPARE_QUEUE_FULL -> {
                     message = "PREPARE_QUEUE_FULL";
-                    details = "Too many prepare writes have been queued.";
-                    break;
-                case ATT.ATTRIBUTE_NOT_FOUND:                           // 0x0A
+                    yield "Too many prepare writes have been queued.";
+                }
+                case ATT.ATTRIBUTE_NOT_FOUND -> {
                     message = "ATTRIBUTE_NOT_FOUND";
-                    details = "No attribute found within the given attribute handle range.";
-                    break;
-                case ATT.ATTRIBUTE_NOT_LONG:                            // 0x0B
+                    yield "No attribute found within the given attribute handle range.";
+                }
+                case ATT.ATTRIBUTE_NOT_LONG -> {
                     message = "ATTRIBUTE_NOT_LONG";
-                    details = "The attribute cannot be read using the Read Blob Request.";
-                    break;
-                case ATT.INSUFFICIENT_ENCRYPTION_KEY_SIZE:              // 0x0C
+                    yield "The attribute cannot be read using the Read Blob Request.";
+                }
+                case ATT.INSUFFICIENT_ENCRYPTION_KEY_SIZE -> {
                     message = "INSUFFICIENT_ENCRYPTION_KEY_SIZE";
-                    details = "The Encryption Key Size used for encrypting this link is insufficient.";
-                    break;
-                case ATT.INVALID_ATTRIBUTE_VALUE_LENGTH:                // 0x0D
+                    yield "The Encryption Key Size used for encrypting this link is insufficient.";
+                }
+                case ATT.INVALID_ATTRIBUTE_VALUE_LENGTH -> {
                     message = "INVALID_ATTRIBUTE_VALUE_LENGTH";
-                    details = "The attribute value length is invalid for the operation.";
-                    break;
-                case ATT.UNLIKELY_ERROR:                                // 0x0E
+                    yield "The attribute value length is invalid for the operation.";
+                }
+                case ATT.UNLIKELY_ERROR -> {
                     message = "UNLIKELY_ERROR";
-                    details = "The attribute request that was requested has encountered an error that was unlikely, and therefore could not be completed as requested.";
-                    break;
-                case ATT.INSUFFICIENT_ENCRYPTION:                       // 0x0F
+                    yield "The attribute request that was requested has encountered an error that was unlikely, and therefore could not be completed as requested.";
+                }
+                case ATT.INSUFFICIENT_ENCRYPTION -> {
                     message = "INSUFFICIENT_ENCRYPTION";
-                    details = "The attribute requires encryption before it can be read or written.";
-                    break;
-                case ATT.UNSUPPORTED_GROUP_TYPE:                        // 0x10
+                    yield "The attribute requires encryption before it can be read or written.";
+                }
+                case ATT.UNSUPPORTED_GROUP_TYPE -> {
                     message = "UNSUPPORTED_GROUP_TYPE";
-                    details = "The attribute type is not a supported grouping attribute as defined by a higher layer specification.";
-                    break;
-                case ATT.INSUFFICIENT_RESOURCES:                        // 0x11
+                    yield "The attribute type is not a supported grouping attribute as defined by a higher layer specification.";
+                }
+                case ATT.INSUFFICIENT_RESOURCES -> {
                     message = "INSUFFICIENT_RESOURCES";
-                    details = "Insufficient Resources to complete the request.";
-                    break;
-            }
+                    yield "Insufficient Resources to complete the request.";
+                }
+                default -> details;
+            };
 
-            return message.length() > 0 ?
-                    message + (detailed && (details.length() > 0) ? ": " + details : "")
+            return !message.isEmpty() ?
+                    message + (detailed && (!details.isEmpty()) ? ": " + details : "")
                     : "";
         }
 
@@ -528,16 +530,17 @@ public final class ErrorStatus {
                     break;
                 case HCI.INVALID_HCI_COMMAND_PARAMETERS:                            // 0x12
                     message = "INVALID_HCI_COMMAND_PARAMETERS";
-                    details = "The Invalid HCI Command Parameters error code indicates that at least one of " +
-                            "the HCI command parameters is invalid. This shall be used when:\n" +
-                            "\t\t\t\t- the parameter total length is invalid.\n" +
-                            "\t\t\t\t- a command parameter is an invalid type.\n" +
-                            "\t\t\t\t- a connection identifier does not match the corresponding event.\n" +
-                            "\t\t\t\t- a parameter is odd when it is required to be even.\n" +
-                            "\t\t\t\t- a parameter is outside of the specified range.\n" +
-                            "\t\t\t\t- two or more parameter values have inconsistent values.\n" +
-                            "Note: An invalid type can be, for example, when a SCO connection handle is used " +
-                            "where an ACL connection handle is required. </p>";
+                    details = """
+                            The Invalid HCI Command Parameters error code indicates that at least one of \
+                            the HCI command parameters is invalid. This shall be used when:
+                            \t\t\t\t- the parameter total length is invalid.
+                            \t\t\t\t- a command parameter is an invalid type.
+                            \t\t\t\t- a connection identifier does not match the corresponding event.
+                            \t\t\t\t- a parameter is odd when it is required to be even.
+                            \t\t\t\t- a parameter is outside of the specified range.
+                            \t\t\t\t- two or more parameter values have inconsistent values.
+                            Note: An invalid type can be, for example, when a SCO connection handle is used \
+                            where an ACL connection handle is required. </p>""";
                     break;
                 case HCI.REMOTE_USER_TERMINATED_CONNECTION:                         // 0x13
                     message = "REMOTE_USER_TERMINATED_CONNECTION";
@@ -599,12 +602,13 @@ public final class ErrorStatus {
                     break;
                 case HCI.INVALID_LMP_OR_LL_PARAMETERS:                              // 0x1E
                     message = "INVALID_LMP_OR_LL_PARAMETERS";
-                    details = "The Invalid LMP Parameters / Invalid LL Parameters error code indicates that some " +
-                            "LMP PDU / LL Control PDU parameters were invalid. This shall be used when:\n" +
-                            "\t\t\t\t- the PDU length is invalid.\n" +
-                            "\t\t\t\t- a parameter is odd when it is required to be even.\n" +
-                            "\t\t\t\t- a parameter is outside of the specified range.\n" +
-                            "\t\t\t\t- two or more parameters have inconsistent values.";
+                    details = """
+                            The Invalid LMP Parameters / Invalid LL Parameters error code indicates that some \
+                            LMP PDU / LL Control PDU parameters were invalid. This shall be used when:
+                            \t\t\t\t- the PDU length is invalid.
+                            \t\t\t\t- a parameter is odd when it is required to be even.
+                            \t\t\t\t- a parameter is outside of the specified range.
+                            \t\t\t\t- two or more parameters have inconsistent values.""";
                     break;
                 case HCI.UNSPECIFIED_ERROR:                                         // 0x1F
                     message = "UNSPECIFIED_ERROR";
@@ -808,8 +812,8 @@ public final class ErrorStatus {
                     break;
             }
 
-            return message.length() > 0 ?
-                    message + (detailed && (details.length() > 0) ? ": " + details : "")
+            return !message.isEmpty() ?
+                    message + (detailed && (!details.isEmpty()) ? ": " + details : "")
                     : "";
         }
 

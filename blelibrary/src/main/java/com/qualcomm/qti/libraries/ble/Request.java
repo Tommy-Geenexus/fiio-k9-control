@@ -353,27 +353,19 @@ class Request {
      * @return A human readable value for the given Request type.
      */
     public static String getRequestTypeLabel(@RequestType int type) {
-        switch (type) {
-            case RequestType.CHARACTERISTIC_NOTIFICATION:
-                return "CHARACTERISTIC_NOTIFICATION";
-            case RequestType.READ_CHARACTERISTIC:
-                return "READ_CHARACTERISTIC";
-            case RequestType.READ_DESCRIPTOR:
-                return "READ_DESCRIPTOR";
-            case RequestType.WRITE_CHARACTERISTIC:
-                return "WRITE_CHARACTERISTIC";
-            case RequestType.WRITE_DESCRIPTOR:
-                return "WRITE_DESCRIPTOR";
-            case RequestType.READ_CHARACTERISTIC_TO_INDUCE_PAIRING:
-                return "READ_CHARACTERISTIC_TO_INDUCE_PAIRING";
-            case RequestType.READ_RSSI:
-                return "READ_RSSI";
-            case RequestType.WRITE_NO_RESPONSE_CHARACTERISTIC:
-                return "WRITE_NO_RESPONSE_CHARACTERISTIC";
-            case RequestType.REQUEST_MTU:
-                return "REQUEST_MTU";
-        }
-        return "UNKNOWN " + type;
+        return switch (type) {
+            case RequestType.CHARACTERISTIC_NOTIFICATION -> "CHARACTERISTIC_NOTIFICATION";
+            case RequestType.READ_CHARACTERISTIC -> "READ_CHARACTERISTIC";
+            case RequestType.READ_DESCRIPTOR -> "READ_DESCRIPTOR";
+            case RequestType.WRITE_CHARACTERISTIC -> "WRITE_CHARACTERISTIC";
+            case RequestType.WRITE_DESCRIPTOR -> "WRITE_DESCRIPTOR";
+            case RequestType.READ_CHARACTERISTIC_TO_INDUCE_PAIRING ->
+                    "READ_CHARACTERISTIC_TO_INDUCE_PAIRING";
+            case RequestType.READ_RSSI -> "READ_RSSI";
+            case RequestType.WRITE_NO_RESPONSE_CHARACTERISTIC -> "WRITE_NO_RESPONSE_CHARACTERISTIC";
+            case RequestType.REQUEST_MTU -> "REQUEST_MTU";
+            default -> "UNKNOWN " + type;
+        };
     }
 
 
