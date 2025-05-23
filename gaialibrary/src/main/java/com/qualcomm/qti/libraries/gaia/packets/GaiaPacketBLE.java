@@ -125,7 +125,7 @@ public class GaiaPacketBLE extends GaiaPacket implements Parcelable {
     protected GaiaPacketBLE(Parcel in) {
     }
 
-    public static final Creator<GaiaPacketBLE> CREATOR = new Creator<GaiaPacketBLE>() {
+    public static final Creator<GaiaPacketBLE> CREATOR = new Creator<>() {
         @Override
         public GaiaPacketBLE createFromParcel(Parcel in) {
             return new GaiaPacketBLE(in);

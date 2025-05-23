@@ -150,537 +150,201 @@ public final class GaiaUtils {
     public static String getGAIACommandToString(int command) {
         String name = "UNKNOWN";
         String deprecated = "(deprecated)";
-        switch (command) {
-
-            case GAIA.COMMAND_SET_RAW_CONFIGURATION:
-                name = "COMMAND_SET_RAW_CONFIGURATION" + deprecated;
-                break;
-            case GAIA.COMMAND_GET_CONFIGURATION_VERSION:
-                name = "COMMAND_GET_CONFIGURATION_VERSION";
-                break;
-            case GAIA.COMMAND_SET_LED_CONFIGURATION:
-                name = "COMMAND_SET_LED_CONFIGURATION";
-                break;
-            case GAIA.COMMAND_GET_LED_CONFIGURATION:
-                name = "COMMAND_GET_LED_CONFIGURATION";
-                break;
-            case GAIA.COMMAND_SET_TONE_CONFIGURATION:
-                name = "COMMAND_SET_TONE_CONFIGURATION";
-                break;
-            case GAIA.COMMAND_GET_TONE_CONFIGURATION:
-                name = "COMMAND_GET_TONE_CONFIGURATION";
-                break;
-            case GAIA.COMMAND_SET_DEFAULT_VOLUME:
-                name = "COMMAND_SET_DEFAULT_VOLUME";
-                break;
-            case GAIA.COMMAND_GET_DEFAULT_VOLUME:
-                name = "COMMAND_GET_DEFAULT_VOLUME";
-                break;
-            case GAIA.COMMAND_FACTORY_DEFAULT_RESET:
-                name = "COMMAND_FACTORY_DEFAULT_RESET";
-                break;
-            case GAIA.COMMAND_GET_CONFIGURATION_ID:
-                name = "COMMAND_GET_CONFIGURATION_ID" + deprecated;
-                break;
-            case GAIA.COMMAND_SET_VIBRATOR_CONFIGURATION:
-                name = "COMMAND_SET_VIBRATOR_CONFIGURATION";
-                break;
-            case GAIA.COMMAND_GET_VIBRATOR_CONFIGURATION:
-                name = "COMMAND_GET_VIBRATOR_CONFIGURATION";
-                break;
-            case GAIA.COMMAND_SET_VOICE_PROMPT_CONFIGURATION:
-                name = "COMMAND_SET_VOICE_PROMPT_CONFIGURATION";
-                break;
-            case GAIA.COMMAND_GET_VOICE_PROMPT_CONFIGURATION:
-                name = "COMMAND_GET_VOICE_PROMPT_CONFIGURATION";
-                break;
-            case GAIA.COMMAND_SET_FEATURE_CONFIGURATION:
-                name = "COMMAND_SET_FEATURE_CONFIGURATION";
-                break;
-            case GAIA.COMMAND_GET_FEATURE_CONFIGURATION:
-                name = "COMMAND_GET_FEATURE_CONFIGURATION";
-                break;
-            case GAIA.COMMAND_SET_USER_EVENT_CONFIGURATION:
-                name = "COMMAND_SET_USER_EVENT_CONFIGURATION";
-                break;
-            case GAIA.COMMAND_GET_USER_EVENT_CONFIGURATION:
-                name = "COMMAND_GET_USER_EVENT_CONFIGURATION";
-                break;
-            case GAIA.COMMAND_SET_TIMER_CONFIGURATION:
-                name = "COMMAND_SET_TIMER_CONFIGURATION";
-                break;
-            case GAIA.COMMAND_GET_TIMER_CONFIGURATION:
-                name = "COMMAND_GET_TIMER_CONFIGURATION";
-                break;
-            case GAIA.COMMAND_SET_AUDIO_GAIN_CONFIGURATION:
-                name = "COMMAND_SET_AUDIO_GAIN_CONFIGURATION";
-                break;
-            case GAIA.COMMAND_GET_AUDIO_GAIN_CONFIGURATION:
-                name = "COMMAND_GET_AUDIO_GAIN_CONFIGURATION";
-                break;
-            case GAIA.COMMAND_SET_VOLUME_CONFIGURATION:
-                name = "COMMAND_SET_VOLUME_CONFIGURATION";
-                break;
-            case GAIA.COMMAND_GET_VOLUME_CONFIGURATION:
-                name = "COMMAND_GET_VOLUME_CONFIGURATION";
-                break;
-            case GAIA.COMMAND_SET_POWER_CONFIGURATION:
-                name = "COMMAND_SET_POWER_CONFIGURATION";
-                break;
-            case GAIA.COMMAND_GET_POWER_CONFIGURATION:
-                name = "COMMAND_GET_POWER_CONFIGURATION";
-                break;
-            case GAIA.COMMAND_SET_USER_TONE_CONFIGURATION:
-                name = "COMMAND_SET_USER_TONE_CONFIGURATION";
-                break;
-            case GAIA.COMMAND_GET_USER_TONE_CONFIGURATION:
-                name = "COMMAND_GET_USER_TONE_CONFIGURATION";
-                break;
-            case GAIA.COMMAND_SET_DEVICE_NAME:
-                name = "COMMAND_SET_DEVICE_NAME";
-                break;
-            case GAIA.COMMAND_GET_DEVICE_NAME:
-                name = "COMMAND_GET_DEVICE_NAME";
-                break;
-            case GAIA.COMMAND_SET_WLAN_CREDENTIALS:
-                name = "COMMAND_SET_WLAN_CREDENTIALS";
-                break;
-            case GAIA.COMMAND_GET_WLAN_CREDENTIALS:
-                name = "COMMAND_GET_WLAN_CREDENTIALS";
-                break;
-            case GAIA.COMMAND_SET_PEER_PERMITTED_ROUTING:
-                name = "COMMAND_SET_PEER_PERMITTED_ROUTING";
-                break;
-            case GAIA.COMMAND_GET_PEER_PERMITTED_ROUTING:
-                name = "COMMAND_GET_PEER_PERMITTED_ROUTING";
-                break;
-            case GAIA.COMMAND_SET_PERMITTED_NEXT_AUDIO_SOURCE:
-                name = "COMMAND_SET_PERMITTED_NEXT_AUDIO_SOURCE";
-                break;
-            case GAIA.COMMAND_GET_PERMITTED_NEXT_AUDIO_SOURCE:
-                name = "COMMAND_GET_PERMITTED_NEXT_AUDIO_SOURCE";
-                break;
-            case GAIA.COMMAND_SET_ONE_TOUCH_DIAL_STRING:
-                name = "COMMAND_SET_ONE_TOUCH_DIAL_STRING";
-                break;
-            case GAIA.COMMAND_GET_ONE_TOUCH_DIAL_STRING:
-                name = "COMMAND_GET_ONE_TOUCH_DIAL_STRING";
-                break;
-            case GAIA.COMMAND_GET_MOUNTED_PARTITIONS:
-                name = "COMMAND_GET_MOUNTED_PARTITIONS";
-                break;
-            case GAIA.COMMAND_SET_DFU_PARTITION:
-                name = "COMMAND_SET_DFU_PARTITION";
-                break;
-            case GAIA.COMMAND_GET_DFU_PARTITION:
-                name = "COMMAND_GET_DFU_PARTITION";
-                break;
-            case GAIA.COMMAND_CHANGE_VOLUME:
-                name = "COMMAND_CHANGE_VOLUME";
-                break;
-            case GAIA.COMMAND_DEVICE_RESET:
-                name = "COMMAND_DEVICE_RESET";
-                break;
-            case GAIA.COMMAND_GET_BOOT_MODE:
-                name = "COMMAND_GET_BOOT_MODE";
-                break;
-            case GAIA.COMMAND_SET_PIO_CONTROL:
-                name = "COMMAND_SET_PIO_CONTROL";
-                break;
-            case GAIA.COMMAND_GET_PIO_CONTROL:
-                name = "COMMAND_GET_PIO_CONTROL";
-                break;
-            case GAIA.COMMAND_SET_POWER_STATE:
-                name = "COMMAND_SET_POWER_STATE";
-                break;
-            case GAIA.COMMAND_GET_POWER_STATE:
-                name = "COMMAND_GET_POWER_STATE";
-                break;
-            case GAIA.COMMAND_SET_VOLUME_ORIENTATION:
-                name = "COMMAND_SET_VOLUME_ORIENTATION";
-                break;
-            case GAIA.COMMAND_GET_VOLUME_ORIENTATION:
-                name = "COMMAND_GET_VOLUME_ORIENTATION";
-                break;
-            case GAIA.COMMAND_SET_VIBRATOR_CONTROL:
-                name = "COMMAND_SET_VIBRATOR_CONTROL";
-                break;
-            case GAIA.COMMAND_GET_VIBRATOR_CONTROL:
-                name = "COMMAND_GET_VIBRATOR_CONTROL";
-                break;
-            case GAIA.COMMAND_SET_LED_CONTROL:
-                name = "COMMAND_SET_LED_CONTROL";
-                break;
-            case GAIA.COMMAND_GET_LED_CONTROL:
-                name = "COMMAND_GET_LED_CONTROL";
-                break;
-            case GAIA.COMMAND_FM_CONTROL:
-                name = "COMMAND_FM_CONTROL";
-                break;
-            case GAIA.COMMAND_PLAY_TONE:
-                name = "COMMAND_PLAY_TONE";
-                break;
-            case GAIA.COMMAND_SET_VOICE_PROMPT_CONTROL:
-                name = "COMMAND_SET_VOICE_PROMPT_CONTROL";
-                break;
-            case GAIA.COMMAND_GET_VOICE_PROMPT_CONTROL:
-                name = "COMMAND_GET_VOICE_PROMPT_CONTROL";
-                break;
-            case GAIA.COMMAND_CHANGE_AUDIO_PROMPT_LANGUAGE:
-                name = "COMMAND_CHANGE_AUDIO_PROMPT_LANGUAGE";
-                break;
-            case GAIA.COMMAND_SET_SPEECH_RECOGNITION_CONTROL:
-                name = "COMMAND_SET_SPEECH_RECOGNITION_CONTROL";
-                break;
-            case GAIA.COMMAND_GET_SPEECH_RECOGNITION_CONTROL:
-                name = "COMMAND_GET_SPEECH_RECOGNITION_CONTROL";
-                break;
-            case GAIA.COMMAND_ALERT_LEDS:
-                name = "COMMAND_ALERT_LEDS";
-                break;
-            case GAIA.COMMAND_ALERT_TONE:
-                name = "COMMAND_ALERT_TONE";
-                break;
-            case GAIA.COMMAND_ALERT_EVENT:
-                name = "COMMAND_ALERT_EVENT";
-                break;
-            case GAIA.COMMAND_ALERT_VOICE:
-                name = "COMMAND_ALERT_VOICE";
-                break;
-            case GAIA.COMMAND_SET_AUDIO_PROMPT_LANGUAGE:
-                name = "COMMAND_SET_AUDIO_PROMPT_LANGUAGE";
-                break;
-            case GAIA.COMMAND_GET_AUDIO_PROMPT_LANGUAGE:
-                name = "COMMAND_GET_AUDIO_PROMPT_LANGUAGE";
-                break;
-            case GAIA.COMMAND_START_SPEECH_RECOGNITION:
-                name = "COMMAND_START_SPEECH_RECOGNITION";
-                break;
-            case GAIA.COMMAND_SET_EQ_CONTROL:
-                name = "COMMAND_SET_EQ_CONTROL";
-                break;
-            case GAIA.COMMAND_GET_EQ_CONTROL:
-                name = "COMMAND_GET_EQ_CONTROL";
-                break;
-            case GAIA.COMMAND_SET_BASS_BOOST_CONTROL:
-                name = "COMMAND_SET_BASS_BOOST_CONTROL";
-                break;
-            case GAIA.COMMAND_GET_BASS_BOOST_CONTROL:
-                name = "COMMAND_GET_BASS_BOOST_CONTROL";
-                break;
-            case GAIA.COMMAND_SET_3D_ENHANCEMENT_CONTROL:
-                name = "COMMAND_SET_3D_ENHANCEMENT_CONTROL";
-                break;
-            case GAIA.COMMAND_GET_3D_ENHANCEMENT_CONTROL:
-                name = "COMMAND_GET_3D_ENHANCEMENT_CONTROL";
-                break;
-            case GAIA.COMMAND_SWITCH_EQ_CONTROL:
-                name = "COMMAND_SWITCH_EQ_CONTROL";
-                break;
-            case GAIA.COMMAND_TOGGLE_BASS_BOOST_CONTROL:
-                name = "COMMAND_TOGGLE_BASS_BOOST_CONTROL";
-                break;
-            case GAIA.COMMAND_TOGGLE_3D_ENHANCEMENT_CONTROL:
-                name = "COMMAND_TOGGLE_3D_ENHANCEMENT_CONTROL";
-                break;
-            case GAIA.COMMAND_SET_EQ_PARAMETER:
-                name = "COMMAND_SET_EQ_PARAMETER";
-                break;
-            case GAIA.COMMAND_GET_EQ_PARAMETER:
-                name = "COMMAND_GET_EQ_PARAMETER";
-                break;
-            case GAIA.COMMAND_SET_EQ_GROUP_PARAMETER:
-                name = "COMMAND_SET_EQ_GROUP_PARAMETER";
-                break;
-            case GAIA.COMMAND_GET_EQ_GROUP_PARAMETER:
-                name = "COMMAND_GET_EQ_GROUP_PARAMETER";
-                break;
-            case GAIA.COMMAND_DISPLAY_CONTROL:
-                name = "COMMAND_DISPLAY_CONTROL";
-                break;
-            case GAIA.COMMAND_ENTER_BLUETOOTH_PAIRING_MODE:
-                name = "COMMAND_ENTER_BLUETOOTH_PAIRING_MODE";
-                break;
-            case GAIA.COMMAND_SET_AUDIO_SOURCE:
-                name = "COMMAND_SET_AUDIO_SOURCE";
-                break;
-            case GAIA.COMMAND_GET_AUDIO_SOURCE:
-                name = "COMMAND_GET_AUDIO_SOURCE";
-                break;
-            case GAIA.COMMAND_AV_REMOTE_CONTROL:
-                name = "COMMAND_AV_REMOTE_CONTROL";
-                break;
-            case GAIA.COMMAND_SET_USER_EQ_CONTROL:
-                name = "COMMAND_SET_USER_EQ_CONTROL";
-                break;
-            case GAIA.COMMAND_GET_USER_EQ_CONTROL:
-                name = "COMMAND_GET_USER_EQ_CONTROL";
-                break;
-            case GAIA.COMMAND_TOGGLE_USER_EQ_CONTROL:
-                name = "COMMAND_TOGGLE_USER_EQ_CONTROL";
-                break;
-            case GAIA.COMMAND_SET_SPEAKER_EQ_CONTROL:
-                name = "COMMAND_SET_SPEAKER_EQ_CONTROL";
-                break;
-            case GAIA.COMMAND_GET_SPEAKER_EQ_CONTROL:
-                name = "COMMAND_GET_SPEAKER_EQ_CONTROL";
-                break;
-            case GAIA.COMMAND_TOGGLE_SPEAKER_EQ_CONTROL:
-                name = "COMMAND_TOGGLE_SPEAKER_EQ_CONTROL";
-                break;
-            case GAIA.COMMAND_SET_TWS_AUDIO_ROUTING:
-                name = "COMMAND_SET_TWS_AUDIO_ROUTING";
-                break;
-            case GAIA.COMMAND_GET_TWS_AUDIO_ROUTING:
-                name = "COMMAND_GET_TWS_AUDIO_ROUTING";
-                break;
-            case GAIA.COMMAND_SET_TWS_VOLUME:
-                name = "COMMAND_SET_TWS_VOLUME";
-                break;
-            case GAIA.COMMAND_GET_TWS_VOLUME:
-                name = "COMMAND_GET_TWS_VOLUME";
-                break;
-            case GAIA.COMMAND_TRIM_TWS_VOLUME:
-                name = "COMMAND_TRIM_TWS_VOLUME";
-                break;
-            case GAIA.COMMAND_SET_PEER_LINK_RESERVED:
-                name = "COMMAND_SET_PEER_LINK_RESERVED";
-                break;
-            case GAIA.COMMAND_GET_PEER_LINK_RESERVED:
-                name = "COMMAND_GET_PEER_LINK_RESERVED";
-                break;
-            case GAIA.COMMAND_TWS_PEER_START_ADVERTISING:
-                name = "COMMAND_TWS_PEER_START_ADVERTISING";
-                break;
-            case GAIA.COMMAND_FIND_MY_REMOTE:
-                name = "COMMAND_FIND_MY_REMOTE";
-                break;
-            case GAIA.COMMAND_SET_CODEC:
-                name = "COMMAND_SET_CODEC";
-                break;
-            case GAIA.COMMAND_GET_CODEC:
-                name = "COMMAND_GET_CODEC";
-                break;
-            case GAIA.COMMAND_SET_SUPPORTED_FEATURES:
-                name = "COMMAND_SET_SUPPORTED_FEATURES";
-                break;
-            case GAIA.COMMAND_DISCONNECT:
-                name = "COMMAND_DISCONNECT";
-                break;
-            case GAIA.COMMAND_GET_API_VERSION:
-                name = "COMMAND_GET_API_VERSION";
-                break;
-            case GAIA.COMMAND_GET_CURRENT_RSSI:
-                name = "COMMAND_GET_CURRENT_RSSI";
-                break;
-            case GAIA.COMMAND_GET_CURRENT_BATTERY_LEVEL:
-                name = "COMMAND_GET_CURRENT_BATTERY_LEVEL";
-                break;
-            case GAIA.COMMAND_GET_MODULE_ID:
-                name = "COMMAND_GET_MODULE_ID";
-                break;
-            case GAIA.COMMAND_GET_APPLICATION_VERSION:
-                name = "COMMAND_GET_APPLICATION_VERSION";
-                break;
-            case GAIA.COMMAND_GET_PIO_STATE:
-                name = "COMMAND_GET_PIO_STATE";
-                break;
-            case GAIA.COMMAND_READ_ADC:
-                name = "COMMAND_READ_ADC";
-                break;
-            case GAIA.COMMAND_GET_PEER_ADDRESS:
-                name = "COMMAND_GET_PEER_ADDRESS";
-                break;
-            case GAIA.COMMAND_GET_DFU_STATUS:
-                name = "COMMAND_GET_DFU_STATUS" + deprecated;
-                break;
-            case GAIA.COMMAND_GET_HOST_FEATURE_INFORMATION:
-                name = "COMMAND_GET_HOST_FEATURE_INFORMATION";
-                break;
-            case GAIA.COMMAND_GET_AUTH_BITMAPS:
-                name = "COMMAND_GET_AUTH_BITMAPS";
-                break;
-            case GAIA.COMMAND_AUTHENTICATE_REQUEST:
-                name = "COMMAND_AUTHENTICATE_REQUEST";
-                break;
-            case GAIA.COMMAND_AUTHENTICATE_RESPONSE:
-                name = "COMMAND_AUTHENTICATE_RESPONSE";
-                break;
-            case GAIA.COMMAND_SET_FEATURE:
-                name = "COMMAND_SET_FEATURE";
-                break;
-            case GAIA.COMMAND_GET_FEATURE:
-                name = "COMMAND_GET_FEATURE";
-                break;
-            case GAIA.COMMAND_SET_SESSION_ENABLE:
-                name = "COMMAND_SET_SESSION_ENABLE";
-                break;
-            case GAIA.COMMAND_GET_SESSION_ENABLE:
-                name = "COMMAND_GET_SESSION_ENABLE";
-                break;
-            case GAIA.COMMAND_DATA_TRANSFER_SETUP:
-                name = "COMMAND_DATA_TRANSFER_SETUP";
-                break;
-            case GAIA.COMMAND_DATA_TRANSFER_CLOSE:
-                name = "COMMAND_DATA_TRANSFER_CLOSE";
-                break;
-            case GAIA.COMMAND_HOST_TO_DEVICE_DATA:
-                name = "COMMAND_HOST_TO_DEVICE_DATA";
-                break;
-            case GAIA.COMMAND_DEVICE_TO_HOST_DATA:
-                name = "COMMAND_DEVICE_TO_HOST_DATA";
-                break;
-            case GAIA.COMMAND_I2C_TRANSFER:
-                name = "COMMAND_I2C_TRANSFER";
-                break;
-            case GAIA.COMMAND_GET_STORAGE_PARTITION_STATUS:
-                name = "COMMAND_GET_STORAGE_PARTITION_STATUS";
-                break;
-            case GAIA.COMMAND_OPEN_STORAGE_PARTITION:
-                name = "COMMAND_OPEN_STORAGE_PARTITION";
-                break;
-            case GAIA.COMMAND_OPEN_UART:
-                name = "COMMAND_OPEN_UART";
-                break;
-            case GAIA.COMMAND_WRITE_STORAGE_PARTITION:
-                name = "COMMAND_WRITE_STORAGE_PARTITION";
-                break;
-            case GAIA.COMMAND_WRITE_STREAM:
-                name = "COMMAND_WRITE_STREAM";
-                break;
-            case GAIA.COMMAND_CLOSE_STORAGE_PARTITION:
-                name = "COMMAND_CLOSE_STORAGE_PARTITION";
-                break;
-            case GAIA.COMMAND_MOUNT_STORAGE_PARTITION:
-                name = "COMMAND_MOUNT_STORAGE_PARTITION";
-                break;
-            case GAIA.COMMAND_GET_FILE_STATUS:
-                name = "COMMAND_GET_FILE_STATUS";
-                break;
-            case GAIA.COMMAND_OPEN_FILE:
-                name = "COMMAND_OPEN_FILE";
-                break;
-            case GAIA.COMMAND_READ_FILE:
-                name = "COMMAND_READ_FILE";
-                break;
-            case GAIA.COMMAND_CLOSE_FILE:
-                name = "COMMAND_CLOSE_FILE";
-                break;
-            case GAIA.COMMAND_DFU_REQUEST:
-                name = "COMMAND_DFU_REQUEST";
-                break;
-            case GAIA.COMMAND_DFU_BEGIN:
-                name = "COMMAND_DFU_BEGIN";
-                break;
-            case GAIA.COMMAND_DFU_WRITE:
-                name = "COMMAND_DFU_WRITE";
-                break;
-            case GAIA.COMMAND_DFU_COMMIT:
-                name = "COMMAND_DFU_COMMIT";
-                break;
-            case GAIA.COMMAND_DFU_GET_RESULT:
-                name = "COMMAND_DFU_GET_RESULT";
-                break;
-            case GAIA.COMMAND_VM_UPGRADE_CONNECT:
-                name = "COMMAND_VM_UPGRADE_CONNECT";
-                break;
-            case GAIA.COMMAND_VM_UPGRADE_DISCONNECT:
-                name = "COMMAND_VM_UPGRADE_DISCONNECT";
-                break;
-            case GAIA.COMMAND_VM_UPGRADE_CONTROL:
-                name = "COMMAND_VM_UPGRADE_CONTROL";
-                break;
-            case GAIA.COMMAND_VM_UPGRADE_DATA:
-                name = "COMMAND_VM_UPGRADE_DATA";
-                break;
-            case GAIA.COMMAND_NO_OPERATION:
-                name = "COMMAND_NO_OPERATION";
-                break;
-            case GAIA.COMMAND_GET_DEBUG_FLAGS:
-                name = "COMMAND_GET_DEBUG_FLAGS";
-                break;
-            case GAIA.COMMAND_SET_DEBUG_FLAGS:
-                name = "COMMAND_SET_DEBUG_FLAGS";
-                break;
-            case GAIA.COMMAND_RETRIEVE_PS_KEY:
-                name = "COMMAND_RETRIEVE_PS_KEY";
-                break;
-            case GAIA.COMMAND_RETRIEVE_FULL_PS_KEY:
-                name = "COMMAND_RETRIEVE_FULL_PS_KEY";
-                break;
-            case GAIA.COMMAND_STORE_PS_KEY:
-                name = "COMMAND_STORE_PS_KEY";
-                break;
-            case GAIA.COMMAND_FLOOD_PS:
-                name = "COMMAND_FLOOD_PS";
-                break;
-            case GAIA.COMMAND_STORE_FULL_PS_KEY:
-                name = "COMMAND_STORE_FULL_PS_KEY";
-                break;
-            case GAIA.COMMAND_SEND_DEBUG_MESSAGE:
-                name = "COMMAND_SEND_DEBUG_MESSAGE";
-                break;
-            case GAIA.COMMAND_SEND_APPLICATION_MESSAGE:
-                name = "COMMAND_SEND_APPLICATION_MESSAGE";
-                break;
-            case GAIA.COMMAND_SEND_KALIMBA_MESSAGE:
-                name = "COMMAND_SEND_KALIMBA_MESSAGE";
-                break;
-            case GAIA.COMMAND_GET_MEMORY_SLOTS:
-                name = "COMMAND_GET_MEMORY_SLOTS";
-                break;
-            case GAIA.COMMAND_GET_DEBUG_VARIABLE:
-                name = "COMMAND_GET_DEBUG_VARIABLE";
-                break;
-            case GAIA.COMMAND_SET_DEBUG_VARIABLE:
-                name = "COMMAND_SET_DEBUG_VARIABLE";
-                break;
-            case GAIA.COMMAND_DELETE_PDL:
-                name = "COMMAND_DELETE_PDL";
-                break;
-            case GAIA.COMMAND_SET_BLE_CONNECTION_PARAMETERS:
-                name = "COMMAND_SET_BLE_CONNECTION_PARAMETERS";
-                break;
-				case GAIA.COMMAND_IVOR_ANSWER_END:
-                name = "COMMAND_IVOR_ANSWER_END";
-                break;
-            case GAIA.COMMAND_IVOR_ANSWER_START:
-                name = "COMMAND_IVOR_ANSWER_START";
-                break;
-            case GAIA.COMMAND_IVOR_CANCEL:
-                name = "COMMAND_IVOR_CANCEL";
-                break;
-            case GAIA.COMMAND_IVOR_CHECK_VERSION:
-                name = "COMMAND_IVOR_CHECK_VERSION";
-                break;
-            case GAIA.COMMAND_IVOR_PING:
-                name = "COMMAND_IVOR_PING";
-                break;
-            case GAIA.COMMAND_IVOR_START:
-                name = "COMMAND_IVOR_START";
-                break;
-            case GAIA.COMMAND_IVOR_VOICE_DATA:
-                name = "COMMAND_IVOR_VOICE_DATA";
-                break;
-            case GAIA.COMMAND_IVOR_VOICE_DATA_REQUEST:
-                name = "COMMAND_IVOR_VOICE_DATA_REQUEST";
-                break;
-            case GAIA.COMMAND_IVOR_VOICE_END:
-                name = "COMMAND_IVOR_VOICE_END";
-                break;
-            case GAIA.COMMAND_REGISTER_NOTIFICATION:
-                name = "COMMAND_REGISTER_NOTIFICATION";
-                break;
-            case GAIA.COMMAND_GET_NOTIFICATION:
-                name = "COMMAND_GET_NOTIFICATION";
-                break;
-            case GAIA.COMMAND_CANCEL_NOTIFICATION:
-                name = "COMMAND_CANCEL_NOTIFICATION";
-                break;
-            case GAIA.COMMAND_EVENT_NOTIFICATION:
-                name = "COMMAND_EVENT_NOTIFICATION";
-                break;
-        }
+        name = switch (command) {
+            case GAIA.COMMAND_SET_RAW_CONFIGURATION -> "COMMAND_SET_RAW_CONFIGURATION" + deprecated;
+            case GAIA.COMMAND_GET_CONFIGURATION_VERSION -> "COMMAND_GET_CONFIGURATION_VERSION";
+            case GAIA.COMMAND_SET_LED_CONFIGURATION -> "COMMAND_SET_LED_CONFIGURATION";
+            case GAIA.COMMAND_GET_LED_CONFIGURATION -> "COMMAND_GET_LED_CONFIGURATION";
+            case GAIA.COMMAND_SET_TONE_CONFIGURATION -> "COMMAND_SET_TONE_CONFIGURATION";
+            case GAIA.COMMAND_GET_TONE_CONFIGURATION -> "COMMAND_GET_TONE_CONFIGURATION";
+            case GAIA.COMMAND_SET_DEFAULT_VOLUME -> "COMMAND_SET_DEFAULT_VOLUME";
+            case GAIA.COMMAND_GET_DEFAULT_VOLUME -> "COMMAND_GET_DEFAULT_VOLUME";
+            case GAIA.COMMAND_FACTORY_DEFAULT_RESET -> "COMMAND_FACTORY_DEFAULT_RESET";
+            case GAIA.COMMAND_GET_CONFIGURATION_ID -> "COMMAND_GET_CONFIGURATION_ID" + deprecated;
+            case GAIA.COMMAND_SET_VIBRATOR_CONFIGURATION -> "COMMAND_SET_VIBRATOR_CONFIGURATION";
+            case GAIA.COMMAND_GET_VIBRATOR_CONFIGURATION -> "COMMAND_GET_VIBRATOR_CONFIGURATION";
+            case GAIA.COMMAND_SET_VOICE_PROMPT_CONFIGURATION ->
+                    "COMMAND_SET_VOICE_PROMPT_CONFIGURATION";
+            case GAIA.COMMAND_GET_VOICE_PROMPT_CONFIGURATION ->
+                    "COMMAND_GET_VOICE_PROMPT_CONFIGURATION";
+            case GAIA.COMMAND_SET_FEATURE_CONFIGURATION -> "COMMAND_SET_FEATURE_CONFIGURATION";
+            case GAIA.COMMAND_GET_FEATURE_CONFIGURATION -> "COMMAND_GET_FEATURE_CONFIGURATION";
+            case GAIA.COMMAND_SET_USER_EVENT_CONFIGURATION ->
+                    "COMMAND_SET_USER_EVENT_CONFIGURATION";
+            case GAIA.COMMAND_GET_USER_EVENT_CONFIGURATION ->
+                    "COMMAND_GET_USER_EVENT_CONFIGURATION";
+            case GAIA.COMMAND_SET_TIMER_CONFIGURATION -> "COMMAND_SET_TIMER_CONFIGURATION";
+            case GAIA.COMMAND_GET_TIMER_CONFIGURATION -> "COMMAND_GET_TIMER_CONFIGURATION";
+            case GAIA.COMMAND_SET_AUDIO_GAIN_CONFIGURATION ->
+                    "COMMAND_SET_AUDIO_GAIN_CONFIGURATION";
+            case GAIA.COMMAND_GET_AUDIO_GAIN_CONFIGURATION ->
+                    "COMMAND_GET_AUDIO_GAIN_CONFIGURATION";
+            case GAIA.COMMAND_SET_VOLUME_CONFIGURATION -> "COMMAND_SET_VOLUME_CONFIGURATION";
+            case GAIA.COMMAND_GET_VOLUME_CONFIGURATION -> "COMMAND_GET_VOLUME_CONFIGURATION";
+            case GAIA.COMMAND_SET_POWER_CONFIGURATION -> "COMMAND_SET_POWER_CONFIGURATION";
+            case GAIA.COMMAND_GET_POWER_CONFIGURATION -> "COMMAND_GET_POWER_CONFIGURATION";
+            case GAIA.COMMAND_SET_USER_TONE_CONFIGURATION -> "COMMAND_SET_USER_TONE_CONFIGURATION";
+            case GAIA.COMMAND_GET_USER_TONE_CONFIGURATION -> "COMMAND_GET_USER_TONE_CONFIGURATION";
+            case GAIA.COMMAND_SET_DEVICE_NAME -> "COMMAND_SET_DEVICE_NAME";
+            case GAIA.COMMAND_GET_DEVICE_NAME -> "COMMAND_GET_DEVICE_NAME";
+            case GAIA.COMMAND_SET_WLAN_CREDENTIALS -> "COMMAND_SET_WLAN_CREDENTIALS";
+            case GAIA.COMMAND_GET_WLAN_CREDENTIALS -> "COMMAND_GET_WLAN_CREDENTIALS";
+            case GAIA.COMMAND_SET_PEER_PERMITTED_ROUTING -> "COMMAND_SET_PEER_PERMITTED_ROUTING";
+            case GAIA.COMMAND_GET_PEER_PERMITTED_ROUTING -> "COMMAND_GET_PEER_PERMITTED_ROUTING";
+            case GAIA.COMMAND_SET_PERMITTED_NEXT_AUDIO_SOURCE ->
+                    "COMMAND_SET_PERMITTED_NEXT_AUDIO_SOURCE";
+            case GAIA.COMMAND_GET_PERMITTED_NEXT_AUDIO_SOURCE ->
+                    "COMMAND_GET_PERMITTED_NEXT_AUDIO_SOURCE";
+            case GAIA.COMMAND_SET_ONE_TOUCH_DIAL_STRING -> "COMMAND_SET_ONE_TOUCH_DIAL_STRING";
+            case GAIA.COMMAND_GET_ONE_TOUCH_DIAL_STRING -> "COMMAND_GET_ONE_TOUCH_DIAL_STRING";
+            case GAIA.COMMAND_GET_MOUNTED_PARTITIONS -> "COMMAND_GET_MOUNTED_PARTITIONS";
+            case GAIA.COMMAND_SET_DFU_PARTITION -> "COMMAND_SET_DFU_PARTITION";
+            case GAIA.COMMAND_GET_DFU_PARTITION -> "COMMAND_GET_DFU_PARTITION";
+            case GAIA.COMMAND_CHANGE_VOLUME -> "COMMAND_CHANGE_VOLUME";
+            case GAIA.COMMAND_DEVICE_RESET -> "COMMAND_DEVICE_RESET";
+            case GAIA.COMMAND_GET_BOOT_MODE -> "COMMAND_GET_BOOT_MODE";
+            case GAIA.COMMAND_SET_PIO_CONTROL -> "COMMAND_SET_PIO_CONTROL";
+            case GAIA.COMMAND_GET_PIO_CONTROL -> "COMMAND_GET_PIO_CONTROL";
+            case GAIA.COMMAND_SET_POWER_STATE -> "COMMAND_SET_POWER_STATE";
+            case GAIA.COMMAND_GET_POWER_STATE -> "COMMAND_GET_POWER_STATE";
+            case GAIA.COMMAND_SET_VOLUME_ORIENTATION -> "COMMAND_SET_VOLUME_ORIENTATION";
+            case GAIA.COMMAND_GET_VOLUME_ORIENTATION -> "COMMAND_GET_VOLUME_ORIENTATION";
+            case GAIA.COMMAND_SET_VIBRATOR_CONTROL -> "COMMAND_SET_VIBRATOR_CONTROL";
+            case GAIA.COMMAND_GET_VIBRATOR_CONTROL -> "COMMAND_GET_VIBRATOR_CONTROL";
+            case GAIA.COMMAND_SET_LED_CONTROL -> "COMMAND_SET_LED_CONTROL";
+            case GAIA.COMMAND_GET_LED_CONTROL -> "COMMAND_GET_LED_CONTROL";
+            case GAIA.COMMAND_FM_CONTROL -> "COMMAND_FM_CONTROL";
+            case GAIA.COMMAND_PLAY_TONE -> "COMMAND_PLAY_TONE";
+            case GAIA.COMMAND_SET_VOICE_PROMPT_CONTROL -> "COMMAND_SET_VOICE_PROMPT_CONTROL";
+            case GAIA.COMMAND_GET_VOICE_PROMPT_CONTROL -> "COMMAND_GET_VOICE_PROMPT_CONTROL";
+            case GAIA.COMMAND_CHANGE_AUDIO_PROMPT_LANGUAGE ->
+                    "COMMAND_CHANGE_AUDIO_PROMPT_LANGUAGE";
+            case GAIA.COMMAND_SET_SPEECH_RECOGNITION_CONTROL ->
+                    "COMMAND_SET_SPEECH_RECOGNITION_CONTROL";
+            case GAIA.COMMAND_GET_SPEECH_RECOGNITION_CONTROL ->
+                    "COMMAND_GET_SPEECH_RECOGNITION_CONTROL";
+            case GAIA.COMMAND_ALERT_LEDS -> "COMMAND_ALERT_LEDS";
+            case GAIA.COMMAND_ALERT_TONE -> "COMMAND_ALERT_TONE";
+            case GAIA.COMMAND_ALERT_EVENT -> "COMMAND_ALERT_EVENT";
+            case GAIA.COMMAND_ALERT_VOICE -> "COMMAND_ALERT_VOICE";
+            case GAIA.COMMAND_SET_AUDIO_PROMPT_LANGUAGE -> "COMMAND_SET_AUDIO_PROMPT_LANGUAGE";
+            case GAIA.COMMAND_GET_AUDIO_PROMPT_LANGUAGE -> "COMMAND_GET_AUDIO_PROMPT_LANGUAGE";
+            case GAIA.COMMAND_START_SPEECH_RECOGNITION -> "COMMAND_START_SPEECH_RECOGNITION";
+            case GAIA.COMMAND_SET_EQ_CONTROL -> "COMMAND_SET_EQ_CONTROL";
+            case GAIA.COMMAND_GET_EQ_CONTROL -> "COMMAND_GET_EQ_CONTROL";
+            case GAIA.COMMAND_SET_BASS_BOOST_CONTROL -> "COMMAND_SET_BASS_BOOST_CONTROL";
+            case GAIA.COMMAND_GET_BASS_BOOST_CONTROL -> "COMMAND_GET_BASS_BOOST_CONTROL";
+            case GAIA.COMMAND_SET_3D_ENHANCEMENT_CONTROL -> "COMMAND_SET_3D_ENHANCEMENT_CONTROL";
+            case GAIA.COMMAND_GET_3D_ENHANCEMENT_CONTROL -> "COMMAND_GET_3D_ENHANCEMENT_CONTROL";
+            case GAIA.COMMAND_SWITCH_EQ_CONTROL -> "COMMAND_SWITCH_EQ_CONTROL";
+            case GAIA.COMMAND_TOGGLE_BASS_BOOST_CONTROL -> "COMMAND_TOGGLE_BASS_BOOST_CONTROL";
+            case GAIA.COMMAND_TOGGLE_3D_ENHANCEMENT_CONTROL ->
+                    "COMMAND_TOGGLE_3D_ENHANCEMENT_CONTROL";
+            case GAIA.COMMAND_SET_EQ_PARAMETER -> "COMMAND_SET_EQ_PARAMETER";
+            case GAIA.COMMAND_GET_EQ_PARAMETER -> "COMMAND_GET_EQ_PARAMETER";
+            case GAIA.COMMAND_SET_EQ_GROUP_PARAMETER -> "COMMAND_SET_EQ_GROUP_PARAMETER";
+            case GAIA.COMMAND_GET_EQ_GROUP_PARAMETER -> "COMMAND_GET_EQ_GROUP_PARAMETER";
+            case GAIA.COMMAND_DISPLAY_CONTROL -> "COMMAND_DISPLAY_CONTROL";
+            case GAIA.COMMAND_ENTER_BLUETOOTH_PAIRING_MODE ->
+                    "COMMAND_ENTER_BLUETOOTH_PAIRING_MODE";
+            case GAIA.COMMAND_SET_AUDIO_SOURCE -> "COMMAND_SET_AUDIO_SOURCE";
+            case GAIA.COMMAND_GET_AUDIO_SOURCE -> "COMMAND_GET_AUDIO_SOURCE";
+            case GAIA.COMMAND_AV_REMOTE_CONTROL -> "COMMAND_AV_REMOTE_CONTROL";
+            case GAIA.COMMAND_SET_USER_EQ_CONTROL -> "COMMAND_SET_USER_EQ_CONTROL";
+            case GAIA.COMMAND_GET_USER_EQ_CONTROL -> "COMMAND_GET_USER_EQ_CONTROL";
+            case GAIA.COMMAND_TOGGLE_USER_EQ_CONTROL -> "COMMAND_TOGGLE_USER_EQ_CONTROL";
+            case GAIA.COMMAND_SET_SPEAKER_EQ_CONTROL -> "COMMAND_SET_SPEAKER_EQ_CONTROL";
+            case GAIA.COMMAND_GET_SPEAKER_EQ_CONTROL -> "COMMAND_GET_SPEAKER_EQ_CONTROL";
+            case GAIA.COMMAND_TOGGLE_SPEAKER_EQ_CONTROL -> "COMMAND_TOGGLE_SPEAKER_EQ_CONTROL";
+            case GAIA.COMMAND_SET_TWS_AUDIO_ROUTING -> "COMMAND_SET_TWS_AUDIO_ROUTING";
+            case GAIA.COMMAND_GET_TWS_AUDIO_ROUTING -> "COMMAND_GET_TWS_AUDIO_ROUTING";
+            case GAIA.COMMAND_SET_TWS_VOLUME -> "COMMAND_SET_TWS_VOLUME";
+            case GAIA.COMMAND_GET_TWS_VOLUME -> "COMMAND_GET_TWS_VOLUME";
+            case GAIA.COMMAND_TRIM_TWS_VOLUME -> "COMMAND_TRIM_TWS_VOLUME";
+            case GAIA.COMMAND_SET_PEER_LINK_RESERVED -> "COMMAND_SET_PEER_LINK_RESERVED";
+            case GAIA.COMMAND_GET_PEER_LINK_RESERVED -> "COMMAND_GET_PEER_LINK_RESERVED";
+            case GAIA.COMMAND_TWS_PEER_START_ADVERTISING -> "COMMAND_TWS_PEER_START_ADVERTISING";
+            case GAIA.COMMAND_FIND_MY_REMOTE -> "COMMAND_FIND_MY_REMOTE";
+            case GAIA.COMMAND_SET_CODEC -> "COMMAND_SET_CODEC";
+            case GAIA.COMMAND_GET_CODEC -> "COMMAND_GET_CODEC";
+            case GAIA.COMMAND_SET_SUPPORTED_FEATURES -> "COMMAND_SET_SUPPORTED_FEATURES";
+            case GAIA.COMMAND_DISCONNECT -> "COMMAND_DISCONNECT";
+            case GAIA.COMMAND_GET_API_VERSION -> "COMMAND_GET_API_VERSION";
+            case GAIA.COMMAND_GET_CURRENT_RSSI -> "COMMAND_GET_CURRENT_RSSI";
+            case GAIA.COMMAND_GET_CURRENT_BATTERY_LEVEL -> "COMMAND_GET_CURRENT_BATTERY_LEVEL";
+            case GAIA.COMMAND_GET_MODULE_ID -> "COMMAND_GET_MODULE_ID";
+            case GAIA.COMMAND_GET_APPLICATION_VERSION -> "COMMAND_GET_APPLICATION_VERSION";
+            case GAIA.COMMAND_GET_PIO_STATE -> "COMMAND_GET_PIO_STATE";
+            case GAIA.COMMAND_READ_ADC -> "COMMAND_READ_ADC";
+            case GAIA.COMMAND_GET_PEER_ADDRESS -> "COMMAND_GET_PEER_ADDRESS";
+            case GAIA.COMMAND_GET_DFU_STATUS -> "COMMAND_GET_DFU_STATUS" + deprecated;
+            case GAIA.COMMAND_GET_HOST_FEATURE_INFORMATION ->
+                    "COMMAND_GET_HOST_FEATURE_INFORMATION";
+            case GAIA.COMMAND_GET_AUTH_BITMAPS -> "COMMAND_GET_AUTH_BITMAPS";
+            case GAIA.COMMAND_AUTHENTICATE_REQUEST -> "COMMAND_AUTHENTICATE_REQUEST";
+            case GAIA.COMMAND_AUTHENTICATE_RESPONSE -> "COMMAND_AUTHENTICATE_RESPONSE";
+            case GAIA.COMMAND_SET_FEATURE -> "COMMAND_SET_FEATURE";
+            case GAIA.COMMAND_GET_FEATURE -> "COMMAND_GET_FEATURE";
+            case GAIA.COMMAND_SET_SESSION_ENABLE -> "COMMAND_SET_SESSION_ENABLE";
+            case GAIA.COMMAND_GET_SESSION_ENABLE -> "COMMAND_GET_SESSION_ENABLE";
+            case GAIA.COMMAND_DATA_TRANSFER_SETUP -> "COMMAND_DATA_TRANSFER_SETUP";
+            case GAIA.COMMAND_DATA_TRANSFER_CLOSE -> "COMMAND_DATA_TRANSFER_CLOSE";
+            case GAIA.COMMAND_HOST_TO_DEVICE_DATA -> "COMMAND_HOST_TO_DEVICE_DATA";
+            case GAIA.COMMAND_DEVICE_TO_HOST_DATA -> "COMMAND_DEVICE_TO_HOST_DATA";
+            case GAIA.COMMAND_I2C_TRANSFER -> "COMMAND_I2C_TRANSFER";
+            case GAIA.COMMAND_GET_STORAGE_PARTITION_STATUS ->
+                    "COMMAND_GET_STORAGE_PARTITION_STATUS";
+            case GAIA.COMMAND_OPEN_STORAGE_PARTITION -> "COMMAND_OPEN_STORAGE_PARTITION";
+            case GAIA.COMMAND_OPEN_UART -> "COMMAND_OPEN_UART";
+            case GAIA.COMMAND_WRITE_STORAGE_PARTITION -> "COMMAND_WRITE_STORAGE_PARTITION";
+            case GAIA.COMMAND_WRITE_STREAM -> "COMMAND_WRITE_STREAM";
+            case GAIA.COMMAND_CLOSE_STORAGE_PARTITION -> "COMMAND_CLOSE_STORAGE_PARTITION";
+            case GAIA.COMMAND_MOUNT_STORAGE_PARTITION -> "COMMAND_MOUNT_STORAGE_PARTITION";
+            case GAIA.COMMAND_GET_FILE_STATUS -> "COMMAND_GET_FILE_STATUS";
+            case GAIA.COMMAND_OPEN_FILE -> "COMMAND_OPEN_FILE";
+            case GAIA.COMMAND_READ_FILE -> "COMMAND_READ_FILE";
+            case GAIA.COMMAND_CLOSE_FILE -> "COMMAND_CLOSE_FILE";
+            case GAIA.COMMAND_DFU_REQUEST -> "COMMAND_DFU_REQUEST";
+            case GAIA.COMMAND_DFU_BEGIN -> "COMMAND_DFU_BEGIN";
+            case GAIA.COMMAND_DFU_WRITE -> "COMMAND_DFU_WRITE";
+            case GAIA.COMMAND_DFU_COMMIT -> "COMMAND_DFU_COMMIT";
+            case GAIA.COMMAND_DFU_GET_RESULT -> "COMMAND_DFU_GET_RESULT";
+            case GAIA.COMMAND_VM_UPGRADE_CONNECT -> "COMMAND_VM_UPGRADE_CONNECT";
+            case GAIA.COMMAND_VM_UPGRADE_DISCONNECT -> "COMMAND_VM_UPGRADE_DISCONNECT";
+            case GAIA.COMMAND_VM_UPGRADE_CONTROL -> "COMMAND_VM_UPGRADE_CONTROL";
+            case GAIA.COMMAND_VM_UPGRADE_DATA -> "COMMAND_VM_UPGRADE_DATA";
+            case GAIA.COMMAND_NO_OPERATION -> "COMMAND_NO_OPERATION";
+            case GAIA.COMMAND_GET_DEBUG_FLAGS -> "COMMAND_GET_DEBUG_FLAGS";
+            case GAIA.COMMAND_SET_DEBUG_FLAGS -> "COMMAND_SET_DEBUG_FLAGS";
+            case GAIA.COMMAND_RETRIEVE_PS_KEY -> "COMMAND_RETRIEVE_PS_KEY";
+            case GAIA.COMMAND_RETRIEVE_FULL_PS_KEY -> "COMMAND_RETRIEVE_FULL_PS_KEY";
+            case GAIA.COMMAND_STORE_PS_KEY -> "COMMAND_STORE_PS_KEY";
+            case GAIA.COMMAND_FLOOD_PS -> "COMMAND_FLOOD_PS";
+            case GAIA.COMMAND_STORE_FULL_PS_KEY -> "COMMAND_STORE_FULL_PS_KEY";
+            case GAIA.COMMAND_SEND_DEBUG_MESSAGE -> "COMMAND_SEND_DEBUG_MESSAGE";
+            case GAIA.COMMAND_SEND_APPLICATION_MESSAGE -> "COMMAND_SEND_APPLICATION_MESSAGE";
+            case GAIA.COMMAND_SEND_KALIMBA_MESSAGE -> "COMMAND_SEND_KALIMBA_MESSAGE";
+            case GAIA.COMMAND_GET_MEMORY_SLOTS -> "COMMAND_GET_MEMORY_SLOTS";
+            case GAIA.COMMAND_GET_DEBUG_VARIABLE -> "COMMAND_GET_DEBUG_VARIABLE";
+            case GAIA.COMMAND_SET_DEBUG_VARIABLE -> "COMMAND_SET_DEBUG_VARIABLE";
+            case GAIA.COMMAND_DELETE_PDL -> "COMMAND_DELETE_PDL";
+            case GAIA.COMMAND_SET_BLE_CONNECTION_PARAMETERS ->
+                    "COMMAND_SET_BLE_CONNECTION_PARAMETERS";
+            case GAIA.COMMAND_IVOR_ANSWER_END -> "COMMAND_IVOR_ANSWER_END";
+            case GAIA.COMMAND_IVOR_ANSWER_START -> "COMMAND_IVOR_ANSWER_START";
+            case GAIA.COMMAND_IVOR_CANCEL -> "COMMAND_IVOR_CANCEL";
+            case GAIA.COMMAND_IVOR_CHECK_VERSION -> "COMMAND_IVOR_CHECK_VERSION";
+            case GAIA.COMMAND_IVOR_PING -> "COMMAND_IVOR_PING";
+            case GAIA.COMMAND_IVOR_START -> "COMMAND_IVOR_START";
+            case GAIA.COMMAND_IVOR_VOICE_DATA -> "COMMAND_IVOR_VOICE_DATA";
+            case GAIA.COMMAND_IVOR_VOICE_DATA_REQUEST -> "COMMAND_IVOR_VOICE_DATA_REQUEST";
+            case GAIA.COMMAND_IVOR_VOICE_END -> "COMMAND_IVOR_VOICE_END";
+            case GAIA.COMMAND_REGISTER_NOTIFICATION -> "COMMAND_REGISTER_NOTIFICATION";
+            case GAIA.COMMAND_GET_NOTIFICATION -> "COMMAND_GET_NOTIFICATION";
+            case GAIA.COMMAND_CANCEL_NOTIFICATION -> "COMMAND_CANCEL_NOTIFICATION";
+            case GAIA.COMMAND_EVENT_NOTIFICATION -> "COMMAND_EVENT_NOTIFICATION";
+            default -> name;
+        };
 
         return getHexadecimalStringFromInt(command) + " " + name;
     }

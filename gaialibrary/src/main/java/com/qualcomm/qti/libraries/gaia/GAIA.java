@@ -961,28 +961,17 @@ public final class GAIA {
      * .gaia.GAIA.Status#NOT_STATUS} if neither {@link GAIA.Status} fits the value.
      */
     public static @GAIA.Status int getStatus(byte status) {
-        switch (status) {
-
-            case Status.SUCCESS:
-                return GAIA.Status.SUCCESS;
-            case Status.NOT_SUPPORTED:
-                return GAIA.Status.NOT_SUPPORTED;
-            case Status.NOT_AUTHENTICATED:
-                return GAIA.Status.NOT_AUTHENTICATED;
-            case Status.INSUFFICIENT_RESOURCES:
-                return GAIA.Status.INSUFFICIENT_RESOURCES;
-            case Status.AUTHENTICATING:
-                return GAIA.Status.AUTHENTICATING;
-            case Status.INVALID_PARAMETER:
-                return GAIA.Status.INVALID_PARAMETER;
-            case Status.INCORRECT_STATE:
-                return GAIA.Status.INCORRECT_STATE;
-            case Status.IN_PROGRESS:
-                return GAIA.Status.IN_PROGRESS;
-
-            default:
-                return GAIA.Status.NOT_STATUS;
-        }
+        return switch (status) {
+            case Status.SUCCESS -> Status.SUCCESS;
+            case Status.NOT_SUPPORTED -> Status.NOT_SUPPORTED;
+            case Status.NOT_AUTHENTICATED -> Status.NOT_AUTHENTICATED;
+            case Status.INSUFFICIENT_RESOURCES -> Status.INSUFFICIENT_RESOURCES;
+            case Status.AUTHENTICATING -> Status.AUTHENTICATING;
+            case Status.INVALID_PARAMETER -> Status.INVALID_PARAMETER;
+            case Status.INCORRECT_STATE -> Status.INCORRECT_STATE;
+            case Status.IN_PROGRESS -> Status.IN_PROGRESS;
+            default -> Status.NOT_STATUS;
+        };
     }
 	
 	/**
@@ -994,30 +983,18 @@ public final class GAIA {
      * @return A string corresponding to the {@link GAIA.Status} value.
      */
     public static String getStatusToString(int status) {
-        switch (status) {
-
-            case Status.SUCCESS:
-                return "SUCCESS";
-            case Status.NOT_SUPPORTED:
-                return "NOT SUPPORTED";
-            case Status.NOT_AUTHENTICATED:
-                return "NOT AUTHENTICATED";
-            case Status.INSUFFICIENT_RESOURCES:
-                return "INSUFFICIENT RESOURCES";
-            case Status.AUTHENTICATING:
-                return "AUTHENTICATING";
-            case Status.INVALID_PARAMETER:
-                return "INVALID PARAMETER";
-            case Status.INCORRECT_STATE:
-                return "INCORRECT STATE";
-            case Status.IN_PROGRESS:
-                return "IN PROGRESS";
-            case Status.NOT_STATUS:
-                return "NOT STATUS";
-
-            default:
-                return "UNKNOWN STATUS";
-        }
+        return switch (status) {
+            case Status.SUCCESS -> "SUCCESS";
+            case Status.NOT_SUPPORTED -> "NOT SUPPORTED";
+            case Status.NOT_AUTHENTICATED -> "NOT AUTHENTICATED";
+            case Status.INSUFFICIENT_RESOURCES -> "INSUFFICIENT RESOURCES";
+            case Status.AUTHENTICATING -> "AUTHENTICATING";
+            case Status.INVALID_PARAMETER -> "INVALID PARAMETER";
+            case Status.INCORRECT_STATE -> "INCORRECT STATE";
+            case Status.IN_PROGRESS -> "IN PROGRESS";
+            case Status.NOT_STATUS -> "NOT STATUS";
+            default -> "UNKNOWN STATUS";
+        };
     }
 	
 	
@@ -1138,67 +1115,30 @@ public final class GAIA {
      * {@link GAIA.NotificationEvents} fits the value.
      */
     public static @GAIA.NotificationEvents int getNotificationEvent(byte event) {
-        switch (event) {
-            case NotificationEvents.RSSI_LOW_THRESHOLD:
-                return NotificationEvents.RSSI_LOW_THRESHOLD;
-
-            case NotificationEvents.RSSI_HIGH_THRESHOLD:
-                return NotificationEvents.RSSI_HIGH_THRESHOLD;
-
-            case NotificationEvents.BATTERY_LOW_THRESHOLD:
-                return NotificationEvents.BATTERY_LOW_THRESHOLD;
-
-            case NotificationEvents.BATTERY_HIGH_THRESHOLD:
-                return NotificationEvents.BATTERY_HIGH_THRESHOLD;
-
-            case NotificationEvents.DEVICE_STATE_CHANGED:
-                return NotificationEvents.DEVICE_STATE_CHANGED;
-
-            case NotificationEvents.PIO_CHANGED:
-                return NotificationEvents.PIO_CHANGED;
-
-            case NotificationEvents.DEBUG_MESSAGE:
-                return NotificationEvents.DEBUG_MESSAGE;
-
-            case NotificationEvents.BATTERY_CHARGED:
-                return NotificationEvents.BATTERY_CHARGED;
-
-            case NotificationEvents.CHARGER_CONNECTION:
-                return NotificationEvents.CHARGER_CONNECTION;
-
-            case NotificationEvents.CAPSENSE_UPDATE:
-                return NotificationEvents.CAPSENSE_UPDATE;
-
-            case NotificationEvents.USER_ACTION:
-                return NotificationEvents.USER_ACTION;
-
-            case NotificationEvents.SPEECH_RECOGNITION:
-                return NotificationEvents.SPEECH_RECOGNITION;
-
-            case NotificationEvents.AV_COMMAND:
-                return NotificationEvents.AV_COMMAND;
-
-            case NotificationEvents.REMOTE_BATTERY_LEVEL:
-                return NotificationEvents.REMOTE_BATTERY_LEVEL;
-
-            case NotificationEvents.KEY:
-                return NotificationEvents.KEY;
-
-            case NotificationEvents.DFU_STATE:
-                return NotificationEvents.DFU_STATE;
-
-            case NotificationEvents.UART_RECEIVED_DATA:
-                return NotificationEvents.UART_RECEIVED_DATA;
-
-            case NotificationEvents.VMU_PACKET:
-                return NotificationEvents.VMU_PACKET;
-
-            case NotificationEvents.HOST_NOTIFICATION:
-                return NotificationEvents.HOST_NOTIFICATION;
-
-            default:
-                return NotificationEvents.NOT_NOTIFICATION;
-        }
+        return switch (event) {
+            case NotificationEvents.RSSI_LOW_THRESHOLD -> NotificationEvents.RSSI_LOW_THRESHOLD;
+            case NotificationEvents.RSSI_HIGH_THRESHOLD -> NotificationEvents.RSSI_HIGH_THRESHOLD;
+            case NotificationEvents.BATTERY_LOW_THRESHOLD ->
+                    NotificationEvents.BATTERY_LOW_THRESHOLD;
+            case NotificationEvents.BATTERY_HIGH_THRESHOLD ->
+                    NotificationEvents.BATTERY_HIGH_THRESHOLD;
+            case NotificationEvents.DEVICE_STATE_CHANGED -> NotificationEvents.DEVICE_STATE_CHANGED;
+            case NotificationEvents.PIO_CHANGED -> NotificationEvents.PIO_CHANGED;
+            case NotificationEvents.DEBUG_MESSAGE -> NotificationEvents.DEBUG_MESSAGE;
+            case NotificationEvents.BATTERY_CHARGED -> NotificationEvents.BATTERY_CHARGED;
+            case NotificationEvents.CHARGER_CONNECTION -> NotificationEvents.CHARGER_CONNECTION;
+            case NotificationEvents.CAPSENSE_UPDATE -> NotificationEvents.CAPSENSE_UPDATE;
+            case NotificationEvents.USER_ACTION -> NotificationEvents.USER_ACTION;
+            case NotificationEvents.SPEECH_RECOGNITION -> NotificationEvents.SPEECH_RECOGNITION;
+            case NotificationEvents.AV_COMMAND -> NotificationEvents.AV_COMMAND;
+            case NotificationEvents.REMOTE_BATTERY_LEVEL -> NotificationEvents.REMOTE_BATTERY_LEVEL;
+            case NotificationEvents.KEY -> NotificationEvents.KEY;
+            case NotificationEvents.DFU_STATE -> NotificationEvents.DFU_STATE;
+            case NotificationEvents.UART_RECEIVED_DATA -> NotificationEvents.UART_RECEIVED_DATA;
+            case NotificationEvents.VMU_PACKET -> NotificationEvents.VMU_PACKET;
+            case NotificationEvents.HOST_NOTIFICATION -> NotificationEvents.HOST_NOTIFICATION;
+            default -> NotificationEvents.NOT_NOTIFICATION;
+        };
     }
 
 	
