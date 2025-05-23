@@ -16,7 +16,7 @@
 
     <application
         android:name=".FiioK9ControlApplication"
-        android:enableOnBackInvokedCallback="false"
+        android:enableOnBackInvokedCallback="true"
         android:fullBackupOnly="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
