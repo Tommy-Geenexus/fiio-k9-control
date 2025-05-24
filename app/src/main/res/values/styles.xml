@@ -6,7 +6,7 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
-    <style name="Widget.FiioK9Control.LinearProgressIndicator" parent="Widget.Material3.LinearProgressIndicator">
+    <style name="Widget.FiioK9Control.LinearProgressIndicator" parent="Widget.Material3Expressive.LinearProgressIndicator">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:indeterminate">true</item>
