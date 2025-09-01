@@ -25,9 +25,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 
-class BluetoothStateBroadcastReceiver(
-    private val onBluetoothStateChanged: (Boolean) -> Unit
-) : BroadcastReceiver() {
+class BluetoothStateBroadcastReceiver(private val onBluetoothStateChanged: (Boolean) -> Unit) :
+    BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
         if (intent?.action == BluetoothAdapter.ACTION_STATE_CHANGED) {

@@ -41,8 +41,8 @@ class GaiaGattRepository @Inject constructor(
         const val GAIA_CMD_DELAY_MS = 200L
     }
 
-    suspend fun connect(service: GaiaGattService, deviceAddress: String): Boolean {
-        return withContext(dispatcherIo) {
+    suspend fun connect(service: GaiaGattService, deviceAddress: String): Boolean =
+        withContext(dispatcherIo) {
             coroutineContext.suspendRunCatching {
                 service.connect(deviceAddress)
             }.getOrElse { exception ->
@@ -50,10 +50,9 @@ class GaiaGattRepository @Inject constructor(
                 false
             }
         }
-    }
 
-    suspend fun sendGaiaPacket(service: GaiaGattService, packet: GaiaPacket): Boolean {
-        return withContext(dispatcherIo) {
+    suspend fun sendGaiaPacket(service: GaiaGattService, packet: GaiaPacket): Boolean =
+        withContext(dispatcherIo) {
             coroutineContext.suspendRunCatching {
                 val result = service.sendGaiaPacket(packet)
                 delay(GAIA_CMD_DELAY_MS)
@@ -63,7 +62,6 @@ class GaiaGattRepository @Inject constructor(
                 false
             }
         }
-    }
 
     suspend fun sendGaiaPackets(service: GaiaGattService, packets: List<GaiaPacket>): Boolean {
         return withContext(dispatcherIo) {

@@ -63,8 +63,8 @@ class StateAdapter(
         setHasStableIds(true)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return when (viewType) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
+        when (viewType) {
             ITEM_VIEW_TYPE_MISC -> {
                 ItemMiscViewHolder(
                     binding = ItemMiscBinding.inflate(
@@ -105,7 +105,6 @@ class StateAdapter(
                 )
             }
         }
-    }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (position) {

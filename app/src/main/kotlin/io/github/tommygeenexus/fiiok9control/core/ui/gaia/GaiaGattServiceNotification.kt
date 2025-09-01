@@ -68,78 +68,76 @@ object GaiaGattServiceNotification {
         volume: Int,
         volumeRelative: Int,
         isMuteEnabled: Boolean
-    ): Notification {
-        return Notification
-            .Builder(context, ID_NOTIFICATION_CHANNEL)
-            .setSmallIcon(R.drawable.ic_k9)
-            .setContentTitle(context.getString(R.string.fiio_k9))
-            .setContentText(
-                context.getString(
-                    R.string.volume_level_value,
-                    context.getString(R.string.volume_level, volume, volumeRelative)
-                )
+    ): Notification = Notification
+        .Builder(context, ID_NOTIFICATION_CHANNEL)
+        .setSmallIcon(R.drawable.ic_k9)
+        .setContentTitle(context.getString(R.string.fiio_k9))
+        .setContentText(
+            context.getString(
+                R.string.volume_level_value,
+                context.getString(R.string.volume_level, volume, volumeRelative)
             )
-            .setContentIntent(
-                PendingIntent.getActivity(
+        )
+        .setContentIntent(
+            PendingIntent.getActivity(
+                context,
+                REQUEST_CODE,
+                context.packageManager.getLaunchIntentForPackage(context.packageName),
+                PendingIntent.FLAG_IMMUTABLE
+            )
+        )
+        .addAction(
+            Notification.Action.Builder(
+                Icon.createWithResource(context, R.drawable.ic_volume_up),
+                context.getString(R.string.volume_up),
+                PendingIntent.getBroadcast(
                     context,
                     REQUEST_CODE,
-                    context.packageManager.getLaunchIntentForPackage(context.packageName),
+                    Intent(INTENT_ACTION_VOLUME_UP).apply {
+                        setPackage(context.packageName)
+                    },
                     PendingIntent.FLAG_IMMUTABLE
                 )
-            )
-            .addAction(
-                Notification.Action.Builder(
-                    Icon.createWithResource(context, R.drawable.ic_volume_up),
-                    context.getString(R.string.volume_up),
-                    PendingIntent.getBroadcast(
-                        context,
-                        REQUEST_CODE,
-                        Intent(INTENT_ACTION_VOLUME_UP).apply {
-                            setPackage(context.packageName)
-                        },
-                        PendingIntent.FLAG_IMMUTABLE
-                    )
-                ).build()
-            )
-            .addAction(
-                Notification.Action.Builder(
-                    Icon.createWithResource(context, R.drawable.ic_volume_down),
-                    context.getString(R.string.volume_down),
-                    PendingIntent.getBroadcast(
-                        context,
-                        REQUEST_CODE,
-                        Intent(INTENT_ACTION_VOLUME_DOWN).apply {
-                            setPackage(context.packageName)
-                        },
-                        PendingIntent.FLAG_IMMUTABLE
-                    )
-                ).build()
-            )
-            .addAction(
-                Notification.Action.Builder(
-                    Icon.createWithResource(context, R.drawable.ic_volume_mute),
-                    context.getString(
-                        if (isMuteEnabled) {
-                            R.string.volume_unmute
-                        } else {
-                            R.string.volume_mute
-                        }
-                    ),
-                    PendingIntent.getBroadcast(
-                        context,
-                        REQUEST_CODE,
-                        Intent(INTENT_ACTION_VOLUME_MUTE).apply {
-                            setPackage(context.packageName)
-                        },
-                        PendingIntent.FLAG_IMMUTABLE
-                    )
-                ).build()
-            )
-            .setOnlyAlertOnce(true)
-            .setOngoing(true)
-            .setVisibility(Notification.VISIBILITY_PUBLIC)
-            .build()
-    }
+            ).build()
+        )
+        .addAction(
+            Notification.Action.Builder(
+                Icon.createWithResource(context, R.drawable.ic_volume_down),
+                context.getString(R.string.volume_down),
+                PendingIntent.getBroadcast(
+                    context,
+                    REQUEST_CODE,
+                    Intent(INTENT_ACTION_VOLUME_DOWN).apply {
+                        setPackage(context.packageName)
+                    },
+                    PendingIntent.FLAG_IMMUTABLE
+                )
+            ).build()
+        )
+        .addAction(
+            Notification.Action.Builder(
+                Icon.createWithResource(context, R.drawable.ic_volume_mute),
+                context.getString(
+                    if (isMuteEnabled) {
+                        R.string.volume_unmute
+                    } else {
+                        R.string.volume_mute
+                    }
+                ),
+                PendingIntent.getBroadcast(
+                    context,
+                    REQUEST_CODE,
+                    Intent(INTENT_ACTION_VOLUME_MUTE).apply {
+                        setPackage(context.packageName)
+                    },
+                    PendingIntent.FLAG_IMMUTABLE
+                )
+            ).build()
+        )
+        .setOnlyAlertOnce(true)
+        .setOngoing(true)
+        .setVisibility(Notification.VISIBILITY_PUBLIC)
+        .build()
 
     fun GaiaGattService.startForeground(
         context: Context,

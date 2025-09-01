@@ -35,11 +35,8 @@ sealed class StateSideEffect : Parcelable {
     }
 
     @Parcelize
-    data class NotifyVolume(
-        val volume: Int,
-        val volumeRelative: Int,
-        val isMuteEnabled: Boolean
-    ) : StateSideEffect()
+    data class NotifyVolume(val volume: Int, val volumeRelative: Int, val isMuteEnabled: Boolean) :
+        StateSideEffect()
 
     @Parcelize
     data object Disconnected : StateSideEffect()

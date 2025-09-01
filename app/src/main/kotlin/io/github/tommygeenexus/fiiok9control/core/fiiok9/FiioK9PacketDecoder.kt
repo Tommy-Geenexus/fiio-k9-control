@@ -62,17 +62,14 @@ object FiioK9PacketDecoder {
         }
     }
 
-    fun decodePayloadVolume(payload: ByteArray): Int? {
-        return payload.toHexString().toIntOrNull(radix = 16)
-    }
+    fun decodePayloadVolume(payload: ByteArray): Int? =
+        payload.toHexString().toIntOrNull(radix = 16)
 
-    fun decodePayloadMuteEnabled(payload: ByteArray): Boolean? {
-        return payload.toHexString().toIntOrNull(radix = 16)?.equals(1)
-    }
+    fun decodePayloadMuteEnabled(payload: ByteArray): Boolean? =
+        payload.toHexString().toIntOrNull(radix = 16)?.equals(1)
 
-    fun decodePayloadMqaEnabled(payload: ByteArray): Boolean? {
-        return payload.toHexString().toIntOrNull(radix = 16)?.equals(1)
-    }
+    fun decodePayloadMqaEnabled(payload: ByteArray): Boolean? =
+        payload.toHexString().toIntOrNull(radix = 16)?.equals(1)
 
     fun decodePayloadInputSource(payload: ByteArray): InputSource? {
         val id = payload.toHexString().toIntOrNull(radix = 16)
@@ -91,7 +88,8 @@ object FiioK9PacketDecoder {
         val id = indicatorRgbLighting.substring(0, 4).toIntOrNull(radix = 16) ?: -1
         val indicatorState = IndicatorState.findById(id)
         val indicatorBrightness = indicatorRgbLighting.substring(4).toIntOrNull(radix = 16)
-        return if (indicatorState == null || indicatorBrightness == null ||
+        return if (indicatorState == null ||
+            indicatorBrightness == null ||
             indicatorBrightness < FiioK9Defaults.INDICATOR_BRIGHTNESS_MIN ||
             indicatorBrightness > FiioK9Defaults.INDICATOR_BRIGHTNESS_MAX
         ) {
@@ -144,7 +142,6 @@ object FiioK9PacketDecoder {
         return EqPreSet.findById(id)
     }
 
-    fun decodePayloadHpPreSimultaneously(payload: ByteArray): Boolean? {
-        return payload.toHexString().toIntOrNull(radix = 16)?.equals(1)
-    }
+    fun decodePayloadHpPreSimultaneously(payload: ByteArray): Boolean? =
+        payload.toHexString().toIntOrNull(radix = 16)?.equals(1)
 }

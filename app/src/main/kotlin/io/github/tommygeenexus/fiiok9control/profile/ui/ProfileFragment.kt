@@ -160,7 +160,7 @@ class ProfileFragment :
                         R.string.profile_apply_failure,
                         Snackbar.LENGTH_SHORT
                     )
-                    .setAnchorView(requireActivity().findViewById<View>(R.id.nav_view))
+                    .setAnchorView(requireActivity().findViewById(R.id.nav_view))
                     .show()
             }
             ProfileSideEffect.Apply.Success -> {
@@ -170,7 +170,7 @@ class ProfileFragment :
                         R.string.profile_apply_success,
                         Snackbar.LENGTH_SHORT
                     )
-                    .setAnchorView(requireActivity().findViewById<View>(R.id.nav_view))
+                    .setAnchorView(requireActivity().findViewById(R.id.nav_view))
                     .show()
             }
             ProfileSideEffect.Delete.Failure -> {
@@ -180,7 +180,7 @@ class ProfileFragment :
                         R.string.profile_delete_failure,
                         Snackbar.LENGTH_SHORT
                     )
-                    .setAnchorView(requireActivity().findViewById<View>(R.id.nav_view))
+                    .setAnchorView(requireActivity().findViewById(R.id.nav_view))
                     .show()
             }
             ProfileSideEffect.Delete.Success -> {
@@ -190,7 +190,7 @@ class ProfileFragment :
                         R.string.profile_delete_success,
                         Snackbar.LENGTH_SHORT
                     )
-                    .setAnchorView(requireActivity().findViewById<View>(R.id.nav_view))
+                    .setAnchorView(requireActivity().findViewById(R.id.nav_view))
                     .show()
             }
             is ProfileSideEffect.Select -> {
@@ -203,7 +203,7 @@ class ProfileFragment :
                         R.string.shortcut_profile_add_failure,
                         Snackbar.LENGTH_SHORT
                     )
-                    .setAnchorView(requireActivity().findViewById<View>(R.id.nav_view))
+                    .setAnchorView(requireActivity().findViewById(R.id.nav_view))
                     .show()
             }
             ProfileSideEffect.Shortcut.Add.Success -> {
@@ -213,7 +213,7 @@ class ProfileFragment :
                         R.string.shortcut_profile_add_success,
                         Snackbar.LENGTH_SHORT
                     )
-                    .setAnchorView(requireActivity().findViewById<View>(R.id.nav_view))
+                    .setAnchorView(requireActivity().findViewById(R.id.nav_view))
                     .show()
             }
             ProfileSideEffect.Shortcut.Delete.Failure -> {
@@ -223,7 +223,7 @@ class ProfileFragment :
                         R.string.shortcut_profile_delete_failure,
                         Snackbar.LENGTH_SHORT
                     )
-                    .setAnchorView(requireActivity().findViewById<View>(R.id.nav_view))
+                    .setAnchorView(requireActivity().findViewById(R.id.nav_view))
                     .show()
             }
             ProfileSideEffect.Shortcut.Delete.Success -> {
@@ -233,7 +233,7 @@ class ProfileFragment :
                         R.string.shortcut_profile_delete_success,
                         Snackbar.LENGTH_SHORT
                     )
-                    .setAnchorView(requireActivity().findViewById<View>(R.id.nav_view))
+                    .setAnchorView(requireActivity().findViewById(R.id.nav_view))
                     .show()
             }
         }

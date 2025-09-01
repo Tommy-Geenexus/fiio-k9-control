@@ -24,9 +24,8 @@ import androidx.recyclerview.widget.RecyclerView
 import io.github.tommygeenexus.fiiok9control.R
 import io.github.tommygeenexus.fiiok9control.databinding.ItemMiscBinding
 
-class ItemMiscViewHolder(
-    private val binding: ItemMiscBinding
-) : RecyclerView.ViewHolder(binding.root) {
+class ItemMiscViewHolder(private val binding: ItemMiscBinding) :
+    RecyclerView.ViewHolder(binding.root) {
 
     fun bindItemMisc(fwVersion: String, audioFmt: String) {
         binding.fwVersion.text = itemView.context.getString(R.string.fw_version, fwVersion)

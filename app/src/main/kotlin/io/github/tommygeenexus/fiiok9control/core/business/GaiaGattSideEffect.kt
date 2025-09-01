@@ -41,34 +41,24 @@ sealed class GaiaGattSideEffect : Parcelable {
         data object Error : Gatt()
 
         @Parcelize
-        data class Ready(
-            val deviceAddress: String
-        ) : Gatt()
+        data class Ready(val deviceAddress: String) : Gatt()
 
         @Parcelize
-        data class ServiceDiscovery(
-            val deviceAddress: String
-        ) : Gatt()
+        data class ServiceDiscovery(val deviceAddress: String) : Gatt()
 
         sealed class Characteristic : Gatt() {
 
             sealed class Write : Characteristic() {
 
                 @Parcelize
-                data class Success(
-                    val packet: GaiaPacketBLE
-                ) : Write()
+                data class Success(val packet: GaiaPacketBLE) : Write()
 
                 @Parcelize
-                data class Failure(
-                    val packet: GaiaPacketBLE
-                ) : Write()
+                data class Failure(val packet: GaiaPacketBLE) : Write()
             }
 
             @Parcelize
-            data class Changed(
-                val packet: GaiaPacketBLE
-            ) : Characteristic()
+            data class Changed(val packet: GaiaPacketBLE) : Characteristic()
         }
     }
 }

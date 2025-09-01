@@ -65,7 +65,5 @@ sealed class ProfileSideEffect : Parcelable {
     }
 
     @Parcelize
-    data class Select(
-        val profile: Profile
-    ) : ProfileSideEffect()
+    data class Select(val profile: Profile) : ProfileSideEffect()
 }

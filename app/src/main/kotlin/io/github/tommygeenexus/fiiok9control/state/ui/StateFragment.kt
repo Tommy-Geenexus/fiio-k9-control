@@ -341,7 +341,7 @@ class StateFragment :
                         R.string.profile_export_failure,
                         Snackbar.LENGTH_SHORT
                     )
-                    .setAnchorView(requireActivity().findViewById<View>(R.id.nav_view))
+                    .setAnchorView(requireActivity().findViewById(R.id.nav_view))
                     .show()
             }
             StateSideEffect.ExportProfile.Success -> {
@@ -351,7 +351,7 @@ class StateFragment :
                         R.string.profile_export_success,
                         Snackbar.LENGTH_SHORT
                     )
-                    .setAnchorView(requireActivity().findViewById<View>(R.id.nav_view))
+                    .setAnchorView(requireActivity().findViewById(R.id.nav_view))
                     .show()
             }
             is StateSideEffect.NotifyVolume -> {

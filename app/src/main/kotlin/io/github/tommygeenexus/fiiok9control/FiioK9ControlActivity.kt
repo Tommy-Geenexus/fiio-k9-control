@@ -24,7 +24,6 @@ import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.Configuration
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.FrameLayout
@@ -46,7 +45,6 @@ import androidx.window.core.layout.computeWindowSizeClass
 import androidx.window.layout.WindowMetricsCalculator
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.tommygeenexus.fiiok9control.core.business.GaiaGattSideEffect
-import io.github.tommygeenexus.fiiok9control.core.extension.resolveThemeAttribute
 import io.github.tommygeenexus.fiiok9control.core.receiver.BluetoothStateBroadcastReceiver
 import io.github.tommygeenexus.fiiok9control.core.ui.gaia.GaiaGattService
 import io.github.tommygeenexus.fiiok9control.core.ui.gaia.GaiaGattServiceConnection
@@ -145,7 +143,6 @@ class FiioK9ControlActivity : AppCompatActivity() {
         unregisterReceiver(bluetoothStateReceiver)
         unbindService(connection)
         if (!isChangingConfigurations) {
-            @Suppress("ImplicitSamInstance")
             stopService(Intent(this, GaiaGattService::class.java))
         }
     }
@@ -160,16 +157,6 @@ class FiioK9ControlActivity : AppCompatActivity() {
             val isSetup = navDestination.id == R.id.fragment_setup
             binding.navRail?.isVisible = !isSetup
             binding.navView?.isInvisible = isSetup
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-                @Suppress("DEPRECATION")
-                window.navigationBarColor = resolveThemeAttribute(
-                    if (binding.navView?.isVisible == true) {
-                        com.google.android.material.R.attr.colorSurfaceContainer
-                    } else {
-                        com.google.android.material.R.attr.colorSurface
-                    }
-                )
-            }
         }
     }
 
@@ -180,8 +167,7 @@ class FiioK9ControlActivity : AppCompatActivity() {
         windowSizeClass = WindowSizeClass.BREAKPOINTS_V1.computeWindowSizeClass(widthDp, heightDp)
     }
 
-    private fun findNavController(): NavController {
-        return (supportFragmentManager.findFragmentById(R.id.container) as NavHostFragment)
+    private fun findNavController(): NavController =
+        (supportFragmentManager.findFragmentById(R.id.container) as NavHostFragment)
             .navController
-    }
 }

@@ -54,28 +54,24 @@ data class Profile(
         private const val KEY_INDICATOR_BRIGHTNESS = TOP_LEVEL_PACKAGE_NAME + "INDICATOR_BRIGHTNESS"
         private const val KEY_VOLUME = TOP_LEVEL_PACKAGE_NAME + "VOLUME"
 
-        fun createFromPersistableBundle(bundle: PersistableBundle): Profile {
-            return Profile(
-                id = bundle.getLong(KEY_ID),
-                name = bundle.getString(KEY_NAME).orEmpty(),
-                inputSource = InputSource.findById(bundle.getInt(KEY_INPUT_SRC)).orDefault(),
-                indicatorState = IndicatorState
-                    .findById(bundle.getInt(KEY_INDICATOR_STATE))
-                    .orDefault(),
-                indicatorBrightness = bundle.getInt(KEY_INDICATOR_BRIGHTNESS),
-                volume = bundle.getInt(KEY_VOLUME)
-            )
-        }
+        fun createFromPersistableBundle(bundle: PersistableBundle): Profile = Profile(
+            id = bundle.getLong(KEY_ID),
+            name = bundle.getString(KEY_NAME).orEmpty(),
+            inputSource = InputSource.findById(bundle.getInt(KEY_INPUT_SRC)).orDefault(),
+            indicatorState = IndicatorState
+                .findById(bundle.getInt(KEY_INDICATOR_STATE))
+                .orDefault(),
+            indicatorBrightness = bundle.getInt(KEY_INDICATOR_BRIGHTNESS),
+            volume = bundle.getInt(KEY_VOLUME)
+        )
     }
 
-    fun toPersistableBundle(): PersistableBundle {
-        return PersistableBundle().apply {
-            putLong(KEY_ID, id)
-            putString(KEY_NAME, name)
-            putInt(KEY_INPUT_SRC, inputSource.id)
-            putInt(KEY_INDICATOR_STATE, indicatorState.id)
-            putInt(KEY_INDICATOR_BRIGHTNESS, indicatorBrightness)
-            putInt(KEY_VOLUME, volume)
-        }
+    fun toPersistableBundle(): PersistableBundle = PersistableBundle().apply {
+        putLong(KEY_ID, id)
+        putString(KEY_NAME, name)
+        putInt(KEY_INPUT_SRC, inputSource.id)
+        putInt(KEY_INDICATOR_STATE, indicatorState.id)
+        putInt(KEY_INDICATOR_BRIGHTNESS, indicatorBrightness)
+        putInt(KEY_VOLUME, volume)
     }
 }

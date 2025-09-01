@@ -52,8 +52,8 @@ class EqAdapter(
         setHasStableIds(true)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return ItemEqViewHolder(
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
+        ItemEqViewHolder(
             binding = ItemEqBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
@@ -61,7 +61,6 @@ class EqAdapter(
             ),
             listener = listener
         )
-    }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         (holder as? ItemEqViewHolder)?.bindItemEq(

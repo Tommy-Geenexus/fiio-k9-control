@@ -25,10 +25,8 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 
-class RecyclerViewItemDecoration(
-    private val margin: Int,
-    private val isLtr: Boolean
-) : RecyclerView.ItemDecoration() {
+class RecyclerViewItemDecoration(private val margin: Int, private val isLtr: Boolean) :
+    RecyclerView.ItemDecoration() {
 
     override fun getItemOffsets(
         outRect: Rect,

@@ -49,42 +49,36 @@ class ProfileRepository @Inject constructor(
         const val PROFILES_MAX = 100
     }
 
-    suspend fun getProfiles(): List<Profile> {
-        return withContext(dispatcherIo) {
-            coroutineContext.suspendRunCatching {
-                profileDao.getProfiles()
-            }
-        }.getOrElse { exception ->
-            Timber.e(exception)
-            emptyList()
+    suspend fun getProfiles(): List<Profile> = withContext(dispatcherIo) {
+        coroutineContext.suspendRunCatching {
+            profileDao.getProfiles()
         }
+    }.getOrElse { exception ->
+        Timber.e(exception)
+        emptyList()
     }
 
-    suspend fun insertProfile(profile: Profile): Boolean {
-        return withContext(dispatcherIo) {
-            coroutineContext.suspendRunCatching {
-                if (profileDao.getProfileCount() < PROFILES_MAX) {
-                    profileDao.upsert(profile)
-                    true
-                } else {
-                    false
-                }
+    suspend fun insertProfile(profile: Profile): Boolean = withContext(dispatcherIo) {
+        coroutineContext.suspendRunCatching {
+            if (profileDao.getProfileCount() < PROFILES_MAX) {
+                profileDao.upsert(profile)
+                true
+            } else {
+                false
             }
+        }
+    }.getOrElse { exception ->
+        Timber.e(exception)
+        false
+    }
+
+    suspend fun deleteProfile(profile: Profile): Boolean = withContext(dispatcherIo) {
+        coroutineContext.suspendRunCatching {
+            profileDao.delete(profile)
+            true
         }.getOrElse { exception ->
             Timber.e(exception)
             false
-        }
-    }
-
-    suspend fun deleteProfile(profile: Profile): Boolean {
-        return withContext(dispatcherIo) {
-            coroutineContext.suspendRunCatching {
-                profileDao.delete(profile)
-                true
-            }.getOrElse { exception ->
-                Timber.e(exception)
-                false
-            }
         }
     }
 
@@ -114,17 +108,15 @@ class ProfileRepository @Inject constructor(
         }
     }
 
-    suspend fun deleteProfileShortcut(profile: Profile): Boolean {
-        return withContext(dispatcherIo) {
-            val shortcut = listOf(profile.id.toString())
-            coroutineContext.suspendRunCatching {
-                ShortcutManagerCompat.removeDynamicShortcuts(context, shortcut)
-                ShortcutManagerCompat.disableShortcuts(context, shortcut, "")
-                true
-            }.getOrElse { exception ->
-                Timber.e(exception)
-                false
-            }
+    suspend fun deleteProfileShortcut(profile: Profile): Boolean = withContext(dispatcherIo) {
+        val shortcut = listOf(profile.id.toString())
+        coroutineContext.suspendRunCatching {
+            ShortcutManagerCompat.removeDynamicShortcuts(context, shortcut)
+            ShortcutManagerCompat.disableShortcuts(context, shortcut, "")
+            true
+        }.getOrElse { exception ->
+            Timber.e(exception)
+            false
         }
     }
 }

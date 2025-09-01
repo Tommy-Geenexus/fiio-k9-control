@@ -23,9 +23,7 @@ package io.github.tommygeenexus.fiiok9control.core.fiiok9.feature
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
-sealed class EqPreSet(
-    val id: Int
-) : Parcelable {
+sealed class EqPreSet(val id: Int) : Parcelable {
 
     companion object {
 

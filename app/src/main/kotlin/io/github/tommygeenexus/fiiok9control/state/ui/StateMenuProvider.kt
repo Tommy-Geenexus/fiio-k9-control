@@ -86,64 +86,62 @@ class StateMenuProvider(
         }
     }
 
-    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-        return when (menuItem.itemId) {
-            R.id.disconnect -> {
-                onDisconnect()
-                true
-            }
-            R.id.export -> {
-                onExportProfile()
-                true
-            }
-            R.id.hp_pre_simultaneously_on,
-            R.id.hp_pre_simultaneously_off -> {
-                onToggleHpPreSimultaneously()
-                true
-            }
-            R.id.mqa_on,
-            R.id.mqa_off -> {
-                onToggleMqaEnabled()
-                true
-            }
-            R.id.mute_on,
-            R.id.mute_off -> {
-                onToggleMuteEnabled()
-                true
-            }
-            R.id.standby -> {
-                onStandby()
-                true
-            }
-            R.id.reset -> {
-                onReset()
-                true
-            }
-            R.id.volume_up -> {
-                onVolumeUp()
-                true
-            }
-            R.id.volume_down -> {
-                onVolumeDown()
-                true
-            }
-            R.id.volume_step_size_1 -> {
-                onVolumeStepSizeChanged(FiioK9Defaults.VOLUME_STEP_SIZE_MIN)
-                true
-            }
-            R.id.volume_step_size_2 -> {
-                onVolumeStepSizeChanged(FiioK9Defaults.VOLUME_STEP_SIZE_MIN + 1)
-                true
-            }
-            R.id.volume_step_size_3 -> {
-                onVolumeStepSizeChanged(FiioK9Defaults.VOLUME_STEP_SIZE_MIN + 2)
-                true
-            }
-            R.id.volume_step_size_4 -> {
-                onVolumeStepSizeChanged(FiioK9Defaults.VOLUME_STEP_SIZE_MAX)
-                true
-            }
-            else -> false
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean = when (menuItem.itemId) {
+        R.id.disconnect -> {
+            onDisconnect()
+            true
         }
+        R.id.export -> {
+            onExportProfile()
+            true
+        }
+        R.id.hp_pre_simultaneously_on,
+        R.id.hp_pre_simultaneously_off -> {
+            onToggleHpPreSimultaneously()
+            true
+        }
+        R.id.mqa_on,
+        R.id.mqa_off -> {
+            onToggleMqaEnabled()
+            true
+        }
+        R.id.mute_on,
+        R.id.mute_off -> {
+            onToggleMuteEnabled()
+            true
+        }
+        R.id.standby -> {
+            onStandby()
+            true
+        }
+        R.id.reset -> {
+            onReset()
+            true
+        }
+        R.id.volume_up -> {
+            onVolumeUp()
+            true
+        }
+        R.id.volume_down -> {
+            onVolumeDown()
+            true
+        }
+        R.id.volume_step_size_1 -> {
+            onVolumeStepSizeChanged(FiioK9Defaults.VOLUME_STEP_SIZE_MIN)
+            true
+        }
+        R.id.volume_step_size_2 -> {
+            onVolumeStepSizeChanged(FiioK9Defaults.VOLUME_STEP_SIZE_MIN + 1)
+            true
+        }
+        R.id.volume_step_size_3 -> {
+            onVolumeStepSizeChanged(FiioK9Defaults.VOLUME_STEP_SIZE_MIN + 2)
+            true
+        }
+        R.id.volume_step_size_4 -> {
+            onVolumeStepSizeChanged(FiioK9Defaults.VOLUME_STEP_SIZE_MAX)
+            true
+        }
+        else -> false
     }
 }

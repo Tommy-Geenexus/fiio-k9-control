@@ -46,9 +46,7 @@ import io.github.tommygeenexus.fiiok9control.core.util.KEY_BLUETOOTH_ENABLED
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
-abstract class BaseFragment<B : ViewBinding>(
-    @LayoutRes layoutRes: Int
-) : Fragment(layoutRes) {
+abstract class BaseFragment<B : ViewBinding>(@LayoutRes layoutRes: Int) : Fragment(layoutRes) {
 
     private var _binding: B? = null
     internal val binding: B get() = _binding!!
@@ -92,10 +90,9 @@ abstract class BaseFragment<B : ViewBinding>(
 
     abstract fun onServiceConnectionStateChanged(isConnected: Boolean)
 
-    internal fun shouldConsumeIntent(intent: Intent): Boolean {
-        return intent.hasExtra(INTENT_ACTION_SHORTCUT_PROFILE) &&
+    internal fun shouldConsumeIntent(intent: Intent): Boolean =
+        intent.hasExtra(INTENT_ACTION_SHORTCUT_PROFILE) &&
             !intent.hasExtra(INTENT_EXTRA_CONSUMED)
-    }
 
     internal fun consumeIntent(intent: Intent) {
         val profile = IntentCompat.getParcelableExtra(
@@ -131,7 +128,6 @@ abstract class BaseFragment<B : ViewBinding>(
         }
     }
 
-    internal fun requireGaiaGattService(): GaiaGattService {
-        return checkNotNull((requireActivity() as? FiioK9ControlActivity)?.gaiaGattService)
-    }
+    internal fun requireGaiaGattService(): GaiaGattService =
+        checkNotNull((requireActivity() as? FiioK9ControlActivity)?.gaiaGattService)
 }

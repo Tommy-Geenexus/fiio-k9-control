@@ -24,9 +24,7 @@ import android.os.Binder
 import io.github.tommygeenexus.fiiok9control.core.ui.gaia.GaiaGattService
 import java.lang.ref.WeakReference
 
-class GaiaGattBinder(
-    private val service: WeakReference<GaiaGattService>
-) : Binder() {
+class GaiaGattBinder(private val service: WeakReference<GaiaGattService>) : Binder() {
 
     fun getService(): GaiaGattService? = service.get()
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
+ * Copyright (c) 2021-2025, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -27,7 +27,6 @@ import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanSettings
 import android.content.Context
 import android.content.pm.PackageManager
-import android.os.Build
 import androidx.core.content.ContextCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.github.tommygeenexus.fiiok9control.core.ble.BleScanCallback
@@ -48,18 +47,12 @@ class SetupRepository @Inject constructor(
     @DispatcherIo private val dispatcherIo: CoroutineDispatcher
 ) {
 
-    val requiredPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    val requiredPermissions =
         listOf(
             Manifest.permission.BLUETOOTH_CONNECT,
             Manifest.permission.BLUETOOTH_SCAN,
             Manifest.permission.POST_NOTIFICATIONS
         )
-    } else {
-        listOf(
-            Manifest.permission.BLUETOOTH_CONNECT,
-            Manifest.permission.BLUETOOTH_SCAN
-        )
-    }
 
     val bleScanResults = MutableSharedFlow<BleScanResult>(
         extraBufferCapacity = 1,
@@ -71,18 +64,15 @@ class SetupRepository @Inject constructor(
         arePermissionsGranted = ::arePermissionsGranted
     )
 
-    fun isBleSupported(): Boolean {
-        return context.packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)
-    }
+    fun isBleSupported(): Boolean =
+        context.packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)
 
-    suspend fun isBluetoothEnabled(): Boolean {
-        return withContext(dispatcherIo) {
-            coroutineContext.suspendRunCatching {
-                context.getSystemService(BluetoothManager::class.java)?.adapter?.isEnabled == true
-            }.getOrElse { exception ->
-                Timber.e(exception)
-                false
-            }
+    suspend fun isBluetoothEnabled(): Boolean = withContext(dispatcherIo) {
+        coroutineContext.suspendRunCatching {
+            context.getSystemService(BluetoothManager::class.java)?.adapter?.isEnabled == true
+        }.getOrElse { exception ->
+            Timber.e(exception)
+            false
         }
     }
 

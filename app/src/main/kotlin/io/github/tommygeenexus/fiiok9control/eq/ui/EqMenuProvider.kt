@@ -39,13 +39,11 @@ class EqMenuProvider(
         menu.findItem(R.id.restore_default).isVisible = hasCustomEqValues()
     }
 
-    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-        return when (menuItem.itemId) {
-            R.id.restore_default -> {
-                onRestoreDefault()
-                true
-            }
-            else -> false
+    override fun onMenuItemSelected(menuItem: MenuItem): Boolean = when (menuItem.itemId) {
+        R.id.restore_default -> {
+            onRestoreDefault()
+            true
         }
+        else -> false
     }
 }

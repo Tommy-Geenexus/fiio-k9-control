@@ -24,7 +24,4 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class EqValue(
-    val id: Int,
-    val value: Float
-) : Parcelable
+data class EqValue(val id: Int, val value: Float) : Parcelable

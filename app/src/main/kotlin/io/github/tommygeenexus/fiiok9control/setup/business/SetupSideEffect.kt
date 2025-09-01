@@ -33,14 +33,10 @@ sealed class SetupSideEffect : Parcelable {
     }
 
     @Parcelize
-    data class GrantPermissions(
-        val requiredPermissions: List<String>
-    ) : SetupSideEffect()
+    data class GrantPermissions(val requiredPermissions: List<String>) : SetupSideEffect()
 
     @Parcelize
-    data class NavigateToProfile(
-        val profile: Profile
-    ) : SetupSideEffect()
+    data class NavigateToProfile(val profile: Profile) : SetupSideEffect()
 
     @Parcelize
     data object NavigateToState : SetupSideEffect()

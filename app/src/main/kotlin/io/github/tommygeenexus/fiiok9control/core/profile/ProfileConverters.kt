@@ -28,17 +28,15 @@ import io.github.tommygeenexus.fiiok9control.core.fiiok9.feature.orDefault
 class ProfileConverters {
 
     @TypeConverter
-    fun fromInputSourceId(id: Int?): InputSource {
-        return InputSource.findById(id ?: InputSource.Usb.id).orDefault()
-    }
+    fun fromInputSourceId(id: Int?): InputSource =
+        InputSource.findById(id ?: InputSource.Usb.id).orDefault()
 
     @TypeConverter
     fun toInputSourceId(inputSource: InputSource) = inputSource.id
 
     @TypeConverter
-    fun fromIndicatorStateId(id: Int?): IndicatorState {
-        return IndicatorState.findById(id ?: IndicatorState.EnabledDefault.id).orDefault()
-    }
+    fun fromIndicatorStateId(id: Int?): IndicatorState =
+        IndicatorState.findById(id ?: IndicatorState.EnabledDefault.id).orDefault()
 
     @TypeConverter
     fun toIndicatorStateId(indicatorState: IndicatorState) = indicatorState.id

@@ -262,8 +262,8 @@ class GaiaGattService : BLEService() {
 
     override fun provideHandler() = handler
 
-    private fun checkService(gattService: BluetoothGattService): Boolean {
-        return if (gattService.uuid == UUID_SERVICE_GAIA) {
+    private fun checkService(gattService: BluetoothGattService): Boolean =
+        if (gattService.uuid == UUID_SERVICE_GAIA) {
             this.gattService = gattService
             gattService.characteristics.forEach { characteristic ->
                 when (characteristic.uuid) {
@@ -294,13 +294,10 @@ class GaiaGattService : BLEService() {
         } else {
             false
         }
-    }
 
-    suspend fun connect(address: String): Boolean {
-        return withContext(dispatcherIo) {
-            disconnectAndReset()
-            super.connectToDevice(address)
-        }
+    suspend fun connect(address: String): Boolean = withContext(dispatcherIo) {
+        disconnectAndReset()
+        super.connectToDevice(address)
     }
 
     suspend fun disconnectAndReset() {
@@ -313,12 +310,10 @@ class GaiaGattService : BLEService() {
         }
     }
 
-    private fun hasBluetoothConnectPermission(): Boolean {
-        return ActivityCompat.checkSelfPermission(
-            applicationContext,
-            Manifest.permission.BLUETOOTH_CONNECT
-        ) == PackageManager.PERMISSION_GRANTED
-    }
+    private fun hasBluetoothConnectPermission(): Boolean = ActivityCompat.checkSelfPermission(
+        applicationContext,
+        Manifest.permission.BLUETOOTH_CONNECT
+    ) == PackageManager.PERMISSION_GRANTED
 
     private fun onGattReady() {
         val ready = isGattReady

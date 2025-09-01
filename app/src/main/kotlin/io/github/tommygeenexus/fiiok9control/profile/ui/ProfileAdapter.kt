@@ -28,9 +28,8 @@ import io.github.tommygeenexus.fiiok9control.core.db.Profile
 import io.github.tommygeenexus.fiiok9control.core.profile.ProfileDiffCallback
 import io.github.tommygeenexus.fiiok9control.databinding.ItemProfileBinding
 
-class ProfileAdapter(
-    private val listener: Listener
-) : ListAdapter<Profile, RecyclerView.ViewHolder>(ProfileDiffCallback) {
+class ProfileAdapter(private val listener: Listener) :
+    ListAdapter<Profile, RecyclerView.ViewHolder>(ProfileDiffCallback) {
 
     interface Listener {
 
