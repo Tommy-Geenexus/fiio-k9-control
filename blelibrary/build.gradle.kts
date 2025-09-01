@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.qualcomm.qti.libraries.ble"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 30

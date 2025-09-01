@@ -3,6 +3,7 @@ import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
 import java.io.FileInputStream
 import java.util.Properties
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.application)
@@ -80,10 +81,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-
     lint {
         disable += "LogNotTimber"
     }
@@ -121,6 +118,7 @@ kotlin {
             "-opt-in=androidx.window.core.ExperimentalWindowCoreApi",
             "-opt-in=kotlin.ExperimentalStdlibApi"
         )
+        jvmTarget.set(JvmTarget.JVM_17)
     }
 }
 
