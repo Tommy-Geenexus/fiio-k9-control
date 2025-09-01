@@ -32,7 +32,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navOptions
 import androidx.viewbinding.ViewBinding
 import androidx.window.core.layout.WindowSizeClass
 import io.github.tommygeenexus.fiiok9control.FiioK9ControlActivity
@@ -113,18 +112,10 @@ abstract class BaseFragment<B : ViewBinding>(@LayoutRes layoutRes: Int) : Fragme
 
     internal fun navigateToSetup() {
         with(findNavController()) {
-            navigate(
-                resId = R.id.fragment_setup,
-                args = null,
-                navOptions = navOptions {
-                    val id = currentDestination?.id
-                    if (id != null) {
-                        popUpTo(id) {
-                            inclusive = true
-                        }
-                    }
-                }
-            )
+            // Workaround for issue introduced in androidx.navigation:navigation-*:2.7.5
+            // (setGraph does not clear backstack and navigate to start destination)
+            setGraph(R.navigation.nav_graph_2)
+            setGraph(R.navigation.nav_graph)
         }
     }
 
