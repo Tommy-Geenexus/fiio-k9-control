@@ -45,6 +45,8 @@ import androidx.window.core.layout.computeWindowSizeClass
 import androidx.window.layout.WindowMetricsCalculator
 import dagger.hilt.android.AndroidEntryPoint
 import io.github.tommygeenexus.fiiok9control.core.business.GaiaGattSideEffect
+import io.github.tommygeenexus.fiiok9control.core.extension.resolveThemeAttribute
+import io.github.tommygeenexus.fiiok9control.core.extension.setCutoutForegroundColor
 import io.github.tommygeenexus.fiiok9control.core.receiver.BluetoothStateBroadcastReceiver
 import io.github.tommygeenexus.fiiok9control.core.ui.gaia.GaiaGattService
 import io.github.tommygeenexus.fiiok9control.core.ui.gaia.GaiaGattServiceConnection
@@ -107,6 +109,11 @@ class FiioK9ControlActivity : AppCompatActivity() {
             computeWindowSizeClasses()
             setSupportActionBar(toolbar)
             setupNavigation(this, findNavController())
+            setCutoutForegroundColor(
+                color = resolveThemeAttribute(
+                    attrRes = com.google.android.material.R.attr.colorSurfaceContainer
+                )
+            )
             ViewCompat.setOnApplyWindowInsetsListener(root) { _, windowInsetsCompat ->
                 val insets = windowInsetsCompat.getInsets(
                     WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
