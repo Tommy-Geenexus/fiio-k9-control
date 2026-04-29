@@ -58,6 +58,7 @@ jobs:
         id: tag_create
         uses: rickstaa/action-create-tag@a1c7777fcb2fee4f19b0f283ba888afa11678b72 # v1.7.2
         with:
+          github-token: ${{ secrets.GH_UPLOAD_TOKEN }}
           message: ${{ env.COMMIT_SUBJECT }}
           tag: ${{ env.RELEASE_TAG }}
 
