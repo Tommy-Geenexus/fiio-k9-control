@@ -19,12 +19,12 @@ plugins {
 
 android {
     namespace = "io.github.tommygeenexus.fiiok9control"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "io.github.tommygeenexus"
         minSdk = 35
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 22
         versionName = "2.2.0"
     }
