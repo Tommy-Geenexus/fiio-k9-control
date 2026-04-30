@@ -22,7 +22,7 @@ android {
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "io.github.tommygeenexus"
+        applicationId = "io.github.tommygeenexus.fiiok9control"
         minSdk = 35
         targetSdk = 37
         versionCode = 22
