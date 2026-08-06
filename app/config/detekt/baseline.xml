@@ -38,8 +38,8 @@
     <ID>TooManyFunctions:FiioK9PacketFactory.kt:FiioK9PacketFactory</ID>
     <ID>TooManyFunctions:GaiaGattService.kt:GaiaGattService : BLEService</ID>
     <ID>TooManyFunctions:ProfileFragment.kt:ProfileFragment : BaseFragmentListener</ID>
-    <ID>TooManyFunctions:SetupViewModel.kt:SetupViewModel : AndroidViewModelContainerHost</ID>
+    <ID>TooManyFunctions:SetupViewModel.kt:SetupViewModel : AndroidViewModelOrbitContainerHost</ID>
     <ID>TooManyFunctions:StateFragment.kt:StateFragment : BaseFragmentListener</ID>
-    <ID>TooManyFunctions:StateViewModel.kt:StateViewModel : ViewModelContainerHost</ID>
+    <ID>TooManyFunctions:StateViewModel.kt:StateViewModel : ViewModelOrbitContainerHost</ID>
   </CurrentIssues>
 </SmellBaseline>

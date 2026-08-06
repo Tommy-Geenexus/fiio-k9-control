@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
+ * Copyright (c) 2021-2026, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -34,8 +34,8 @@ import io.github.tommygeenexus.fiiok9control.core.ui.gaia.GaiaGattService
 import io.github.tommygeenexus.fiiok9control.profile.data.ProfileRepository
 import io.github.tommygeenexus.fiiok9control.profile.ui.ProfileFragmentArgs
 import javax.inject.Inject
-import org.orbitmvi.orbit.ContainerHost
-import org.orbitmvi.orbit.viewmodel.container
+import org.orbitmvi.orbit.OrbitContainerHost
+import org.orbitmvi.orbit.viewmodel.orbitContainer
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
@@ -43,9 +43,9 @@ class ProfileViewModel @Inject constructor(
     private val gaiaGattRepository: GaiaGattRepository,
     private val profileRepository: ProfileRepository
 ) : ViewModel(),
-    ContainerHost<ProfileState, ProfileSideEffect> {
+    OrbitContainerHost<ProfileState, ProfileState, ProfileSideEffect> {
 
-    override val container = container<ProfileState, ProfileSideEffect>(
+    override val container = orbitContainer<ProfileState, ProfileSideEffect>(
         initialState = ProfileState(),
         savedStateHandle = savedStateHandle,
         onCreate = {

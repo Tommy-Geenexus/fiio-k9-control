@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
+ * Copyright (c) 2021-2026, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -34,17 +34,17 @@ import io.github.tommygeenexus.fiiok9control.core.fiiok9.feature.LowPassFilter
 import io.github.tommygeenexus.fiiok9control.core.gaia.GaiaPacketFactory
 import io.github.tommygeenexus.fiiok9control.core.ui.gaia.GaiaGattService
 import javax.inject.Inject
-import org.orbitmvi.orbit.ContainerHost
-import org.orbitmvi.orbit.viewmodel.container
+import org.orbitmvi.orbit.OrbitContainerHost
+import org.orbitmvi.orbit.viewmodel.orbitContainer
 
 @HiltViewModel
 class AudioViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val gaiaGattRepository: GaiaGattRepository
 ) : ViewModel(),
-    ContainerHost<AudioState, AudioSideEffect> {
+    OrbitContainerHost<AudioState, AudioState, AudioSideEffect> {
 
-    override val container = container<AudioState, AudioSideEffect>(
+    override val container = orbitContainer<AudioState, AudioSideEffect>(
         savedStateHandle = savedStateHandle,
         initialState = AudioState()
     )

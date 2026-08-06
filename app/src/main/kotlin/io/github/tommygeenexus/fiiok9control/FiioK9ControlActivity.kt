@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2025, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
+ * Copyright (c) 2021-2026, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -30,7 +30,6 @@ import android.widget.FrameLayout
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isInvisible
@@ -67,7 +66,9 @@ class FiioK9ControlActivity : AppCompatActivity() {
         onBluetoothStateChanged = { isEnabled ->
             supportFragmentManager.setFragmentResult(
                 KEY_BLUETOOTH_ENABLED,
-                bundleOf(KEY_BLUETOOTH_ENABLED to isEnabled)
+                Bundle().apply {
+                    putBoolean(KEY_BLUETOOTH_ENABLED, isEnabled)
+                }
             )
         }
     )

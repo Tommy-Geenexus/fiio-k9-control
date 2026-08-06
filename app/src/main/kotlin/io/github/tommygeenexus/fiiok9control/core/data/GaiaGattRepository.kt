@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2025, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
+ * Copyright (c) 2023-2026, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -26,6 +26,7 @@ import io.github.tommygeenexus.fiiok9control.core.extension.suspendRunCatching
 import io.github.tommygeenexus.fiiok9control.core.ui.gaia.GaiaGattService
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -36,10 +37,7 @@ class GaiaGattRepository @Inject constructor(
     @DispatcherIo private val dispatcherIo: CoroutineDispatcher
 ) {
 
-    private companion object {
-
-        const val GAIA_CMD_DELAY_MS = 200L
-    }
+    private val gaiaCmdDelay = 200.milliseconds
 
     suspend fun connect(service: GaiaGattService, deviceAddress: String): Boolean =
         withContext(dispatcherIo) {
@@ -55,7 +53,7 @@ class GaiaGattRepository @Inject constructor(
         withContext(dispatcherIo) {
             coroutineContext.suspendRunCatching {
                 val result = service.sendGaiaPacket(packet)
-                delay(GAIA_CMD_DELAY_MS)
+                delay(gaiaCmdDelay)
                 result
             }.getOrElse { exception ->
                 Timber.e(exception)
@@ -68,7 +66,7 @@ class GaiaGattRepository @Inject constructor(
             coroutineContext.suspendRunCatching {
                 packets.forEach { packet ->
                     val result = service.sendGaiaPacket(packet)
-                    delay(GAIA_CMD_DELAY_MS)
+                    delay(gaiaCmdDelay)
                     if (!result) {
                         return@suspendRunCatching false
                     }

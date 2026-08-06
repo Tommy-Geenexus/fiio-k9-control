@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
+ * Copyright (c) 2021-2026, Tom Geiselmann (tomgapplicationsdevelopment@gmail.com)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software
  * and associated documentation files (the "Software"), to deal in the Software without restriction,
@@ -24,7 +24,6 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.WindowInsets
-import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import io.github.tommygeenexus.fiiok9control.core.util.KEY_PROFILE_NAME
@@ -43,10 +42,10 @@ class ExportProfileFragment : DialogFragment() {
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 parentFragmentManager.setFragmentResult(
                     KEY_PROFILE_NAME,
-                    bundleOf(
-                        KEY_PROFILE_NAME to binding.profileName.text?.trim().toString(),
-                        KEY_PROFILE_VOLUME_EXPORT to binding.exportVolume.isChecked
-                    )
+                    Bundle().apply {
+                        putString(KEY_PROFILE_NAME, binding.profileName.text?.trim().toString())
+                        putBoolean(KEY_PROFILE_VOLUME_EXPORT, binding.exportVolume.isChecked)
+                    }
                 )
             }
             .setNegativeButton(android.R.string.cancel, null)
