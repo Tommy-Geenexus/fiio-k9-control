@@ -25,8 +25,8 @@ android {
         applicationId = "io.github.tommygeenexus.fiiok9control"
         minSdk = 35
         targetSdk = 37
-        versionCode = 22
-        versionName = "2.2.0"
+        versionCode = 23
+        versionName = "2.2.1"
     }
 
     signingConfigs {
